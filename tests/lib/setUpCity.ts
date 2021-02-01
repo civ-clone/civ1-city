@@ -43,6 +43,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import Tileset from '@civ-clone/core-world/Tileset';
 import { Water } from '@civ-clone/core-terrain/Types';
 import World from '@civ-clone/core-world/World';
+import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 
 export const setUpCity = ({
   name = '',
@@ -124,7 +125,15 @@ export const setUpCity = ({
   const city = new City(player, tile, name, ruleRegistry);
 
   if (size > 1) {
-    const cityGrowth = cityGrowthRegistry.getByCity(city);
+    let cityGrowth;
+
+    try {
+      cityGrowth = cityGrowthRegistry.getByCity(city);
+    } catch (e) {
+      cityGrowth = new CityGrowth(city, ruleRegistry);
+
+      cityGrowthRegistry.register(cityGrowth);
+    }
 
     while (cityGrowth.size() < size) {
       cityGrowth.grow();

@@ -16,6 +16,7 @@ const TerrainFeatures_1 = require("@civ-clone/base-terrain-civ1/TerrainFeatures"
 const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
 const World_1 = require("@civ-clone/core-world/World");
+const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
 const setUpCity = ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, world = (() => {
     const generator = new FillGenerator_1.default(5, 5, Terrains_1.Grassland), world = new World_1.default(generator);
     world.build(ruleRegistry);
@@ -48,7 +49,14 @@ const setUpCity = ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance
     });
     const city = new City_1.default(player, tile, name, ruleRegistry);
     if (size > 1) {
-        const cityGrowth = cityGrowthRegistry.getByCity(city);
+        let cityGrowth;
+        try {
+            cityGrowth = cityGrowthRegistry.getByCity(city);
+        }
+        catch (e) {
+            cityGrowth = new CityGrowth_1.default(city, ruleRegistry);
+            cityGrowthRegistry.register(cityGrowth);
+        }
         while (cityGrowth.size() < size) {
             cityGrowth.grow();
         }
