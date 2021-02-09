@@ -6,7 +6,7 @@ const Engine_1 = require("@civ-clone/core-engine/Engine");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const Destroyed_1 = require("@civ-clone/core-city/Rules/Destroyed");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
-const TileImprovements_1 = require("@civ-clone/base-terrain-civ1/TileImprovements");
+const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityRegistry = CityRegistry_1.instance, engine = Engine_1.instance) => [
     new Destroyed_1.default(new Effect_1.default((city) => tileImprovementRegistry
         .getByTile(city.tile())

@@ -1,8 +1,8 @@
 {
-  "name": "@civ-clone/base-city-civ1",
+  "name": "@civ-clone/civ1-city",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "git@github.com:civ-clone/base-city-civ1.git",
+  "repository": "git@github.com:civ-clone/civ1-city.git",
   "keywords": [
     "typescript",
     "civilization"
@@ -19,9 +19,9 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
-    "@civ-clone/base-unit-civ1": "github:civ-clone/base-unit-civ1",
-    "@civ-clone/base-world-generator": "github:civ-clone/base-world-generator",
+    "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/core-player-world": "^0.1.0",
+    "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.2.14",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
@@ -39,9 +39,9 @@
     "@civ-clone/base-city-yield-luxuries": "^0.1.0",
     "@civ-clone/base-city-yield-research": "^0.1.0",
     "@civ-clone/base-city-yield-unhappiness": "^0.1.0",
-    "@civ-clone/base-government-civ1": "^0.1.0",
-    "@civ-clone/base-terrain-civ1": "github:civ-clone/base-terrain-civ1",
     "@civ-clone/base-terrain-yield-trade": "^0.1.0",
+    "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
+    "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
     "@civ-clone/core-city": "^0.1.0",
     "@civ-clone/core-city-build": "^0.1.0",
     "@civ-clone/core-city-growth": "^0.1.0",

@@ -1,4 +1,4 @@
-export { Food, Production } from '@civ-clone/base-terrain-civ1/Yields';
+export { Food, Production } from '@civ-clone/civ1-world/Yields';
 export { Gold } from '@civ-clone/base-city-yield-gold/Gold';
 export { Happiness } from '@civ-clone/base-city-yield-happiness/Happiness';
 export { Luxuries } from '@civ-clone/base-city-yield-luxuries/Luxuries';

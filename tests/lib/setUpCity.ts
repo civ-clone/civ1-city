@@ -7,16 +7,12 @@ import {
   Ocean,
   Plains,
   River,
-} from '@civ-clone/base-terrain-civ1/Terrains';
+} from '@civ-clone/civ1-world/Terrains';
 import {
   CityGrowthRegistry,
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
-import {
-  Irrigation,
-  Mine,
-  Road,
-} from '@civ-clone/base-terrain-civ1/TileImprovements';
+import { Irrigation, Mine, Road } from '@civ-clone/civ1-world/TileImprovements';
 import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
@@ -34,10 +30,10 @@ import {
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import City from '@civ-clone/core-city/City';
-import FillGenerator from '@civ-clone/base-world-generator/tests/lib/FillGenerator';
+import FillGenerator from '@civ-clone/simple-world-generator/tests/lib/FillGenerator';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
-import { Shield } from '@civ-clone/base-terrain-civ1/TerrainFeatures';
+import { Shield } from '@civ-clone/civ1-world/TerrainFeatures';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
 import Tileset from '@civ-clone/core-world/Tileset';

@@ -5,9 +5,9 @@ import {
   Despotism,
   Monarchy,
   Republic,
-} from '@civ-clone/base-government-civ1/Governments';
-import { Food, Production } from '@civ-clone/base-terrain-civ1/Yields';
-import { Settlers, Warrior } from '@civ-clone/base-unit-civ1/Units';
+} from '@civ-clone/civ1-government/Governments';
+import { Food, Production } from '@civ-clone/civ1-world/Yields';
+import { Settlers, Warrior } from '@civ-clone/civ1-unit/Units';
 import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
@@ -16,12 +16,12 @@ import PlayerGovernmentRegistry from '@civ-clone/core-government/PlayerGovernmen
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
-import added from '@civ-clone/base-government-civ1/Rules/Player/added';
+import added from '@civ-clone/civ1-government/Rules/Player/added';
 import cost from '../Rules/City/cost';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
 import setUpCity from './lib/setUpCity';
-import unitCreated from '@civ-clone/base-unit-civ1/Rules/Unit/created';
+import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import Yield from '@civ-clone/core-yield/Yield';
 
 describe('city:cost', (): void => {

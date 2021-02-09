@@ -5,7 +5,7 @@ import {
   Despotism,
   Monarchy,
   Republic,
-} from '@civ-clone/base-government-civ1/Governments';
+} from '@civ-clone/civ1-government/Governments';
 import {
   CityGrowthRegistry,
   instance as cityGrowthRegistryInstance,
@@ -23,8 +23,8 @@ import City from '@civ-clone/core-city/City';
 import Cost from '@civ-clone/core-city/Rules/Cost';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { Fortifiable } from '@civ-clone/base-unit-civ1/Types';
-import { Settlers } from '@civ-clone/base-unit-civ1/Units';
+import { Fortifiable } from '@civ-clone/civ1-unit/Types';
+import { Settlers } from '@civ-clone/civ1-unit/Units';
 import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-yield/Yield';
 

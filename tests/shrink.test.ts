@@ -1,7 +1,7 @@
 import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
-import { Food } from '@civ-clone/base-terrain-civ1/Yields';
+import { Food } from '@civ-clone/civ1-world/Yields';
 import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';

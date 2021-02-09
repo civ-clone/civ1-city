@@ -13,7 +13,7 @@ import {
 import City from '@civ-clone/core-city/City';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
-import { Irrigation } from '@civ-clone/base-terrain-civ1/TileImprovements';
+import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import Player from '@civ-clone/core-player/Player';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 

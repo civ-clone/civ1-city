@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unhappiness = exports.Trade = exports.Research = exports.Luxuries = exports.Happiness = exports.Gold = exports.Production = exports.Food = void 0;
-var Yields_1 = require("@civ-clone/base-terrain-civ1/Yields");
+var Yields_1 = require("@civ-clone/civ1-world/Yields");
 Object.defineProperty(exports, "Food", { enumerable: true, get: function () { return Yields_1.Food; } });
 Object.defineProperty(exports, "Production", { enumerable: true, get: function () { return Yields_1.Production; } });
 var Gold_1 = require("@civ-clone/base-city-yield-gold/Gold");

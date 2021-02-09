@@ -18,10 +18,7 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
-import {
-  Irrigation,
-  Road,
-} from '@civ-clone/base-terrain-civ1/TileImprovements';
+import { Irrigation, Road } from '@civ-clone/civ1-world/TileImprovements';
 import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,

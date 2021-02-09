@@ -1,7 +1,4 @@
-import {
-  Irrigation,
-  Road,
-} from '@civ-clone/base-terrain-civ1/TileImprovements';
+import { Irrigation, Road } from '@civ-clone/civ1-world/TileImprovements';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';

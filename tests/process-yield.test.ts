@@ -1,4 +1,4 @@
-import { Food, Production } from '@civ-clone/base-terrain-civ1/Yields';
+import { Food, Production } from '@civ-clone/civ1-world/Yields';
 import {
   ProcessYield,
   IProcessYieldRegistry,
@@ -10,8 +10,8 @@ import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistr
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
-import { Warrior } from '@civ-clone/base-unit-civ1/Units';
-import buildCost from '@civ-clone/base-unit-civ1/Rules/City/buildCost';
+import { Warrior } from '@civ-clone/civ1-unit/Units';
+import buildCost from '@civ-clone/civ1-unit/Rules/City/buildCost';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
 import foodStorage from '../Rules/City/food-storage';
@@ -19,8 +19,8 @@ import grow from '../Rules/City/grow';
 import processYield from '../Rules/City/process-yield';
 import setUpCity from './lib/setUpCity';
 import shrink from '../Rules/City/shrink';
-import unitCreated from '@civ-clone/base-unit-civ1/Rules/Unit/created';
-import unitDestroyed from '@civ-clone/base-unit-civ1/Rules/Unit/destroyed';
+import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
+import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import growthCost from '../Rules/City/growth-cost';
 
 describe('city:process-yield', (): void => {
