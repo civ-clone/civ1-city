@@ -34,8 +34,8 @@ describe('city:shrink', (): void => {
     ...shrink(cityGrowthRegistry, playerWorldRegistry)
   );
 
-  it('should empty the food storage', (): void => {
-    const city = setUpCity({
+  it('should empty the food storage', async (): Promise<void> => {
+    const city = await setUpCity({
         size: 10,
         ruleRegistry,
         playerWorldRegistry,

@@ -6,62 +6,54 @@ const CityGrowthRegistry_1 = require("@civ-clone/core-city-growth/CityGrowthRegi
 const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
 const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
-const TerrainFeatureRegistry_1 = require("@civ-clone/core-terrain-feature/TerrainFeatureRegistry");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
+const buildWorld_1 = require("@civ-clone/core-world/tests/lib/buildWorld");
 const City_1 = require("@civ-clone/core-city/City");
-const FillGenerator_1 = require("@civ-clone/simple-world-generator/tests/lib/FillGenerator");
+const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
 const Player_1 = require("@civ-clone/core-player/Player");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
-const TerrainFeatures_1 = require("@civ-clone/civ1-world/TerrainFeatures");
 const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
-const World_1 = require("@civ-clone/core-world/World");
-const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
-const setUpCity = ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, world = (() => {
-    const generator = new FillGenerator_1.default(5, 5, Terrains_1.Grassland), world = new World_1.default(generator);
-    world.build(ruleRegistry);
-    world
-        .entries()
-        .forEach((tile) => terrainFeatureRegistry.register(new TerrainFeatures_1.Shield(tile.terrain())));
-    try {
-        playerWorldRegistry.getByPlayer(player);
+const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
+    if (world === undefined) {
+        world = await buildWorld_1.generateWorld(buildWorld_1.generateGenerator(5, 5, Terrains_1.Grassland));
+        playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
     }
-    catch (e) {
-        const playerWorld = new PlayerWorld_1.default(player, world);
-        playerWorldRegistry.register(playerWorld);
+    if (tile === undefined) {
+        tile = world.get(2, 2);
     }
-    return world;
-})(), tile = world.get(2, 2), tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
-    Tileset_1.default.fromSurrounding(tile).forEach((tile) => {
-        playerWorldRegistry.getByPlayer(player).register(tile);
-        if (tile.terrain() instanceof Types_1.Water) {
-            return;
+    return new Promise((resolve) => {
+        Tileset_1.default.fromSurrounding(tile).forEach((tile) => {
+            playerWorldRegistry.getByPlayer(player).register(tile);
+            if (tile.terrain() instanceof Types_1.Water) {
+                return;
+            }
+            if ([Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Hills, Terrains_1.Plains, Terrains_1.River].some((IrrigatableTerrain) => tile.terrain() instanceof IrrigatableTerrain)) {
+                tileImprovementRegistry.register(new TileImprovements_1.Irrigation(tile));
+            }
+            else if ([Terrains_1.Hills, Terrains_1.Mountains].some((MineableTerrain) => tile.terrain() instanceof MineableTerrain)) {
+                tileImprovementRegistry.register(new TileImprovements_1.Mine(tile));
+            }
+            if (![Terrains_1.Arctic, Terrains_1.Ocean, Terrains_1.River].some((UnroadableTerrain) => tile.terrain() instanceof UnroadableTerrain)) {
+                tileImprovementRegistry.register(new TileImprovements_1.Road(tile));
+            }
+        });
+        const city = new City_1.default(player, tile, name, ruleRegistry);
+        if (size > 1) {
+            let cityGrowth;
+            try {
+                cityGrowth = cityGrowthRegistry.getByCity(city);
+            }
+            catch (e) {
+                cityGrowth = new CityGrowth_1.default(city, ruleRegistry);
+                cityGrowthRegistry.register(cityGrowth);
+            }
+            while (cityGrowth.size() < size) {
+                cityGrowth.grow();
+            }
         }
-        if ([Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Hills, Terrains_1.Plains, Terrains_1.River].some((IrrigatableTerrain) => tile.terrain() instanceof IrrigatableTerrain)) {
-            tileImprovementRegistry.register(new TileImprovements_1.Irrigation(tile));
-        }
-        else if ([Terrains_1.Hills, Terrains_1.Mountains].some((MineableTerrain) => tile.terrain() instanceof MineableTerrain)) {
-            tileImprovementRegistry.register(new TileImprovements_1.Mine(tile));
-        }
-        if (![Terrains_1.Arctic, Terrains_1.Ocean, Terrains_1.River].some((UnroadableTerrain) => tile.terrain() instanceof UnroadableTerrain)) {
-            tileImprovementRegistry.register(new TileImprovements_1.Road(tile));
-        }
+        resolve(city);
     });
-    const city = new City_1.default(player, tile, name, ruleRegistry);
-    if (size > 1) {
-        let cityGrowth;
-        try {
-            cityGrowth = cityGrowthRegistry.getByCity(city);
-        }
-        catch (e) {
-            cityGrowth = new CityGrowth_1.default(city, ruleRegistry);
-            cityGrowthRegistry.register(cityGrowth);
-        }
-        while (cityGrowth.size() < size) {
-            cityGrowth.grow();
-        }
-    }
-    return city;
 };
 exports.setUpCity = setUpCity;
 exports.default = exports.setUpCity;

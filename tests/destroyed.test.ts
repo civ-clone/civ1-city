@@ -26,8 +26,8 @@ describe('city:destroyed', (): void => {
     ...destroyed(tileImprovementRegistry, cityRegistry)
   );
 
-  it('should remove irrigation from the city tile', (): void => {
-    const city = setUpCity({
+  it('should remove irrigation from the city tile', async (): Promise<void> => {
+    const city = await setUpCity({
       ruleRegistry,
       tileImprovementRegistry,
       cityGrowthRegistry,
@@ -60,8 +60,8 @@ describe('city:destroyed', (): void => {
     ).to.true;
   });
 
-  it('should be removed from the CityRegistry', (): void => {
-    const city = setUpCity({
+  it('should be removed from the CityRegistry', async (): Promise<void> => {
+    const city = await setUpCity({
       ruleRegistry,
       tileImprovementRegistry,
       cityGrowthRegistry,

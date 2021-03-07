@@ -45,8 +45,8 @@ describe('city:cost', (): void => {
     ...unitCreated(unitRegistry)
   );
 
-  it('should cost 2 Food to feed each population point', (): void => {
-    const city = setUpCity({
+  it('should cost 2 Food to feed each population point', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         cityGrowthRegistry,
       }),
@@ -71,8 +71,8 @@ describe('city:cost', (): void => {
     );
   });
 
-  it('should cost Food to support each Settlers', (): void => {
-    const city = setUpCity({
+  it('should cost Food to support each Settlers', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         cityGrowthRegistry,
       }),
@@ -99,8 +99,8 @@ describe('city:cost', (): void => {
     );
   });
 
-  it('should cost Production to support military units', (): void => {
-    const city = setUpCity({
+  it('should cost Production to support military units', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         cityGrowthRegistry,
       }),

@@ -40,8 +40,8 @@ describe('city:captured', (): void => {
     ...unitDestroyed(unitRegistry)
   );
 
-  it('should cause a city to lose a population point', (): void => {
-    const city = setUpCity({
+  it('should cause a city to lose a population point', async (): Promise<void> => {
+    const city = await setUpCity({
         size: 2,
         ruleRegistry,
         tileImprovementRegistry,
@@ -58,8 +58,8 @@ describe('city:captured', (): void => {
     expect(city.player()).to.equal(enemy);
   });
 
-  it('should destroy all of the cities units', (): void => {
-    const city = setUpCity({
+  it('should destroy all of the cities units', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         cityGrowthRegistry,
@@ -77,8 +77,8 @@ describe('city:captured', (): void => {
     unitRegistry.unregister(unit);
   });
 
-  it('should clear build progress', (): void => {
-    const city = setUpCity({
+  it('should clear build progress', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         cityGrowthRegistry,

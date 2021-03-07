@@ -8,6 +8,7 @@ import {
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import City from '@civ-clone/core-city/City';
 import Tile from '@civ-clone/core-world/Tile';
+import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
 
 export const assignWorkers: (
   city: City,
@@ -30,7 +31,16 @@ export const assignWorkers: (
       )
       .sort(
         (a: Tile, b: Tile): number =>
-          b.score(city.player()) - a.score(city.player())
+          b.score(city.player(), [
+            [Food, 4],
+            [Production, 2],
+            [Trade, 1],
+          ]) -
+          a.score(city.player(), [
+            [Food, 4],
+            [Production, 2],
+            [Trade, 1],
+          ])
       )
       // +1 here because we also work the main city tile
       .slice(0, cityGrowth.size() + 1 - city.tilesWorked().length)

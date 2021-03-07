@@ -51,8 +51,8 @@ describe('city:process-yield', (): void => {
     ...unitDestroyed(unitRegistry)
   );
 
-  it('should cause a city to grow when the food cost is met', (): void => {
-    const city = setUpCity({
+  it('should cause a city to grow when the food cost is met', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         playerWorldRegistry,
@@ -72,8 +72,8 @@ describe('city:process-yield', (): void => {
     expect(cityGrowth.size()).to.equal(2);
   });
 
-  it('should cause a city to shrink when the food store is depleted', (): void => {
-    const city = setUpCity({
+  it('should cause a city to shrink when the food store is depleted', async (): Promise<void> => {
+    const city = await setUpCity({
         size: 2,
         ruleRegistry,
         tileImprovementRegistry,
@@ -94,8 +94,8 @@ describe('city:process-yield', (): void => {
     expect(cityGrowth.size()).to.equal(1);
   });
 
-  it('should cause a city to accrue Production when surplus is available', (): void => {
-    const city = setUpCity({
+  it('should cause a city to accrue Production when surplus is available', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         playerWorldRegistry,
@@ -112,8 +112,8 @@ describe('city:process-yield', (): void => {
     expect(cityBuild.progress().value()).to.equal(2);
   });
 
-  it('should cause units to be destroyed in a city where there is not enough Production to support them', (): void => {
-    const city = setUpCity({
+  it('should cause units to be destroyed in a city where there is not enough Production to support them', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         playerWorldRegistry,

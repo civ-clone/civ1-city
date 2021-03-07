@@ -34,8 +34,8 @@ describe('city:grow', (): void => {
     ...growthCost()
   );
 
-  it('should cause a city to grow when the food cost is met', (): void => {
-    const city = setUpCity({
+  it('should cause a city to grow when the food cost is met', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
         playerWorldRegistry,

@@ -1,7 +1,6 @@
 import { CityGrowthRegistry } from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import { PlayerWorldRegistry } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
-import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
@@ -13,7 +12,6 @@ export declare const setUpCity: ({
   ruleRegistry,
   player,
   playerWorldRegistry,
-  terrainFeatureRegistry,
   world,
   tile,
   tileImprovementRegistry,
@@ -32,8 +30,7 @@ export declare const setUpCity: ({
   tile?: Tile | undefined;
   player?: Player | undefined;
   tileImprovementRegistry?: TileImprovementRegistry | undefined;
-  terrainFeatureRegistry?: TerrainFeatureRegistry | undefined;
   playerWorldRegistry?: PlayerWorldRegistry | undefined;
   cityGrowthRegistry?: CityGrowthRegistry | undefined;
-}) => City;
+}) => Promise<City>;
 export default setUpCity;
