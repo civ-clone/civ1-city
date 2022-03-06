@@ -60,10 +60,7 @@ export const getRules: (
 ): Created[] => [
   new Created(
     new Effect((city: City): void => {
-      ([
-        Irrigation,
-        Road,
-      ] as typeof TileImprovement[]).forEach(
+      ([Irrigation, Road] as typeof TileImprovement[]).forEach(
         (Improvement: typeof TileImprovement): void =>
           tileImprovementRegistry.register(new Improvement(city.tile()))
       );

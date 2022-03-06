@@ -16,7 +16,7 @@ const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, playerWorl
         .entries()
         .slice(cityGrowth.size() + 1)
         .forEach((tile) => cityGrowth.city().tilesWorked().unregister(tile)))),
-    new Shrink_1.default(new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Criterion_1.default((cityGrowth) => cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1), new Effect_1.default((cityGrowth) => assignWorkers_1.default(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry))),
+    new Shrink_1.default(new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Criterion_1.default((cityGrowth) => cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1), new Effect_1.default((cityGrowth) => (0, assignWorkers_1.default)(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry))),
     new Shrink_1.default(new Criterion_1.default((cityGrowth) => cityGrowth.size() === 0), new Effect_1.default((cityGrowth) => cityGrowth.city().destroy())),
 ];
 exports.getRules = getRules;

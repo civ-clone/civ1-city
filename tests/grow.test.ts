@@ -46,34 +46,34 @@ describe('city:grow', (): void => {
     expect(cityGrowth.progress().value()).to.equal(0);
     expect(cityGrowth.cost().value()).to.equal(20);
 
-    ([
-      [2, 2, 20],
-      [2, 4, 20],
-      [12, 16, 20],
-      [2, 18, 20],
-      [2, 0, 30],
-      [2, 2, 30],
-      [26, 28, 30],
-      [2, 0, 40],
-    ] as [number, number, number][]).forEach(
-      ([yieldValue, expectedProgress, expectedCost]): void => {
-        cityGrowth.add(new Food(yieldValue));
+    (
+      [
+        [2, 2, 20],
+        [2, 4, 20],
+        [12, 16, 20],
+        [2, 18, 20],
+        [2, 0, 30],
+        [2, 2, 30],
+        [26, 28, 30],
+        [2, 0, 40],
+      ] as [number, number, number][]
+    ).forEach(([yieldValue, expectedProgress, expectedCost]): void => {
+      cityGrowth.add(new Food(yieldValue));
 
-        cityGrowth.check();
+      cityGrowth.check();
 
-        expect(
-          cityGrowth.progress().value(),
-          `Progress should be ${expectedProgress}`
-        ).to.equal(expectedProgress);
-        expect(
-          cityGrowth.cost().value(),
-          `Cost should be ${expectedCost}`
-        ).to.equal(expectedCost);
-        expect(
-          city.tilesWorked().length,
-          `Number of tilesWorked should be ${cityGrowth.size() + 1}`
-        ).to.equal(cityGrowth.size() + 1);
-      }
-    );
+      expect(
+        cityGrowth.progress().value(),
+        `Progress should be ${expectedProgress}`
+      ).to.equal(expectedProgress);
+      expect(
+        cityGrowth.cost().value(),
+        `Cost should be ${expectedCost}`
+      ).to.equal(expectedCost);
+      expect(
+        city.tilesWorked().length,
+        `Number of tilesWorked should be ${cityGrowth.size() + 1}`
+      ).to.equal(cityGrowth.size() + 1);
+    });
   });
 });

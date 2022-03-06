@@ -17,10 +17,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const assignWorkers_1 = require("../../lib/assignWorkers");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, cityRegistry = CityRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, availableBuildItemsRegistry = AvailableCityBuildItemsRegistry_1.instance, engine = Engine_1.instance) => [
     new Created_1.default(new Effect_1.default((city) => {
-        [
-            TileImprovements_1.Irrigation,
-            TileImprovements_1.Road,
-        ].forEach((Improvement) => tileImprovementRegistry.register(new Improvement(city.tile())));
+        [TileImprovements_1.Irrigation, TileImprovements_1.Road].forEach((Improvement) => tileImprovementRegistry.register(new Improvement(city.tile())));
     })),
     new Created_1.default(new Effect_1.default((city) => cityBuildRegistry.register(new CityBuild_1.default(city, availableBuildItemsRegistry, ruleRegistry)))),
     new Created_1.default(new Effect_1.default((city) => cityGrowthRegistry.register(new CityGrowth_1.default(city, ruleRegistry)))),
@@ -28,7 +25,7 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     new Created_1.default(new Effect_1.default((city) => {
         engine.emit('city:created', city);
     })),
-    new Created_1.default(new Effect_1.default((city) => assignWorkers_1.default(city, playerWorldRegistry, cityGrowthRegistry))),
+    new Created_1.default(new Effect_1.default((city) => (0, assignWorkers_1.default)(city, playerWorldRegistry, cityGrowthRegistry))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

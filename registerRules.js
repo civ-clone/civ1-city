@@ -12,5 +12,5 @@ const growth_cost_1 = require("./Rules/City/growth-cost");
 const action_1 = require("./Rules/Player/action");
 const process_yield_1 = require("./Rules/City/process-yield");
 const shrink_1 = require("./Rules/City/shrink");
-RuleRegistry_1.instance.register(...building_complete_1.default(), ...captured_1.default(), ...cost_1.default(), ...created_1.default(), ...destroyed_1.default(), ...food_storage_1.default(), ...grow_1.default(), ...growth_cost_1.default(), ...action_1.default(), ...process_yield_1.default(), ...shrink_1.default());
+RuleRegistry_1.instance.register(...(0, building_complete_1.default)(), ...(0, captured_1.default)(), ...(0, cost_1.default)(), ...(0, created_1.default)(), ...(0, destroyed_1.default)(), ...(0, food_storage_1.default)(), ...(0, grow_1.default)(), ...(0, growth_cost_1.default)(), ...(0, action_1.default)(), ...(0, process_yield_1.default)(), ...(0, shrink_1.default)());
 //# sourceMappingURL=registerRules.js.map

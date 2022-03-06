@@ -81,22 +81,22 @@ describe('city:cost', (): void => {
     new Settlers(city, city.player(), city.tile(), ruleRegistry);
 
     // -2 for food cost and -1/-2 for each unit cost
-    ([
-      [Anarchy, -3],
-      [Communism, -4],
-      [Democracy, -4],
-      [Despotism, -3],
-      [Monarchy, -4],
-      [Republic, -4],
-    ] as [typeof Government, number][]).forEach(
-      ([TargetGovernment, expectedCost]): void => {
-        playerGovernment.set(new TargetGovernment());
+    (
+      [
+        [Anarchy, -3],
+        [Communism, -4],
+        [Democracy, -4],
+        [Despotism, -3],
+        [Monarchy, -4],
+        [Republic, -4],
+      ] as [typeof Government, number][]
+    ).forEach(([TargetGovernment, expectedCost]): void => {
+      playerGovernment.set(new TargetGovernment());
 
-        const yields = city.yields([Food]);
+      const yields = city.yields([Food]);
 
-        expect(yields[0].value()).to.equal(expectedCost);
-      }
-    );
+      expect(yields[0].value()).to.equal(expectedCost);
+    });
   });
 
   it('should cost Production to support military units', async (): Promise<void> => {
@@ -109,24 +109,24 @@ describe('city:cost', (): void => {
     new Warrior(city, city.player(), city.tile(), ruleRegistry);
     new Warrior(city, city.player(), city.tile(), ruleRegistry);
 
-    ([
-      [Anarchy, -1],
-      [Communism, -2],
-      [Democracy, -2],
-      [Despotism, -1],
-      [Monarchy, -2],
-      [Republic, -2],
-    ] as [typeof Government, number][]).forEach(
-      ([TargetGovernment, expectedCost]): void => {
-        playerGovernment.set(new TargetGovernment());
+    (
+      [
+        [Anarchy, -1],
+        [Communism, -2],
+        [Democracy, -2],
+        [Despotism, -1],
+        [Monarchy, -2],
+        [Republic, -2],
+      ] as [typeof Government, number][]
+    ).forEach(([TargetGovernment, expectedCost]): void => {
+      playerGovernment.set(new TargetGovernment());
 
-        const yields = city.yields([Production]);
+      const yields = city.yields([Production]);
 
-        expect(
-          yields[0].value(),
-          `expected to cost ${expectedCost} for 2 Warriors under ${TargetGovernment.name}`
-        ).to.equal(expectedCost);
-      }
-    );
+      expect(
+        yields[0].value(),
+        `expected to cost ${expectedCost} for 2 Warriors under ${TargetGovernment.name}`
+      ).to.equal(expectedCost);
+    });
   });
 });

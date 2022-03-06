@@ -66,6 +66,10 @@ export const setUpCity = async ({
     playerWorldRegistry.register(new PlayerWorld(player, world));
   }
 
+  if (!playerWorldRegistry.getByPlayer(player)) {
+    playerWorldRegistry.register(new PlayerWorld(player, world));
+  }
+
   if (tile === undefined) {
     tile = world.get(2, 2);
   }

@@ -49,9 +49,11 @@ export const getRules: (
     )
   ),
   new Captured(
-    new Effect((capturedCity: City, player: Player): void => {
-      engine.emit('city:captured', capturedCity, player);
-    })
+    new Effect(
+      (capturedCity: City, capturingPlayer: Player, player: Player): void => {
+        engine.emit('city:captured', capturedCity, player);
+      }
+    )
   ),
   new Captured(
     new Effect((capturedCity: City): void =>

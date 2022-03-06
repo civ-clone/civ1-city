@@ -12,7 +12,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, cityBuildRegistry = CityBuildRegistry_1.instance, engine = Engine_1.instance) => [
     new Captured_1.default(new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).progress().set(0))),
     new Captured_1.default(new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink())),
-    new Captured_1.default(new Effect_1.default((capturedCity, player) => {
+    new Captured_1.default(new Effect_1.default((capturedCity, capturingPlayer, player) => {
         engine.emit('city:captured', capturedCity, player);
     })),
     new Captured_1.default(new Effect_1.default((capturedCity) => unitRegistry

@@ -16,7 +16,10 @@ const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
 const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
     if (world === undefined) {
-        world = await buildWorld_1.generateWorld(buildWorld_1.generateGenerator(5, 5, Terrains_1.Grassland));
+        world = await (0, buildWorld_1.generateWorld)((0, buildWorld_1.generateGenerator)(5, 5, Terrains_1.Grassland));
+        playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
+    }
+    if (!playerWorldRegistry.getByPlayer(player)) {
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
     }
     if (tile === undefined) {
