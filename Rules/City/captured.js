@@ -13,7 +13,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     new Captured_1.default(new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).progress().set(0))),
     new Captured_1.default(new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink())),
     new Captured_1.default(new Effect_1.default((capturedCity, capturingPlayer, player) => {
-        engine.emit('city:captured', capturedCity, player);
+        engine.emit('city:captured', capturedCity, capturingPlayer, player);
     })),
     new Captured_1.default(new Effect_1.default((capturedCity) => unitRegistry
         .getByCity(capturedCity)
