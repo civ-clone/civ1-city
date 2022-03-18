@@ -62,16 +62,6 @@ export const getRules: (
         .forEach((unit: Unit) => unit.destroy())
     )
   ),
-  new Captured(
-    // TODO: have some `Rule`s that just call `Player#defeated` or something?
-    new Criterion(
-      (capturedCity: City): boolean =>
-        cityRegistry.getByPlayer(capturedCity.player()).length === 0
-    ),
-    new Effect((capturedCity: City): void => {
-      engine.emit('player:defeated', capturedCity.player());
-    })
-  ),
 ];
 
 export default getRules;
