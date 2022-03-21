@@ -14,7 +14,8 @@ const Player_1 = require("@civ-clone/core-player/Player");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
 const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
-const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
+const YieldRegistry_1 = require("@civ-clone/core-yield/YieldRegistry");
+const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, yieldRegistry = YieldRegistry_1.instance, } = {}) => {
     if (world === undefined) {
         world = await (0, buildWorld_1.generateWorld)((0, buildWorld_1.generateGenerator)(5, 5, Terrains_1.Grassland));
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
@@ -41,7 +42,7 @@ const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.in
                 tileImprovementRegistry.register(new TileImprovements_1.Road(tile));
             }
         });
-        const city = new City_1.default(player, tile, name, ruleRegistry);
+        const city = new City_1.default(player, tile, name, ruleRegistry, yieldRegistry);
         if (size > 1) {
             let cityGrowth;
             try {
