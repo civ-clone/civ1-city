@@ -20,7 +20,6 @@ import {
 } from '@civ-clone/core-engine/Engine';
 import Captured from '@civ-clone/core-city/Rules/Captured';
 import City from '@civ-clone/core-city/City';
-import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import Unit from '@civ-clone/core-unit/Unit';

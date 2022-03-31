@@ -38,10 +38,6 @@ import Tile from '@civ-clone/core-world/Tile';
 import Tileset from '@civ-clone/core-world/Tileset';
 import { Water } from '@civ-clone/core-terrain/Types';
 import World from '@civ-clone/core-world/World';
-import {
-  YieldRegistry,
-  instance as yieldRegistryInstance,
-} from '@civ-clone/core-yield/YieldRegistry';
 
 export const setUpCity = async ({
   name = '',
@@ -53,7 +49,6 @@ export const setUpCity = async ({
   tile,
   tileImprovementRegistry = tileImprovementRegistryInstance,
   cityGrowthRegistry = cityGrowthRegistryInstance,
-  yieldRegistry = yieldRegistryInstance,
 }: {
   name?: string;
   size?: number;
@@ -64,10 +59,12 @@ export const setUpCity = async ({
   tileImprovementRegistry?: TileImprovementRegistry;
   playerWorldRegistry?: PlayerWorldRegistry;
   cityGrowthRegistry?: CityGrowthRegistry;
-  yieldRegistry?: YieldRegistry;
 } = {}): Promise<City> => {
   if (world === undefined) {
-    world = await generateWorld(generateGenerator(5, 5, Grassland));
+    world = await generateWorld(
+      generateGenerator(5, 5, Grassland),
+      ruleRegistry
+    );
 
     playerWorldRegistry.register(new PlayerWorld(player, world));
   }
@@ -114,13 +111,7 @@ export const setUpCity = async ({
       }
     });
 
-    const city = new City(
-      player,
-      tile as Tile,
-      name,
-      ruleRegistry,
-      yieldRegistry
-    );
+    const city = new City(player, tile as Tile, name, ruleRegistry);
 
     if (size > 1) {
       let cityGrowth;

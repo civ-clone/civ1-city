@@ -35,6 +35,7 @@ export const getRules: (
       assignWorkers(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry)
     )
   ),
+
   new Grow(
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>

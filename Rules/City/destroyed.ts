@@ -10,21 +10,28 @@ import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
+import {
+  UnitRegistry,
+  instance as unitRegistryInstance,
+} from '@civ-clone/core-unit/UnitRegistry';
 import City from '@civ-clone/core-city/City';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import Player from '@civ-clone/core-player/Player';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
+import Unit from '@civ-clone/core-unit/Unit';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   cityRegistry?: CityRegistry,
-  engine?: Engine
+  engine?: Engine,
+  unitRegistry?: UnitRegistry
 ) => Destroyed[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
-  engine: Engine = engineInstance
+  engine: Engine = engineInstance,
+  unitRegistry: UnitRegistry = unitRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
     new Effect((city: City): void =>
@@ -39,13 +46,21 @@ export const getRules: (
         )
     )
   ),
+
   new Destroyed(
     new Effect((city: City): void => cityRegistry.unregister(city))
   ),
+
   new Destroyed(
     new Effect((city: City, player: Player | null): void => {
       engine.emit('city:destroyed', city, player);
     })
+  ),
+
+  new Destroyed(
+    new Effect((city: City): void =>
+      unitRegistry.getByCity(city).forEach((unit: Unit) => unit.destroy())
+    )
   ),
 ];
 

@@ -66,7 +66,8 @@ describe('city:process-yield', (): void => {
     (ruleRegistry as IProcessYieldRegistry).process(
       ProcessYield,
       cityYield,
-      city
+      city,
+      []
     );
 
     expect(cityGrowth.size()).to.equal(2);
@@ -88,7 +89,8 @@ describe('city:process-yield', (): void => {
     (ruleRegistry as IProcessYieldRegistry).process(
       ProcessYield,
       cityYield,
-      city
+      city,
+      []
     );
 
     expect(cityGrowth.size()).to.equal(1);
@@ -106,7 +108,8 @@ describe('city:process-yield', (): void => {
     (ruleRegistry as IProcessYieldRegistry).process(
       ProcessYield,
       new Production(2),
-      city
+      city,
+      []
     );
 
     expect(cityBuild.progress().value()).to.equal(2);
@@ -139,7 +142,8 @@ describe('city:process-yield', (): void => {
     (ruleRegistry as IProcessYieldRegistry).process(
       ProcessYield,
       cityYield,
-      city
+      city,
+      []
     );
 
     expect(supportedUnit.destroyed()).to.false;

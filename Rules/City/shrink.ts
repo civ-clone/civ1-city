@@ -22,14 +22,11 @@ export const getRules: (
 ): Shrink[] => [
   new Shrink(
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.empty())
-  ),
-  new Shrink(
-    new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Effect((cityGrowth: CityGrowth): void =>
       cityGrowth.cost().set((cityGrowth.size() + 1) * 10, 'city-shrink')
     )
   ),
+
   new Shrink(
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Criterion(
@@ -47,6 +44,7 @@ export const getRules: (
         )
     )
   ),
+
   new Shrink(
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Criterion(
@@ -57,6 +55,8 @@ export const getRules: (
       assignWorkers(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry)
     )
   ),
+
+  // TODO: this needs to potentially be associated to an attacking user...
   new Shrink(
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() === 0),
     new Effect((cityGrowth: CityGrowth): void => cityGrowth.city().destroy())

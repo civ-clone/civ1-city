@@ -17,15 +17,22 @@ import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 import added from '@civ-clone/civ1-government/Rules/Player/added';
-import cost from '../Rules/City/cost';
+import cityYield from '../Rules/City/yield';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
 import setUpCity from './lib/setUpCity';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import Yield from '@civ-clone/core-yield/Yield';
+import AvailableGovernmentRegistry from '@civ-clone/core-government/AvailableGovernmentRegistry';
+import {
+  PopulationSupportFood,
+  UnitSupportFood,
+  UnitSupportProduction,
+} from '../Yields';
 
 describe('city:cost', (): void => {
   const ruleRegistry = new RuleRegistry(),
+    availableGovernmentRegistry = new AvailableGovernmentRegistry(),
     playerGovernmentRegistry = new PlayerGovernmentRegistry(),
     unitRegistry = new UnitRegistry(),
     cityRegistry = new CityRegistry(),
@@ -34,8 +41,12 @@ describe('city:cost', (): void => {
     cityGrowthRegistry = new CityGrowthRegistry();
 
   ruleRegistry.register(
-    ...added(playerGovernmentRegistry, ruleRegistry),
-    ...cost(playerGovernmentRegistry, unitRegistry, cityGrowthRegistry),
+    ...added(
+      availableGovernmentRegistry,
+      playerGovernmentRegistry,
+      ruleRegistry
+    ),
+    ...cityYield(cityGrowthRegistry, playerGovernmentRegistry, unitRegistry),
     ...created(
       tileImprovementRegistry,
       cityBuildRegistry,
@@ -53,22 +64,24 @@ describe('city:cost', (): void => {
       cityGrowth = cityGrowthRegistry.getByCity(city),
       cityYields = city.yields([Food]),
       [cityFood] = cityYields.filter(
-        (cityYield: Yield): boolean => cityYield instanceof Food
+        (cityYield: Yield): boolean =>
+          cityYield instanceof PopulationSupportFood
       );
 
-    expect(cityFood.value()).to.equal(-2);
+    expect(cityFood.value()).to.equal(2);
 
-    [-4, -6, -8, -10, -12, -14, -16, -18, -20].forEach(
-      (value: number): void => {
-        cityGrowth.grow();
+    [4, 6, 8, 10, 12, 14, 16, 18, 20].forEach((value: number): void => {
+      cityGrowth.grow();
 
-        const [updatedCityFood] = city
-          .yields([Food])
-          .filter((cityYield: Yield): boolean => cityYield instanceof Food);
+      const [updatedCityFood] = city
+        .yields([Food])
+        .filter(
+          (cityYield: Yield): boolean =>
+            cityYield instanceof PopulationSupportFood
+        );
 
-        expect(updatedCityFood.value()).to.equal(value);
-      }
-    );
+      expect(updatedCityFood.value()).to.equal(value);
+    });
   });
 
   it('should cost Food to support each Settlers', async (): Promise<void> => {
@@ -83,19 +96,21 @@ describe('city:cost', (): void => {
     // -2 for food cost and -1/-2 for each unit cost
     (
       [
-        [Anarchy, -3],
-        [Communism, -4],
-        [Democracy, -4],
-        [Despotism, -3],
-        [Monarchy, -4],
-        [Republic, -4],
+        [Anarchy, 1],
+        [Communism, 2],
+        [Democracy, 2],
+        [Despotism, 1],
+        [Monarchy, 2],
+        [Republic, 2],
       ] as [typeof Government, number][]
     ).forEach(([TargetGovernment, expectedCost]): void => {
       playerGovernment.set(new TargetGovernment());
 
-      const yields = city.yields([Food]);
+      const [unitFoodSupport] = city
+        .yields([Food])
+        .filter((cityYield) => cityYield instanceof UnitSupportFood);
 
-      expect(yields[0].value()).to.equal(expectedCost);
+      expect(unitFoodSupport.value()).to.equal(expectedCost);
     });
   });
 
@@ -111,20 +126,27 @@ describe('city:cost', (): void => {
 
     (
       [
-        [Anarchy, -1],
-        [Communism, -2],
-        [Democracy, -2],
-        [Despotism, -1],
-        [Monarchy, -2],
-        [Republic, -2],
+        [Anarchy, 1],
+        [Communism, 2],
+        [Democracy, 2],
+        [Despotism, 1],
+        [Monarchy, 2],
+        [Republic, 2],
       ] as [typeof Government, number][]
     ).forEach(([TargetGovernment, expectedCost]): void => {
       playerGovernment.set(new TargetGovernment());
 
-      const yields = city.yields([Production]);
+      const unitSupportProduction = city
+        .yields([Production])
+        .filter((cityYield) => cityYield instanceof UnitSupportProduction)
+        .reduce((baseYield, cityYield) => {
+          baseYield.add(cityYield.value());
+
+          return baseYield;
+        }, new Yield());
 
       expect(
-        yields[0].value(),
+        unitSupportProduction.value(),
         `expected to cost ${expectedCost} for 2 Warriors under ${TargetGovernment.name}`
       ).to.equal(expectedCost);
     });

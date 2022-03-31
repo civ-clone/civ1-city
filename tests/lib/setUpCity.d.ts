@@ -6,7 +6,6 @@ import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
-import { YieldRegistry } from '@civ-clone/core-yield/YieldRegistry';
 export declare const setUpCity: ({
   name,
   size,
@@ -17,7 +16,6 @@ export declare const setUpCity: ({
   tile,
   tileImprovementRegistry,
   cityGrowthRegistry,
-  yieldRegistry,
 }?: {
   name?: string | undefined;
   size?: number | undefined;
@@ -34,6 +32,5 @@ export declare const setUpCity: ({
   tileImprovementRegistry?: TileImprovementRegistry | undefined;
   playerWorldRegistry?: PlayerWorldRegistry | undefined;
   cityGrowthRegistry?: CityGrowthRegistry | undefined;
-  yieldRegistry?: YieldRegistry | undefined;
 }) => Promise<City>;
 export default setUpCity;
