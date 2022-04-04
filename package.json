@@ -48,6 +48,7 @@
     "@civ-clone/core-city": "^0.1.0",
     "@civ-clone/core-city-build": "^0.1.0",
     "@civ-clone/core-city-growth": "^0.1.0",
+    "@civ-clone/core-city-happiness": "github:civ-clone/core-city-happiness",
     "@civ-clone/core-engine": "^0.1.0",
     "@civ-clone/core-government": "^0.1.0",
     "@civ-clone/core-player": "^0.1.0",

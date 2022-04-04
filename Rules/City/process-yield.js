@@ -3,14 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const CityBuildRegistry_1 = require("@civ-clone/core-city-build/CityBuildRegistry");
 const CityGrowthRegistry_1 = require("@civ-clone/core-city-growth/CityGrowthRegistry");
+const CivilDisorder_1 = require("@civ-clone/core-city-happiness/Rules/CivilDisorder");
 const Yields_1 = require("@civ-clone/civ1-world/Yields");
 const Yields_2 = require("../../Yields");
+const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const ProcessYield_1 = require("@civ-clone/core-city/Rules/ProcessYield");
 const Low_1 = require("@civ-clone/core-rule/Priorities/Low");
-const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => [
+const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
     new ProcessYield_1.default(new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Food), new Effect_1.default((cityYield, city, cityYields) => {
         const cityGrowth = cityGrowthRegistry.getByCity(city), foodStorage = new Yields_2.FoodStorage(cityYield), foodSupportedUnits = [];
         cityYields.forEach((cityYield) => {
@@ -37,9 +39,14 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRe
             cityYield.subtract(otherYield);
         }
     }))),
-    new ProcessYield_1.default(new Low_1.default(), new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Criterion_1.default((cityYield) => cityYield.value() >= 0), new Effect_1.default((cityYield, city) => {
+    new ProcessYield_1.default(new Low_1.default(), new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Criterion_1.default((cityYield, city, yields) => !ruleRegistry
+        .get(CivilDisorder_1.CivilDisorder)
+        .some((rule) => rule.validate(city, yields))), new Criterion_1.default((cityYield) => cityYield.value() >= 0), new Effect_1.default((cityYield, city) => {
         const cityBuild = cityBuildRegistry.getByCity(city);
         cityBuild.add(cityYield);
+    })),
+    new ProcessYield_1.default(new Low_1.default(), new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Effect_1.default((cityYield, city) => {
+        const cityBuild = cityBuildRegistry.getByCity(city);
         cityBuild.check();
     })),
     new ProcessYield_1.default(new Low_1.default(), new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Criterion_1.default((cityYield) => cityYield.value() < 0), new Effect_1.default((cityYield, city) => {

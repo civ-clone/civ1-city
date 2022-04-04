@@ -6,6 +6,10 @@ import {
   CityGrowthRegistry,
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
+import {
+  CivilDisorder,
+  ICivilDisorderRegistry,
+} from '@civ-clone/core-city-happiness/Rules/CivilDisorder';
 import { Food, Production } from '@civ-clone/civ1-world/Yields';
 import {
   FoodStorage,
@@ -13,6 +17,10 @@ import {
   UnitSupportFood,
   UnitSupportProduction,
 } from '../../Yields';
+import {
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
 import {
   UnitRegistry,
   instance as unitRegistryInstance,
@@ -28,11 +36,13 @@ import Low from '@civ-clone/core-rule/Priorities/Low';
 export const getRules: (
   cityBuildRegistry?: CityBuildRegistry,
   cityGrowthRegistry?: CityGrowthRegistry,
-  unitRegistry?: UnitRegistry
+  unitRegistry?: UnitRegistry,
+  ruleRegistry?: RuleRegistry
 ) => ProcessYield[] = (
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
-  unitRegistry: UnitRegistry = unitRegistryInstance
+  unitRegistry: UnitRegistry = unitRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): ProcessYield[] => [
   new ProcessYield(
     new Criterion((cityYield: Yield): boolean => cityYield instanceof Food),
@@ -87,11 +97,28 @@ export const getRules: (
     new Criterion(
       (cityYield: Yield): boolean => cityYield instanceof Production
     ),
+    new Criterion(
+      (cityYield: Yield, city: City, yields: Yield[]) =>
+        !(ruleRegistry as ICivilDisorderRegistry)
+          .get(CivilDisorder)
+          .some((rule: CivilDisorder): boolean => rule.validate(city, yields))
+    ),
     new Criterion((cityYield: Yield): boolean => cityYield.value() >= 0),
     new Effect((cityYield: Yield, city: City): void => {
       const cityBuild = cityBuildRegistry.getByCity(city);
 
       cityBuild.add(cityYield);
+    })
+  ),
+
+  new ProcessYield(
+    new Low(),
+    new Criterion(
+      (cityYield: Yield): boolean => cityYield instanceof Production
+    ),
+    new Effect((cityYield: Yield, city: City): void => {
+      const cityBuild = cityBuildRegistry.getByCity(city);
+
       cityBuild.check();
     })
   ),

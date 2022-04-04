@@ -1288,7 +1288,7 @@
 
 "@civ-clone/civ1-science@github:civ-clone/civ1-science":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-science/tar.gz/786a8545f7a42288601f6874567d3262f17b7548"
+  resolved "https://codeload.github.com/civ-clone/civ1-science/tar.gz/256b1e3d44dec6b9d765a9b38287c4bec020276e"
   dependencies:
     "@civ-clone/base-city-yield-research" "^0.1.0"
     "@civ-clone/base-science-advance-advancedflight" "^0.1.0"
@@ -1368,7 +1368,7 @@
 
 "@civ-clone/civ1-unit@github:civ-clone/civ1-unit":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-unit/tar.gz/44fb51b1775d1a0cb5d080fc17cc787fc4744836"
+  resolved "https://codeload.github.com/civ-clone/civ1-unit/tar.gz/823f01fb5fb40573a1fbc729959fad9822fbed22"
   dependencies:
     "@civ-clone/base-player-action-active-unit" "^0.1.0"
     "@civ-clone/base-player-action-inactive-unit" "^0.1.0"
@@ -1449,7 +1449,7 @@
 
 "@civ-clone/civ1-world@github:civ-clone/civ1-world":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-world/tar.gz/2017b578af26d74eaf741edc57baeff32163424f"
+  resolved "https://codeload.github.com/civ-clone/civ1-world/tar.gz/916726db913590b890660b920540cef2a20fa857"
   dependencies:
     "@civ-clone/base-terrain-arctic" "^0.1.0"
     "@civ-clone/base-terrain-desert" "^0.1.0"
@@ -1484,6 +1484,8 @@
     "@civ-clone/civ1-government" "github:civ-clone/civ1-government"
     "@civ-clone/civ1-science" "github:civ-clone/civ1-science"
     "@civ-clone/core-engine" "^0.1.0"
+    "@civ-clone/core-government" "^0.1.0"
+    "@civ-clone/core-player" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
     "@civ-clone/core-science" "^0.1.0"
     "@civ-clone/core-terrain" "^0.1.0"
@@ -1513,6 +1515,14 @@
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-registry" "^0.1.0"
+    "@civ-clone/core-rule" "^0.1.0"
+    "@civ-clone/core-yield" "^0.1.0"
+
+"@civ-clone/core-city-happiness@github:civ-clone/core-city-happiness":
+  version "0.1.0"
+  resolved "https://codeload.github.com/civ-clone/core-city-happiness/tar.gz/34e528bf836371e44adcbbe99aec82d344d49f81"
+  dependencies:
+    "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
     "@civ-clone/core-yield" "^0.1.0"
 
@@ -1690,9 +1700,9 @@
     "@civ-clone/core-terrain" "^0.1.0"
 
 "@civ-clone/core-world@^0.1.0":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.7.tgz#f20f839404738d163486f1a6e18a21a1bff8a8f7"
-  integrity sha512-M9ANNWoyOxQQsOfczsYOkFOMLLrhBBuPpeFFH92TD7Z8yMKhBhUJp4Ljyd7WQqkfGfS1J6qSuOx1H+EF2nLAcg==
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.8.tgz#909b580293ac0cbd1e2c8b3b94b850562242b487"
+  integrity sha512-4cw2PuTHPJzaexaF1Xal0OgmWYMkjT7BJILKQVw+Wt4Dj+dFrGDS8kO/sUCMJrtanchwKksX5i17kmoCzYFaOQ==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -2334,9 +2344,9 @@ picomatch@^2.0.4, picomatch@^2.2.1:
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
 prettier@^2.0.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.1.tgz#d472797e0d7461605c1609808e27b80c0f9cfe17"
-  integrity sha512-8UVbTBYGwN37Bs9LERmxCPjdvPxlEowx2urIL6urHzdb3SDq4B/Z6xLFCblrSnE4iKWcS6ziJ3aOYrc1kz/E2A==
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
+  integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
 
 randombytes@^2.1.0:
   version "2.1.0"
