@@ -10,13 +10,26 @@ import {
 import City from '@civ-clone/core-city/City';
 import Tile from '@civ-clone/core-world/Tile';
 import Yield from '@civ-clone/core-yield/Yield';
+import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 export const getHighestValueCityTiles = (
   city: City,
   weights: [typeof Yield, number][] = [
-    [Food, 4],
-    [Production, 2],
-    [Trade, 1],
+    [Food, 8],
+    [
+      Production,
+      3 *
+        (reduceYield(city.tilesWorked().yields(city.player()), Production) === 0
+          ? 3
+          : 1),
+    ],
+    [
+      Trade,
+      1 *
+        (reduceYield(city.tilesWorked().yields(city.player()), Trade) === 0
+          ? 3
+          : 1),
+    ],
   ]
 ) =>
   city
