@@ -7,6 +7,161 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@civ-clone/base-city-improvement-aqueduct@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-aqueduct/-/base-city-improvement-aqueduct-0.1.0.tgz#6f2d29b4b34ec87f62f75e0ef512e28458872a34"
+  integrity sha512-COk36T/3Q0uaWWzFnSYztZsJWC1VWRxWdXKGcNp2HYU/VkgcdLGVdruyNqtobSaWcoT9rb3gq+RrcJNhhWsLsQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-bank@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-bank/-/base-city-improvement-bank-0.1.0.tgz#69663c4d92c59ee8f719f7de32ec734da38cdd84"
+  integrity sha512-afet37X5RxYTvA/kizs0WBAzk9xFBHJhmyJSpYrhwJ5FHS5KlXIZf2MmY2QTTcuFUP5vz0Oihjf1Ur6+/JTdJQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-barracks@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-barracks/-/base-city-improvement-barracks-0.1.0.tgz#681391d0d546e84d06551958b5805a2e1d991107"
+  integrity sha512-7KGPwv4k/ABFK8BuvjzP1cokMRRi4GfJCkxbGvWUiefTqFv4W5ZXplNDmlRO/8o3/TRaFvM2tp0bAwQl11gvkQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-cathedral@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-cathedral/-/base-city-improvement-cathedral-0.1.0.tgz#3f2b0f550e544981f685450773061cadd91cee87"
+  integrity sha512-ZYT1cm7IT99EBxok0zpEsHkOJJrtECwRv9Cz/ZGm6WY9twv1+hwmfJ5nfjd40GWSaBgC+2B57WtudG2Q7fj42w==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-citywalls@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-citywalls/-/base-city-improvement-citywalls-0.1.0.tgz#f5c32ea327f7db3fa07a3f93ec1a54d438348221"
+  integrity sha512-rUR9FyCIhIQdij8cLGGHYsyrfqjzFY/HabfDaE8PoWHhQw1JLHsqYdhdr42aE8m1/et/KbCBEJZEeWNKQQ/NrQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-colosseum@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-colosseum/-/base-city-improvement-colosseum-0.1.0.tgz#8055d34c9fabf27292c0adab8a6889aa418882df"
+  integrity sha512-e9kmTabOKhDlFzdmEmYstrKx6bDCmNuQ2UOwJYeBjDCA0n3AxFYtCYXc8M4W2Ofnjb2ZLiWLaVYSvibaNKPmiA==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-courthouse@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-courthouse/-/base-city-improvement-courthouse-0.1.0.tgz#ab4aa52fe1a545c25e267dbcb6bc601a87609603"
+  integrity sha512-2+sADVWyUxGyWubyc3RgmrgQBU1l7Bvddg38MHqttj2F+Hzvv2pSoajYFsALP5IGW22f9slo+EiKUYvOp2S0zQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-factory@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-factory/-/base-city-improvement-factory-0.1.0.tgz#f1fcb5de71b92af928d1e2fda933d23997ce6663"
+  integrity sha512-lZVnYyOjTxJ/olcqxQM+jGwg1ks0wgMZoEtY+4BdLeGCs0ldYDU2jxAPXy6fJuSmBxq3+k9uNbQ/zFhydJZpOQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-granary@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-granary/-/base-city-improvement-granary-0.1.0.tgz#7e2178245ce026810a8cf46798edf1f3215fc33a"
+  integrity sha512-jwv4kPhCR0zbMYYAfatUWAaXZ57UVYxDM5aO1etrfWE8te2ZnEm/+lwsWRTbS3WfKQb9rp+aLc6mPGWZ61ho/g==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-hydroplant@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-hydroplant/-/base-city-improvement-hydroplant-0.1.0.tgz#c1d333bda3e3ec078977fe6403d92cfb3ae17c24"
+  integrity sha512-y1U0aT7PD+zen2hhm1RVKra5nITA2NjCMhJUlkpKFYjB7j9z/mtLUMLbNPyclujcyVOKnP4L6BfQ/TDTBKhQjQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-library@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-library/-/base-city-improvement-library-0.1.0.tgz#e01010f788c245d9ccda8c0acbad546d1136a7ed"
+  integrity sha512-txNDKgwONcguVxElUKEF1i8VANqsx0SDad2CNlVSm9CWmWUdcN0GbCArHJQV7kK8g1AyLLit4uruc8ud+eheRA==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-manufacturingplant@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-manufacturingplant/-/base-city-improvement-manufacturingplant-0.1.0.tgz#1a7e679fff1e9f63bf6b27d03e271aec1883a472"
+  integrity sha512-Zly9C+6kgWnxJSECFxZs6HFuHululKOFafqmJ3XO7dm8oiM+vDVoFM4JmXhUTTIQVTDllacInDkS4u98T7q5Yg==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-marketplace@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-marketplace/-/base-city-improvement-marketplace-0.1.0.tgz#c00d7ac7aae97e1a17e9e1a7cf9ea2150d93cd4a"
+  integrity sha512-Osq7rW1phoPTPQSxhNPUM1NPMnVxYJHkCC6+ZFOm6PT1Ec6tE7MntxJ5ylUbgQOdLOlQYmjh0XB5+CbQMoTrtw==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-masstransit@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-masstransit/-/base-city-improvement-masstransit-0.1.0.tgz#7bf37bd03364b288e33d00fcc9f10aad902b59ae"
+  integrity sha512-bkiq5FO8oRz3OBUOMwnfbCmymsaxSQL8/kGQsIF4sRw1Et4VkfRKp5EmsicRr/6WyLF7DWjcviUWEUi4J7CRTQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-nuclearplant@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-nuclearplant/-/base-city-improvement-nuclearplant-0.1.0.tgz#e90817b66a54114f58bec8c98e1956ad386fc5ae"
+  integrity sha512-pl1n1n6WL9l7RVoMqiW5y1qCKSYOAm3K3gw/sdCVrtSp/2hBfj2ridzJACXioUki8C780la1sb9a5fbRFhsyhQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-palace@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-palace/-/base-city-improvement-palace-0.1.0.tgz#a339944f12c406b226c647ac1e4d13c391c42d82"
+  integrity sha512-TnLxsYDRMURoCjG/hH3mKOgVYdFTK4T05zf4aWauHCaMCYQ6hTIGvWS4xyHhDXoILRZB6j/+dcpxZnCf/jEjKg==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-powerplant@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-powerplant/-/base-city-improvement-powerplant-0.1.0.tgz#9df5b18e5eb30504bde1507d65c1db86582a5018"
+  integrity sha512-aypbM1+9h+jpSwxavlkngw4PINzwiIWlbbtm8ZEnxYpuB+S6vfgmlsG/iRAz82kHWcfaMYLuXIxP8S6zeXd47g==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-recyclingcenter@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-recyclingcenter/-/base-city-improvement-recyclingcenter-0.1.0.tgz#ec6980bd2ec3472071a43f585bcd80b0eeef3184"
+  integrity sha512-bDq0ILYzdtYvFpGGMvmLoW8ZjKP7+z4iKZbi/B4WC3rl61kYdbCo5gXqm61H15m3qPl2uq+8DUbo9/CEE0QD4w==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-sdidefence@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-sdidefence/-/base-city-improvement-sdidefence-0.1.0.tgz#9ee5852c4e2eafc9d6a028378e71d7f57b541c57"
+  integrity sha512-yTNgGmOOvxU7mTtFtn6Qwrbz6JapCGwSsEeKtk23S0YF0cmc6ECk5Rf5ImsRZYyiQoUOUL5leqWGkAl6PIKOdQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-temple@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-temple/-/base-city-improvement-temple-0.1.0.tgz#4d4f34d6282c5fbe805608e2d47de6b346c7005f"
+  integrity sha512-LWaWNhHLjNXC6l618M/kXWv4fmupswtASvH2sca30scwt1geq+ZC17EtAyeNiiVLeAewDPIYVgWS1p4lnoCuyQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-improvement-university@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-improvement-university/-/base-city-improvement-university-0.1.0.tgz#e0788f649e91fc6fbc5521d583c0d229abda36aa"
+  integrity sha512-OTYqc9ujSvkBP2pmP415d0H2PvLr7l9zN3/7DhljE+dbkEClmmTahVDJhT6ZLX/NZBrfxW6HzNQdgwObeagmzQ==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.0"
+
+"@civ-clone/base-city-yield-city-improvement-maintenance-gold@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-city-yield-city-improvement-maintenance-gold/-/base-city-yield-city-improvement-maintenance-gold-0.1.0.tgz#24e2c376bda831673d2642e57eea7a9f08ac7e3c"
+  integrity sha512-wAjnyYd2DnIJZrvfv9fWQNFN3/Cnz9T5SKfKXsqAer926yS6OiuieaguMelxHUQmIVWP9q5p20ZHSbcHeU9XEA==
+  dependencies:
+    "@civ-clone/core-city-improvement" "^0.1.2"
+    "@civ-clone/core-yield" "^0.1.2"
+
 "@civ-clone/base-city-yield-gold@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@civ-clone/base-city-yield-gold/-/base-city-yield-gold-0.1.0.tgz#6bf8124f0a749c1c2ea115fcb09dad3b98820f0c"
@@ -1266,6 +1421,47 @@
   dependencies:
     "@civ-clone/base-unit-type-fortifiable" "^0.1.0"
 
+"@civ-clone/civ1-city-improvement@github:civ-clone/civ1-city-improvement":
+  version "0.1.0"
+  resolved "https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/4160e05d5145fcd1f562322b6e0909bffa11db8e"
+  dependencies:
+    "@civ-clone/base-city-improvement-aqueduct" "^0.1.0"
+    "@civ-clone/base-city-improvement-bank" "^0.1.0"
+    "@civ-clone/base-city-improvement-barracks" "^0.1.0"
+    "@civ-clone/base-city-improvement-cathedral" "^0.1.0"
+    "@civ-clone/base-city-improvement-citywalls" "^0.1.0"
+    "@civ-clone/base-city-improvement-colosseum" "^0.1.0"
+    "@civ-clone/base-city-improvement-courthouse" "^0.1.0"
+    "@civ-clone/base-city-improvement-factory" "^0.1.0"
+    "@civ-clone/base-city-improvement-granary" "^0.1.0"
+    "@civ-clone/base-city-improvement-hydroplant" "^0.1.0"
+    "@civ-clone/base-city-improvement-library" "^0.1.0"
+    "@civ-clone/base-city-improvement-manufacturingplant" "^0.1.0"
+    "@civ-clone/base-city-improvement-marketplace" "^0.1.0"
+    "@civ-clone/base-city-improvement-masstransit" "^0.1.0"
+    "@civ-clone/base-city-improvement-nuclearplant" "^0.1.0"
+    "@civ-clone/base-city-improvement-palace" "^0.1.0"
+    "@civ-clone/base-city-improvement-powerplant" "^0.1.0"
+    "@civ-clone/base-city-improvement-recyclingcenter" "^0.1.0"
+    "@civ-clone/base-city-improvement-sdidefence" "^0.1.0"
+    "@civ-clone/base-city-improvement-temple" "^0.1.0"
+    "@civ-clone/base-city-improvement-university" "^0.1.0"
+    "@civ-clone/base-city-yield-city-improvement-maintenance-gold" "^0.1.0"
+    "@civ-clone/base-city-yield-gold" "^0.1.0"
+    "@civ-clone/civ1-science" "github:civ-clone/civ1-science"
+    "@civ-clone/civ1-unit" "github:civ-clone/civ1-unit"
+    "@civ-clone/core-city" "^0.1.0"
+    "@civ-clone/core-city-build" "^0.1.0"
+    "@civ-clone/core-city-growth" "^0.1.0"
+    "@civ-clone/core-city-improvement" "^0.1.0"
+    "@civ-clone/core-engine" "^0.1.0"
+    "@civ-clone/core-registry" "^0.1.0"
+    "@civ-clone/core-rule" "^0.1.0"
+    "@civ-clone/core-science" "^0.1.0"
+    "@civ-clone/core-unit" "^0.1.0"
+    "@civ-clone/core-unit-improvement" "^0.1.0"
+    "@civ-clone/core-yield" "^0.1.0"
+
 "@civ-clone/civ1-government@github:civ-clone/civ1-government":
   version "0.1.0"
   resolved "https://codeload.github.com/civ-clone/civ1-government/tar.gz/82055ad4116641d561334cec7442ca5dfe86e686"
@@ -1288,7 +1484,7 @@
 
 "@civ-clone/civ1-science@github:civ-clone/civ1-science":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-science/tar.gz/256b1e3d44dec6b9d765a9b38287c4bec020276e"
+  resolved "https://codeload.github.com/civ-clone/civ1-science/tar.gz/83cab8dd84941a21c4c349a6771324767031c0bb"
   dependencies:
     "@civ-clone/base-city-yield-research" "^0.1.0"
     "@civ-clone/base-science-advance-advancedflight" "^0.1.0"
@@ -1359,6 +1555,7 @@
     "@civ-clone/base-science-advance-university" "^0.1.0"
     "@civ-clone/base-science-advance-writing" "^0.1.0"
     "@civ-clone/core-city" "^0.1.0"
+    "@civ-clone/core-city-happiness" "github:civ-clone/core-city-happiness"
     "@civ-clone/core-engine" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
     "@civ-clone/core-registry" "^0.1.0"
@@ -1525,6 +1722,18 @@
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
     "@civ-clone/core-yield" "^0.1.0"
+
+"@civ-clone/core-city-improvement@^0.1.0", "@civ-clone/core-city-improvement@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-city-improvement/-/core-city-improvement-0.1.2.tgz#816aa1a163197dfa83bc3f920581c74a4e2f696b"
+  integrity sha512-tvcng3MgnpUOOe0Og6qUIEb6W5GZ2Av5mnWoihA8QDtUxgZ08MZm/c1mtJAOpPJm7xx0CX1DUFWQEYtq7jJqEQ==
+  dependencies:
+    "@civ-clone/core-city" "^0.1.0"
+    "@civ-clone/core-city-build" "^0.1.3"
+    "@civ-clone/core-data-object" "^0.1.0"
+    "@civ-clone/core-player" "^0.1.0"
+    "@civ-clone/core-registry" "^0.1.0"
+    "@civ-clone/core-rule" "^0.1.0"
 
 "@civ-clone/core-city@^0.1.0":
   version "0.1.7"

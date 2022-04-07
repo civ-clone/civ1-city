@@ -10,6 +10,10 @@ import {
   CivilDisorder,
   ICivilDisorderRegistry,
 } from '@civ-clone/core-city-happiness/Rules/CivilDisorder';
+import {
+  Engine,
+  instance as engineInstance,
+} from '@civ-clone/core-engine/Engine';
 import { Food, Production } from '@civ-clone/civ1-world/Yields';
 import {
   FoodStorage,
@@ -32,50 +36,65 @@ import ProcessYield from '@civ-clone/core-city/Rules/ProcessYield';
 import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-yield/Yield';
 import Low from '@civ-clone/core-rule/Priorities/Low';
+import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 export const getRules: (
   cityBuildRegistry?: CityBuildRegistry,
   cityGrowthRegistry?: CityGrowthRegistry,
   unitRegistry?: UnitRegistry,
-  ruleRegistry?: RuleRegistry
+  ruleRegistry?: RuleRegistry,
+  engine?: Engine
 ) => ProcessYield[] = (
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
-  ruleRegistry: RuleRegistry = ruleRegistryInstance
+  ruleRegistry: RuleRegistry = ruleRegistryInstance,
+  engine: Engine = engineInstance
 ): ProcessYield[] => [
   new ProcessYield(
     new Criterion((cityYield: Yield): boolean => cityYield instanceof Food),
     new Effect((cityYield: Yield, city: City, cityYields: Yield[]): void => {
       const cityGrowth = cityGrowthRegistry.getByCity(city),
         foodStorage = new FoodStorage(cityYield),
-        foodSupportedUnits: UnitSupportFood[] = [];
+        populationCost = reduceYield(cityYields, PopulationSupportFood);
+
+      foodStorage.subtract(populationCost, PopulationSupportFood.name);
+
+      if (foodStorage.value() < 0) {
+        cityGrowth.empty();
+        cityGrowth.shrink();
+
+        engine.emit('city:food-storage-exhausted', city);
+
+        // Recalculate these since they'll have changed
+        cityYields = city.yields();
+        foodStorage.set(
+          reduceYield(cityYields, Food) -
+            reduceYield(cityYields, PopulationSupportFood),
+          'Shrink'
+        );
+      }
 
       cityYields.forEach((cityYield) => {
         if (cityYield instanceof UnitSupportFood) {
-          foodStorage.subtract(cityYield as Yield);
+          if (foodStorage.value() < cityYield.value()) {
+            const unit = cityYield.unit();
 
-          foodSupportedUnits.push(cityYield);
-        }
+            unit.destroy();
 
-        if (cityYield instanceof PopulationSupportFood) {
-          foodStorage.subtract(cityYield as Yield);
+            engine.emit('city:unit-unsupported', city, unit, cityYield);
+
+            return;
+          }
+
+          foodStorage.subtract(cityYield.value(), cityYield.unit().id());
         }
       });
 
-      // This should probably be its own `Rule`
-      while (foodStorage.value() < 0 && foodSupportedUnits.length > 0) {
-        const foodSupportedUnit = foodSupportedUnits.shift() as UnitSupportFood,
-          unit = foodSupportedUnit.unit();
-
-        // TODO: trigger a notification `UnsupportedUnit` - do the same for UnitSupportProduction.
-        unit.destroy();
-
-        foodStorage.add(foodSupportedUnit.value());
+      if (foodStorage.value() > 0) {
+        cityGrowth.add(foodStorage);
+        cityGrowth.check();
       }
-
-      cityGrowth.add(foodStorage);
-      cityGrowth.check();
     })
   ),
 
@@ -84,11 +103,30 @@ export const getRules: (
       (cityYield: Yield): boolean => cityYield instanceof Production
     ),
     new Effect((cityYield: Yield, city: City, cityYields: Yield[]): void =>
-      cityYields.forEach((otherYield) => {
-        if (otherYield instanceof UnitSupportProduction) {
-          cityYield.subtract(otherYield as Yield);
-        }
-      })
+      (
+        cityYields.filter(
+          (otherYield) => otherYield instanceof UnitSupportProduction
+        ) as UnitSupportProduction[]
+      )
+        // Remove units further away from the city if we're out of resources
+        .sort(
+          (otherYieldA, otherYieldB) =>
+            otherYieldA.unit().tile().distanceFrom(city.tile()) -
+            otherYieldB.unit().tile().distanceFrom(city.tile())
+        )
+        .forEach((otherYield) => {
+          if (cityYield.value() < otherYield.value()) {
+            const unit = otherYield.unit();
+
+            unit.destroy();
+
+            engine.emit('city:unit-unsupported', city, unit, otherYield);
+
+            return;
+          }
+
+          cityYield.subtract(otherYield.value(), otherYield.unit().id());
+        })
     )
   ),
 
@@ -120,26 +158,6 @@ export const getRules: (
       const cityBuild = cityBuildRegistry.getByCity(city);
 
       cityBuild.check();
-    })
-  ),
-
-  new ProcessYield(
-    new Low(),
-    new Criterion(
-      (cityYield: Yield): boolean => cityYield instanceof Production
-    ),
-    new Criterion((cityYield: Yield): boolean => cityYield.value() < 0),
-    new Effect((cityYield: Yield, city: City): void => {
-      unitRegistry
-        .getByCity(city)
-        .sort(
-          (a: Unit, b: Unit): number =>
-            a.tile().distanceFrom(city.tile()) -
-            b.tile().distanceFrom(city.tile())
-        )
-        .slice(cityYield.value())
-        // TODO: raise an event/Rule to listen for in the frontend `${city.name()} cannot support ${unit.constructor.name}`
-        .forEach((unit: Unit): void => unit.destroy());
     })
   ),
 ];
