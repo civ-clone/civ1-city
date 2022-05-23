@@ -39,7 +39,7 @@ export const getRules: (
           .filter((cityBuild: CityBuild): boolean => !cityBuild.building())
           .map(
             (cityBuild: CityBuild): CityBuildAction =>
-              new CityBuildAction(cityBuild)
+              new CityBuildAction(player, cityBuild)
           )
       )
     ),
@@ -57,7 +57,7 @@ export const getRules: (
           .filter((cityBuild: CityBuild): boolean => !!cityBuild.building())
           .map(
             (cityBuild: CityBuild): ChangeProduction =>
-              new ChangeProduction(cityBuild)
+              new ChangeProduction(player, cityBuild)
           )
       )
     ),

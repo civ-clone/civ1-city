@@ -16,7 +16,7 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityRegistry
             .getByPlayer(player)
             .map((city) => cityBuildRegistry.getByCity(city))
             .filter((cityBuild) => !cityBuild.building())
-            .map((cityBuild) => new PlayerActions_1.CityBuild(cityBuild)))),
+            .map((cityBuild) => new PlayerActions_1.CityBuild(player, cityBuild)))),
         new Action_1.default(new Criterion_1.default((player) => cityRegistry
             .getByPlayer(player)
             .map((city) => cityBuildRegistry.getByCity(city))
@@ -24,7 +24,7 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityRegistry
             .getByPlayer(player)
             .map((city) => cityBuildRegistry.getByCity(city))
             .filter((cityBuild) => !!cityBuild.building())
-            .map((cityBuild) => new PlayerActions_1.ChangeProduction(cityBuild)))),
+            .map((cityBuild) => new PlayerActions_1.ChangeProduction(player, cityBuild)))),
     ];
 };
 exports.getRules = getRules;
