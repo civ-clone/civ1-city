@@ -76,4 +76,23 @@ describe('city:grow', (): void => {
       ).to.equal(cityGrowth.size() + 1);
     });
   });
+
+  it('should remove workers when there are too many after growth', async () => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        playerWorldRegistry,
+        cityGrowthRegistry,
+      }),
+      cityGrowth = cityGrowthRegistry.getByCity(city);
+
+    city.tilesWorked().push(...city.tile().getSurroundingArea(2).entries());
+
+    expect(city.tilesWorked().length).to.equal(25);
+
+    cityGrowth.add(cityGrowth.cost());
+    cityGrowth.check();
+
+    expect(city.tilesWorked().length).to.equal(3);
+  });
 });

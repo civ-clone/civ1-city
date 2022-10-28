@@ -20,7 +20,9 @@
   },
   "devDependencies": {
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
+    "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
     "@civ-clone/core-player-world": "^0.1.0",
+    "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
     "@types/mocha": "^8.0.0",

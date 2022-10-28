@@ -6,6 +6,17 @@ import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
+export declare type setUpCityOptions = {
+  name?: string;
+  size?: number;
+  ruleRegistry?: RuleRegistry;
+  world?: World;
+  tile?: Tile;
+  player?: Player;
+  tileImprovementRegistry?: TileImprovementRegistry;
+  playerWorldRegistry?: PlayerWorldRegistry;
+  cityGrowthRegistry?: CityGrowthRegistry;
+};
 export declare const setUpCity: ({
   name,
   size,
@@ -16,21 +27,5 @@ export declare const setUpCity: ({
   tile,
   tileImprovementRegistry,
   cityGrowthRegistry,
-}?: {
-  name?: string | undefined;
-  size?: number | undefined;
-  ruleRegistry?:
-    | RuleRegistry<
-        import('@civ-clone/core-rule/Rule').Rule<any[], any>,
-        any[],
-        any
-      >
-    | undefined;
-  world?: World | undefined;
-  tile?: Tile | undefined;
-  player?: Player | undefined;
-  tileImprovementRegistry?: TileImprovementRegistry | undefined;
-  playerWorldRegistry?: PlayerWorldRegistry | undefined;
-  cityGrowthRegistry?: CityGrowthRegistry | undefined;
-}) => Promise<City>;
+}?: setUpCityOptions) => Promise<City>;
 export default setUpCity;

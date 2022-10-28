@@ -58,7 +58,7 @@ export const getRules: (
 
   // TODO: this needs to potentially be associated to an attacking user...
   new Shrink(
-    new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() === 0),
+    new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() <= 0),
     new Effect((cityGrowth: CityGrowth): void => cityGrowth.city().destroy())
   ),
 ];

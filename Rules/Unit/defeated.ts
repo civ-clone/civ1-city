@@ -29,10 +29,10 @@ export const getRules: (
       (defeated, by, action) =>
         action instanceof Attack &&
         action.to() === defeated.tile() &&
-        cityRegistry.getByTile(action.to()).length > 0
+        cityRegistry.getByTile(action.to()) !== null
     ),
     new Effect((defeated) => {
-      const [city] = cityRegistry.getByTile(defeated.tile()),
+      const city = cityRegistry.getByTile(defeated.tile())!,
         cityGrowth = cityGrowthRegistry.getByCity(city);
 
       cityGrowth.shrink();

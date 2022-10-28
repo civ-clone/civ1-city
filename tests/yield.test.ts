@@ -29,6 +29,7 @@ import {
   UnitSupportFood,
   UnitSupportProduction,
 } from '../Yields';
+import cost from '../Rules/City/cost';
 
 describe('city:cost', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -46,7 +47,8 @@ describe('city:cost', (): void => {
       playerGovernmentRegistry,
       ruleRegistry
     ),
-    ...cityYield(cityGrowthRegistry, playerGovernmentRegistry, unitRegistry),
+    ...cityYield(),
+    ...cost(cityGrowthRegistry, playerGovernmentRegistry, unitRegistry),
     ...created(
       tileImprovementRegistry,
       cityBuildRegistry,
@@ -62,25 +64,25 @@ describe('city:cost', (): void => {
         cityGrowthRegistry,
       }),
       cityGrowth = cityGrowthRegistry.getByCity(city),
-      cityYields = city.yields([Food]),
+      cityYields = city.yields(),
       [cityFood] = cityYields.filter(
         (cityYield: Yield): boolean =>
           cityYield instanceof PopulationSupportFood
       );
 
-    expect(cityFood.value()).to.equal(2);
+    expect(cityFood.value()).to.equal(-2);
 
     [4, 6, 8, 10, 12, 14, 16, 18, 20].forEach((value: number): void => {
       cityGrowth.grow();
 
       const [updatedCityFood] = city
-        .yields([Food])
+        .yields()
         .filter(
           (cityYield: Yield): boolean =>
             cityYield instanceof PopulationSupportFood
         );
 
-      expect(updatedCityFood.value()).to.equal(value);
+      expect(updatedCityFood.value()).to.equal(-value);
     });
   });
 
@@ -107,10 +109,10 @@ describe('city:cost', (): void => {
       playerGovernment.set(new TargetGovernment());
 
       const [unitFoodSupport] = city
-        .yields([Food])
+        .yields()
         .filter((cityYield) => cityYield instanceof UnitSupportFood);
 
-      expect(unitFoodSupport.value()).to.equal(expectedCost);
+      expect(unitFoodSupport.value()).to.equal(-expectedCost);
     });
   });
 
@@ -137,7 +139,7 @@ describe('city:cost', (): void => {
       playerGovernment.set(new TargetGovernment());
 
       const unitSupportProduction = city
-        .yields([Production])
+        .yields()
         .filter((cityYield) => cityYield instanceof UnitSupportProduction)
         .reduce((baseYield, cityYield) => {
           baseYield.add(cityYield.value());
@@ -148,7 +150,7 @@ describe('city:cost', (): void => {
       expect(
         unitSupportProduction.value(),
         `expected to cost ${expectedCost} for 2 Warriors under ${TargetGovernment.name}`
-      ).to.equal(expectedCost);
+      ).to.equal(-expectedCost);
     });
   });
 });

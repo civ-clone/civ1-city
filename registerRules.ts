@@ -1,28 +1,34 @@
-import { instance as ruleRegistryInstance } from '@civ-clone/core-rule/RuleRegistry';
-import buildingComplete from './Rules/City/building-complete';
-import captured from './Rules/City/captured';
+import cityBuildingComplete from './Rules/City/building-complete';
+import cityCaptured from './Rules/City/captured';
+import cityCost from './Rules/City/cost';
+import cityCreated from './Rules/City/created';
+import cityDestroyed from './Rules/City/destroyed';
+import cityFoodExhausted from './Rules/City/food-exhausted';
+import cityFoodStorage from './Rules/City/food-storage';
+import cityGrow from './Rules/City/grow';
+import cityGrowthCost from './Rules/City/growth-cost';
+import cityProcessYield from './Rules/City/process-yield';
+import cityShrink from './Rules/City/shrink';
 import cityYield from './Rules/City/yield';
-import created from './Rules/City/created';
-import destroyed from './Rules/City/destroyed';
-import foodStorage from './Rules/City/food-storage';
-import grow from './Rules/City/grow';
-import growthCost from './Rules/City/growth-cost';
+import { instance as ruleRegistryInstance } from '@civ-clone/core-rule/RuleRegistry';
 import playerAction from './Rules/Player/action';
-import processYield from './Rules/City/process-yield';
-import shrink from './Rules/City/shrink';
 import unitDefeated from './Rules/Unit/defeated';
+import unitUnsupported from './Rules/Unit/unsupported';
 
 ruleRegistryInstance.register(
-  ...buildingComplete(),
-  ...captured(),
+  ...cityBuildingComplete(),
+  ...cityCaptured(),
+  ...cityCost(),
+  ...cityCreated(),
+  ...cityDestroyed(),
+  ...cityFoodExhausted(),
+  ...cityFoodStorage(),
+  ...cityGrow(),
+  ...cityGrowthCost(),
+  ...cityProcessYield(),
+  ...cityShrink(),
   ...cityYield(),
-  ...created(),
-  ...destroyed(),
-  ...foodStorage(),
-  ...grow(),
-  ...growthCost(),
   ...playerAction(),
-  ...processYield(),
-  ...shrink(),
-  ...unitDefeated()
+  ...unitDefeated(),
+  ...unitUnsupported()
 );
