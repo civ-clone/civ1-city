@@ -19,7 +19,10 @@ const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.in
         world = await (0, buildWorld_1.generateWorld)((0, buildWorld_1.generateGenerator)(5, 5, Terrains_1.Grassland), ruleRegistry);
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
     }
-    if (!playerWorldRegistry.getByPlayer(player)) {
+    try {
+        playerWorldRegistry.getByPlayer(player);
+    }
+    catch (e) {
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
     }
     if (tile === undefined) {

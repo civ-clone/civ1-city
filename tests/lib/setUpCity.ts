@@ -71,7 +71,9 @@ export const setUpCity = async ({
     playerWorldRegistry.register(new PlayerWorld(player, world));
   }
 
-  if (!playerWorldRegistry.getByPlayer(player)) {
+  try {
+    playerWorldRegistry.getByPlayer(player);
+  } catch (e) {
     playerWorldRegistry.register(new PlayerWorld(player, world));
   }
 
