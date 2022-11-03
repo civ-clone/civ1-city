@@ -9,6 +9,7 @@ import World from '@civ-clone/core-world/World';
 export declare type setUpCityOptions = {
   name?: string;
   size?: number;
+  improveTerrain?: boolean;
   ruleRegistry?: RuleRegistry;
   world?: World;
   tile?: Tile;
@@ -20,6 +21,7 @@ export declare type setUpCityOptions = {
 export declare const setUpCity: ({
   name,
   size,
+  improveTerrain,
   ruleRegistry,
   player,
   playerWorldRegistry,

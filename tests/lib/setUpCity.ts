@@ -42,6 +42,7 @@ import World from '@civ-clone/core-world/World';
 export type setUpCityOptions = {
   name?: string;
   size?: number;
+  improveTerrain?: boolean;
   ruleRegistry?: RuleRegistry;
   world?: World;
   tile?: Tile;
@@ -54,6 +55,7 @@ export type setUpCityOptions = {
 export const setUpCity = async ({
   name = '',
   size = 1,
+  improveTerrain = true,
   ruleRegistry = ruleRegistryInstance,
   player = new Player(ruleRegistry),
   playerWorldRegistry = playerWorldRegistryInstance,
@@ -85,7 +87,7 @@ export const setUpCity = async ({
     Tileset.fromSurrounding(tile as Tile).forEach((tile: Tile): void => {
       playerWorldRegistry.getByPlayer(player).register(tile);
 
-      if (tile.terrain() instanceof Water) {
+      if (!improveTerrain || tile.terrain() instanceof Water) {
         return;
       }
 

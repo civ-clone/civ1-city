@@ -38,6 +38,7 @@ import Created from '@civ-clone/core-city/Rules/Created';
 import Effect from '@civ-clone/core-rule/Effect';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import assignWorkers from '../../lib/assignWorkers';
+import Criterion from '@civ-clone/core-rule/Criterion';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -58,13 +59,21 @@ export const getRules: (
   availableBuildItemsRegistry: AvailableCityBuildItemsRegistry = availableCityBuildItemsRegistryInstance,
   engine: Engine = engineInstance
 ): Created[] => [
-  new Created(
-    new Effect((city: City): void => {
-      ([Irrigation, Road] as typeof TileImprovement[]).forEach(
-        (Improvement: typeof TileImprovement): void =>
-          tileImprovementRegistry.register(new Improvement(city.tile()))
-      );
-    })
+  ...([Irrigation, Road] as typeof TileImprovement[]).map(
+    (TileImprovementType) =>
+      new Created(
+        new Criterion((city: City) =>
+          tileImprovementRegistry
+            .getByTile(city.tile())
+            .every(
+              (tileImprovement) =>
+                !(tileImprovement instanceof TileImprovementType)
+            )
+        ),
+        new Effect((city: City): void =>
+          tileImprovementRegistry.register(new TileImprovementType(city.tile()))
+        )
+      )
   ),
   new Created(
     new Effect((city: City): void =>

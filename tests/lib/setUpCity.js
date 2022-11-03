@@ -14,7 +14,7 @@ const Player_1 = require("@civ-clone/core-player/Player");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
 const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
-const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
+const setUpCity = async ({ name = '', size = 1, improveTerrain = true, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
     if (world === undefined) {
         world = await (0, buildWorld_1.generateWorld)((0, buildWorld_1.generateGenerator)(5, 5, Terrains_1.Grassland), ruleRegistry);
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
@@ -31,7 +31,7 @@ const setUpCity = async ({ name = '', size = 1, ruleRegistry = RuleRegistry_1.in
     return new Promise((resolve) => {
         Tileset_1.default.fromSurrounding(tile).forEach((tile) => {
             playerWorldRegistry.getByPlayer(player).register(tile);
-            if (tile.terrain() instanceof Types_1.Water) {
+            if (!improveTerrain || tile.terrain() instanceof Types_1.Water) {
                 return;
             }
             if ([Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Hills, Terrains_1.Plains, Terrains_1.River].some((IrrigatableTerrain) => tile.terrain() instanceof IrrigatableTerrain)) {
