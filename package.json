@@ -35,6 +35,9 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@civ-clone/base-city-improvement-courthouse": "^0.1.0",
+    "@civ-clone/base-city-improvement-palace": "^0.1.0",
+    "@civ-clone/base-city-yield-corruption": "^0.1.0",
     "@civ-clone/base-city-yield-gold": "^0.1.0",
     "@civ-clone/base-city-yield-happiness": "^0.1.0",
     "@civ-clone/base-city-yield-luxuries": "^0.1.0",
@@ -51,7 +54,7 @@
     "@civ-clone/core-city": "^0.1.0",
     "@civ-clone/core-city-build": "^0.1.0",
     "@civ-clone/core-city-growth": "^0.1.0",
-    "@civ-clone/core-city-happiness": "github:civ-clone/core-city-happiness",
+    "@civ-clone/core-city-happiness": "^0.1.0",
     "@civ-clone/core-city-improvement": "^0.1.2",
     "@civ-clone/core-engine": "^0.1.0",
     "@civ-clone/core-government": "^0.1.0",

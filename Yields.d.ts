@@ -1,4 +1,5 @@
 export { Food, Production } from '@civ-clone/civ1-world/Yields';
+export { Corruption } from '@civ-clone/base-city-yield-corruption/Corruption';
 export { FoodStorage } from '@civ-clone/core-city-growth/Yields/FoodStorage';
 export { Gold } from '@civ-clone/base-city-yield-gold/Gold';
 export { Happiness } from '@civ-clone/base-city-yield-happiness/Happiness';

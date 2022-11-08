@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UnitSupportProduction = exports.UnitSupportFood = exports.Unhappiness = exports.Trade = exports.Research = exports.PopulationSupportFood = exports.Luxuries = exports.Happiness = exports.Gold = exports.FoodStorage = exports.Production = exports.Food = void 0;
+exports.UnitSupportProduction = exports.UnitSupportFood = exports.Unhappiness = exports.Trade = exports.Research = exports.PopulationSupportFood = exports.Luxuries = exports.Happiness = exports.Gold = exports.FoodStorage = exports.Corruption = exports.Production = exports.Food = void 0;
 var Yields_1 = require("@civ-clone/civ1-world/Yields");
 Object.defineProperty(exports, "Food", { enumerable: true, get: function () { return Yields_1.Food; } });
 Object.defineProperty(exports, "Production", { enumerable: true, get: function () { return Yields_1.Production; } });
+var Corruption_1 = require("@civ-clone/base-city-yield-corruption/Corruption");
+Object.defineProperty(exports, "Corruption", { enumerable: true, get: function () { return Corruption_1.Corruption; } });
 var FoodStorage_1 = require("@civ-clone/core-city-growth/Yields/FoodStorage");
 Object.defineProperty(exports, "FoodStorage", { enumerable: true, get: function () { return FoodStorage_1.FoodStorage; } });
 var Gold_1 = require("@civ-clone/base-city-yield-gold/Gold");

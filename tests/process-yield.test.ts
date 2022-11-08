@@ -40,6 +40,7 @@ import tileYield from '@civ-clone/civ1-world/Rules/Tile/yield';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import unitUnsupported from '../Rules/Unit/unsupported';
+import { CityImprovementRegistry } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 
 describe('city:process-yield', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -51,7 +52,8 @@ describe('city:process-yield', (): void => {
     playerWorldRegistry = new PlayerWorldRegistry(),
     playerGovernmentRegistry = new PlayerGovernmentRegistry(),
     availableGovernmentRegistry = new AvailableGovernmentRegistry(),
-    terrainFeatureRegistry = new TerrainFeatureRegistry();
+    terrainFeatureRegistry = new TerrainFeatureRegistry(),
+    cityImprovementRegistry = new CityImprovementRegistry();
 
   availableGovernmentRegistry.register(
     Anarchy,
@@ -77,7 +79,7 @@ describe('city:process-yield', (): void => {
       })
     ),
     ...buildCost(),
-    ...cityYield(),
+    ...cityYield(cityImprovementRegistry, playerGovernmentRegistry),
     ...cost(cityGrowthRegistry, playerGovernmentRegistry, unitRegistry),
     ...created(
       tileImprovementRegistry,
