@@ -48,10 +48,6 @@ export const getRules: (
   ),
 
   new Destroyed(
-    new Effect((city: City): void => cityRegistry.unregister(city))
-  ),
-
-  new Destroyed(
     new Effect((city: City, player: Player | null): void => {
       engine.emit('city:destroyed', city, player);
     })

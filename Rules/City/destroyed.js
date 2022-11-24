@@ -13,7 +13,6 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         .getByTile(city.tile())
         .filter((improvement) => improvement instanceof TileImprovements_1.Irrigation)
         .forEach((irrigation) => tileImprovementRegistry.unregister(irrigation)))),
-    new Destroyed_1.default(new Effect_1.default((city) => cityRegistry.unregister(city))),
     new Destroyed_1.default(new Effect_1.default((city, player) => {
         engine.emit('city:destroyed', city, player);
     })),
