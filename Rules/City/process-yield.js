@@ -53,8 +53,8 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRe
         const updatedCityYields = city.yields();
         // No production happens when there's civil disorder.
         if (!ruleRegistry
-            .get(CivilDisorder_1.default)
-            .some((rule) => rule.validate(city, updatedCityYields))) {
+            .process(CivilDisorder_1.default, city, updatedCityYields)
+            .some((result) => result)) {
             cityBuild.add(availableProduction);
         }
         cityBuild.check();

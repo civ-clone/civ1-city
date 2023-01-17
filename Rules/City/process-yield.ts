@@ -112,10 +112,8 @@ export const getRules: (
         // No production happens when there's civil disorder.
         if (
           !ruleRegistry
-            .get(CivilDisorder)
-            .some((rule: CivilDisorder): boolean =>
-              rule.validate(city, updatedCityYields)
-            )
+            .process(CivilDisorder, city, updatedCityYields)
+            .some((result: boolean): boolean => result)
         ) {
           cityBuild.add(availableProduction);
         }

@@ -6,7 +6,7 @@ import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
-export declare type setUpCityOptions = {
+export type setUpCityOptions = {
   name?: string;
   size?: number;
   improveTerrain?: boolean;
