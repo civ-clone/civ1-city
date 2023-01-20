@@ -11,14 +11,20 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Shrink from '@civ-clone/core-city-growth/Rules/Shrink';
 import Tile from '@civ-clone/core-world/Tile';
-import assignWorkers from '../../lib/assignWorkers';
+import { reduceWorkers } from '../../lib/assignWorkers';
+import {
+  instance as workedTileRegistryInstance,
+  WorkedTileRegistry,
+} from '@civ-clone/core-city/WorkedTileRegistry';
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
-  playerWorldRegistry?: PlayerWorldRegistry
+  playerWorldRegistry?: PlayerWorldRegistry,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Shrink[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
-  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
+  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Shrink[] => [
   new Shrink(
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
@@ -34,25 +40,9 @@ export const getRules: (
         cityGrowth.city().tilesWorked().length > cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      cityGrowth
-        .city()
-        .tilesWorked()
-        .entries()
-        .slice(cityGrowth.size() + 1)
-        .forEach((tile: Tile): void =>
-          cityGrowth.city().tilesWorked().unregister(tile)
-        )
-    )
-  ),
-
-  new Shrink(
-    new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
-    new Criterion(
-      (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1
-    ),
-    new Effect((cityGrowth: CityGrowth): void =>
-      assignWorkers(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry)
+      reduceWorkers(cityGrowth.city(), cityGrowth).forEach((tile: Tile): void =>
+        workedTileRegistry.unregisterByTile(tile)
+      )
     )
   ),
 

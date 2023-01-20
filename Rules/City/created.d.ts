@@ -6,6 +6,7 @@ import { Engine } from '@civ-clone/core-engine/Engine';
 import { PlayerWorldRegistry } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
+import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
 import Created from '@civ-clone/core-city/Rules/Created';
 export declare const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -15,6 +16,7 @@ export declare const getRules: (
   playerWorldRegistry?: PlayerWorldRegistry,
   ruleRegistry?: RuleRegistry,
   availableBuildItemsRegistry?: AvailableCityBuildItemsRegistry,
-  engine?: Engine
+  engine?: Engine,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Created[];
 export default getRules;

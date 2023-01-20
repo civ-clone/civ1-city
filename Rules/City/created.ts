@@ -31,14 +31,21 @@ import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
+import {
+  WorkedTileRegistry,
+  instance as workedTileRegistryInstance,
+} from '@civ-clone/core-city/WorkedTileRegistry';
 import City from '@civ-clone/core-city/City';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Created from '@civ-clone/core-city/Rules/Created';
-import Effect from '@civ-clone/core-rule/Effect';
-import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
-import assignWorkers from '../../lib/assignWorkers';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Effect from '@civ-clone/core-rule/Effect';
+import { High } from '@civ-clone/core-rule/Priorities';
+import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
+import TileReassigned from '@civ-clone/core-city/Rules/TileReassigned';
+import WorkedTile from '@civ-clone/core-city/WorkedTile';
+import assignWorkers from '../../lib/assignWorkers';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -48,7 +55,8 @@ export const getRules: (
   playerWorldRegistry?: PlayerWorldRegistry,
   ruleRegistry?: RuleRegistry,
   availableBuildItemsRegistry?: AvailableCityBuildItemsRegistry,
-  engine?: Engine
+  engine?: Engine,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Created[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
@@ -57,7 +65,8 @@ export const getRules: (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   availableBuildItemsRegistry: AvailableCityBuildItemsRegistry = availableCityBuildItemsRegistryInstance,
-  engine: Engine = engineInstance
+  engine: Engine = engineInstance,
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Created[] => [
   ...([Irrigation, Road] as typeof TileImprovement[]).map(
     (TileImprovementType) =>
@@ -94,9 +103,32 @@ export const getRules: (
     })
   ),
   new Created(
-    new Effect((city: City): void =>
-      assignWorkers(city, playerWorldRegistry, cityGrowthRegistry)
-    )
+    new Effect((city: City): void => {
+      const existingWorkedTile = workedTileRegistry.getByTile(city.tile());
+
+      if (existingWorkedTile !== null) {
+        workedTileRegistry.unregister(existingWorkedTile);
+      }
+
+      workedTileRegistry.register(new WorkedTile(city.tile(), city));
+
+      // Give the existing City the chance to reassign its worker before...
+      if (existingWorkedTile !== null) {
+        ruleRegistry.process(
+          TileReassigned,
+          existingWorkedTile.city(),
+          existingWorkedTile.tile()
+        );
+      }
+
+      // ...assigning the remaining workers.
+      assignWorkers(
+        city,
+        playerWorldRegistry,
+        cityGrowthRegistry,
+        workedTileRegistry
+      );
+    })
   ),
 ];
 

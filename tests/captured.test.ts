@@ -58,7 +58,7 @@ describe('city:captured', (): void => {
     expect(city.player()).to.equal(enemy);
   });
 
-  it('should destroy all of the cities units', async (): Promise<void> => {
+  it('should destroy all of the `City`s units', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
@@ -72,7 +72,6 @@ describe('city:captured', (): void => {
     city.capture(enemy);
 
     expect(unit.destroyed()).to.true;
-    expect(unitRegistry.entries().includes(unit)).to.false;
 
     unitRegistry.unregister(unit);
   });

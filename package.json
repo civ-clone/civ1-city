@@ -14,7 +14,7 @@
     "prettier:check": "prettier --config .prettierrc '**/*.ts'",
     "prettier:format": "prettier --config .prettierrc '**/*.ts' --write",
     "test": "ts-mocha ./tests/*.test.ts",
-    "test:coverage": "c8 ts-mocha ./tests/*.test.ts",
+    "test:coverage": "c8 --all -x '**/*.ts' -x 'index.*' -x 'register*.*' ts-mocha ./tests/*.test.ts",
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
@@ -24,13 +24,13 @@
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
-    "@types/mocha": "^8.0.0",
+    "@types/mocha": "^10.0.0",
     "@types/node": "^14.0.0",
     "c8": "^7.0.0",
     "chai": "^4.0.0",
-    "mocha": "^9.0.0",
+    "mocha": "^10.0.0",
     "prettier": "^2.0.0",
-    "ts-mocha": "^9.0.0",
+    "ts-mocha": "^10.0.0",
     "typescript": "^4.0.0"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
-    "@civ-clone/core-city": "^0.1.0",
+    "@civ-clone/core-city": "^0.1.10",
     "@civ-clone/core-city-build": "^0.1.0",
     "@civ-clone/core-city-growth": "^0.1.0",
     "@civ-clone/core-city-happiness": "^0.1.0",

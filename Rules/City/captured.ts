@@ -23,19 +23,32 @@ import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import Unit from '@civ-clone/core-unit/Unit';
+import { reassignWorkers } from '../../lib/assignWorkers';
+import {
+  instance as playerWorldRegistryInstance,
+  PlayerWorldRegistry,
+} from '@civ-clone/core-player-world/PlayerWorldRegistry';
+import {
+  instance as workedTileRegistryInstance,
+  WorkedTileRegistry,
+} from '@civ-clone/core-city/WorkedTileRegistry';
 
 export const getRules: (
   cityRegistry?: CityRegistry,
   unitRegistry?: UnitRegistry,
   cityGrowthRegistry?: CityGrowthRegistry,
   cityBuildRegistry?: CityBuildRegistry,
-  engine?: Engine
+  engine?: Engine,
+  playerWorldRegistry?: PlayerWorldRegistry,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Captured[] = (
   cityRegistry: CityRegistry = cityRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
-  engine: Engine = engineInstance
+  engine: Engine = engineInstance,
+  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Captured[] => [
   new Captured(
     new Effect((capturedCity: City): void =>
@@ -59,6 +72,16 @@ export const getRules: (
       unitRegistry
         .getByCity(capturedCity)
         .forEach((unit: Unit) => unit.destroy())
+    )
+  ),
+  new Captured(
+    new Effect((capturedCity: City): void =>
+      reassignWorkers(
+        capturedCity,
+        playerWorldRegistry,
+        cityGrowthRegistry,
+        workedTileRegistry
+      )
     )
   ),
 ];

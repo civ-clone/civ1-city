@@ -71,6 +71,6 @@ describe('city:destroyed', (): void => {
 
     city.destroy();
 
-    expect(cityRegistry.entries()).to.not.include(city);
+    expect(city.destroyed()).true;
   });
 });

@@ -21,17 +21,23 @@ import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import Player from '@civ-clone/core-player/Player';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import Unit from '@civ-clone/core-unit/Unit';
+import {
+  instance as workedTileRegistryInstance,
+  WorkedTileRegistry,
+} from '@civ-clone/core-city/WorkedTileRegistry';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   cityRegistry?: CityRegistry,
   engine?: Engine,
-  unitRegistry?: UnitRegistry
+  unitRegistry?: UnitRegistry,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Destroyed[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
   engine: Engine = engineInstance,
-  unitRegistry: UnitRegistry = unitRegistryInstance
+  unitRegistry: UnitRegistry = unitRegistryInstance,
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
     new Effect((city: City): void =>
@@ -56,6 +62,14 @@ export const getRules: (
   new Destroyed(
     new Effect((city: City): void =>
       unitRegistry.getByCity(city).forEach((unit: Unit) => unit.destroy())
+    )
+  ),
+
+  new Destroyed(
+    new Effect((city: City): void =>
+      workedTileRegistry
+        .getByCity(city)
+        .forEach((workedTile) => workedTileRegistry.unregister(workedTile))
     )
   ),
 ];

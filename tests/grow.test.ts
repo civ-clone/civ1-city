@@ -11,6 +11,9 @@ import foodStorage from '../Rules/City/food-storage';
 import grow from '../Rules/City/grow';
 import setUpCity from './lib/setUpCity';
 import growthCost from '../Rules/City/growth-cost';
+import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import WorkedTile from '@civ-clone/core-city/WorkedTile';
+import Tile from '@civ-clone/core-world/Tile';
 
 describe('city:grow', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -18,7 +21,8 @@ describe('city:grow', (): void => {
     cityRegistry = new CityRegistry(),
     cityBuildRegistry = new CityBuildRegistry(),
     cityGrowthRegistry = new CityGrowthRegistry(),
-    playerWorldRegistry = new PlayerWorldRegistry();
+    playerWorldRegistry = new PlayerWorldRegistry(),
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
   ruleRegistry.register(
     ...created(
@@ -27,10 +31,13 @@ describe('city:grow', (): void => {
       cityGrowthRegistry,
       cityRegistry,
       playerWorldRegistry,
-      ruleRegistry
+      ruleRegistry,
+      undefined,
+      undefined,
+      workedTileRegistry
     ),
     ...foodStorage(),
-    ...grow(cityGrowthRegistry, playerWorldRegistry),
+    ...grow(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
     ...growthCost()
   );
 
@@ -40,11 +47,13 @@ describe('city:grow', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityGrowth = cityGrowthRegistry.getByCity(city);
 
     expect(cityGrowth.progress().value()).to.equal(0);
     expect(cityGrowth.cost().value()).to.equal(20);
+    expect(city.tiles().length).equal(25);
 
     (
       [
@@ -83,10 +92,17 @@ describe('city:grow', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityGrowth = cityGrowthRegistry.getByCity(city);
 
-    city.tilesWorked().push(...city.tile().getSurroundingArea(2).entries());
+    city.tiles().forEach((tile: Tile) => {
+      if (workedTileRegistry.tileIsWorked(tile)) {
+        return;
+      }
+
+      workedTileRegistry.register(new WorkedTile(tile, city));
+    });
 
     expect(city.tilesWorked().length).to.equal(25);
 

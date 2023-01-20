@@ -1,10 +1,10 @@
 import { CityGrowthRegistry } from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import { PlayerWorldRegistry } from '@civ-clone/core-player-world/PlayerWorldRegistry';
-import Shrink from '@civ-clone/core-city-growth/Rules/Shrink';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import TileReassigned from '@civ-clone/core-city/Rules/TileReassigned';
 export declare const getRules: (
-  cityGrowthRegistry?: CityGrowthRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
+  cityGrowthRegistry?: CityGrowthRegistry,
   workedTileRegistry?: WorkedTileRegistry
-) => Shrink[];
+) => TileReassigned[];
 export default getRules;

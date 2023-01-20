@@ -11,14 +11,24 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Grow from '@civ-clone/core-city-growth/Rules/Grow';
 import Tile from '@civ-clone/core-world/Tile';
-import assignWorkers from '../../lib/assignWorkers';
+import assignWorkers, {
+  assignWorker,
+  reduceWorkers,
+  sortTiles,
+} from '../../lib/assignWorkers';
+import {
+  instance as workedTileRegistryInstance,
+  WorkedTileRegistry,
+} from '@civ-clone/core-city/WorkedTileRegistry';
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
-  playerWorldRegistry?: PlayerWorldRegistry
+  playerWorldRegistry?: PlayerWorldRegistry,
+  workedTileRegistry?: WorkedTileRegistry
 ) => Grow[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
-  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
+  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Grow[] => [
   new Grow(new Effect((cityGrowth: CityGrowth): void => cityGrowth.empty())),
   new Grow(
@@ -32,7 +42,12 @@ export const getRules: (
         cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      assignWorkers(cityGrowth.city(), playerWorldRegistry, cityGrowthRegistry)
+      assignWorker(
+        cityGrowth.city(),
+        playerWorldRegistry,
+        cityGrowthRegistry,
+        workedTileRegistry
+      )
     )
   ),
 
@@ -42,14 +57,9 @@ export const getRules: (
         cityGrowth.city().tilesWorked().length > cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      cityGrowth
-        .city()
-        .tilesWorked()
-        .entries()
-        .slice(cityGrowth.size() + 1)
-        .forEach((tile: Tile): void =>
-          cityGrowth.city().tilesWorked().unregister(tile)
-        )
+      reduceWorkers(cityGrowth.city(), cityGrowth).forEach((tile: Tile): void =>
+        workedTileRegistry.unregisterByTile(tile)
+      )
     )
   ),
 ];

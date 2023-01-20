@@ -26,15 +26,23 @@ import {
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import {
+  WorkedTileRegistry,
+  instance as workedTileRegistryInstance,
+} from '@civ-clone/core-city/WorkedTileRegistry';
+import {
   generateGenerator,
   generateWorld,
 } from '@civ-clone/core-world/tests/lib/buildWorld';
+import CanBeWorked from '@civ-clone/core-city/Rules/CanBeWorked';
 import City from '@civ-clone/core-city/City';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
+import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
+import Priority from '@civ-clone/core-rule/Priority';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
+import Tiles from '@civ-clone/core-city/Rules/Tiles';
 import Tileset from '@civ-clone/core-world/Tileset';
 import { Water } from '@civ-clone/core-terrain/Types';
 import World from '@civ-clone/core-world/World';
@@ -50,6 +58,7 @@ export type setUpCityOptions = {
   tileImprovementRegistry?: TileImprovementRegistry;
   playerWorldRegistry?: PlayerWorldRegistry;
   cityGrowthRegistry?: CityGrowthRegistry;
+  workedTileRegistry?: WorkedTileRegistry;
 };
 
 export const setUpCity = async ({
@@ -63,7 +72,20 @@ export const setUpCity = async ({
   tile,
   tileImprovementRegistry = tileImprovementRegistryInstance,
   cityGrowthRegistry = cityGrowthRegistryInstance,
+  workedTileRegistry = workedTileRegistryInstance,
 }: setUpCityOptions = {}): Promise<City> => {
+  ruleRegistry.register(
+    new Tiles(
+      new Priority(9000), // Very low priority so it can be overridden with a `Normal` `Priority` `Rule`
+      new Effect((city: City): Tileset => city.tile().getSurroundingArea(2))
+    ),
+    new CanBeWorked(
+      new Effect(
+        (tile: Tile): boolean => !workedTileRegistry.tileIsWorked(tile)
+      )
+    )
+  );
+
   if (world === undefined) {
     world = await generateWorld(
       generateGenerator(5, 5, Grassland),
@@ -117,19 +139,25 @@ export const setUpCity = async ({
       }
     });
 
-    const city = new City(player, tile as Tile, name, ruleRegistry);
+    const city = new City(
+      player,
+      tile as Tile,
+      name,
+      ruleRegistry,
+      workedTileRegistry
+    );
+
+    let cityGrowth;
+
+    try {
+      cityGrowth = cityGrowthRegistry.getByCity(city);
+    } catch (e) {
+      cityGrowth = new CityGrowth(city, ruleRegistry);
+
+      cityGrowthRegistry.register(cityGrowth);
+    }
 
     if (size > 1) {
-      let cityGrowth;
-
-      try {
-        cityGrowth = cityGrowthRegistry.getByCity(city);
-      } catch (e) {
-        cityGrowth = new CityGrowth(city, ruleRegistry);
-
-        cityGrowthRegistry.register(cityGrowth);
-      }
-
       while (cityGrowth.size() < size) {
         cityGrowth.grow();
       }

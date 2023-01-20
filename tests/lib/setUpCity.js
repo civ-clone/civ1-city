@@ -7,14 +7,21 @@ const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
 const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
+const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
 const buildWorld_1 = require("@civ-clone/core-world/tests/lib/buildWorld");
+const CanBeWorked_1 = require("@civ-clone/core-city/Rules/CanBeWorked");
 const City_1 = require("@civ-clone/core-city/City");
 const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
+const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Player_1 = require("@civ-clone/core-player/Player");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
+const Priority_1 = require("@civ-clone/core-rule/Priority");
+const Tiles_1 = require("@civ-clone/core-city/Rules/Tiles");
 const Tileset_1 = require("@civ-clone/core-world/Tileset");
 const Types_1 = require("@civ-clone/core-terrain/Types");
-const setUpCity = async ({ name = '', size = 1, improveTerrain = true, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, } = {}) => {
+const setUpCity = async ({ name = '', size = 1, improveTerrain = true, ruleRegistry = RuleRegistry_1.instance, player = new Player_1.default(ruleRegistry), playerWorldRegistry = PlayerWorldRegistry_1.instance, world, tile, tileImprovementRegistry = TileImprovementRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, } = {}) => {
+    ruleRegistry.register(new Tiles_1.default(new Priority_1.default(9000), // Very low priority so it can be overridden with a `Normal` `Priority` `Rule`
+    new Effect_1.default((city) => city.tile().getSurroundingArea(2))), new CanBeWorked_1.default(new Effect_1.default((tile) => !workedTileRegistry.tileIsWorked(tile))));
     if (world === undefined) {
         world = await (0, buildWorld_1.generateWorld)((0, buildWorld_1.generateGenerator)(5, 5, Terrains_1.Grassland), ruleRegistry);
         playerWorldRegistry.register(new PlayerWorld_1.default(player, world));
@@ -44,16 +51,16 @@ const setUpCity = async ({ name = '', size = 1, improveTerrain = true, ruleRegis
                 tileImprovementRegistry.register(new TileImprovements_1.Road(tile));
             }
         });
-        const city = new City_1.default(player, tile, name, ruleRegistry);
+        const city = new City_1.default(player, tile, name, ruleRegistry, workedTileRegistry);
+        let cityGrowth;
+        try {
+            cityGrowth = cityGrowthRegistry.getByCity(city);
+        }
+        catch (e) {
+            cityGrowth = new CityGrowth_1.default(city, ruleRegistry);
+            cityGrowthRegistry.register(cityGrowth);
+        }
         if (size > 1) {
-            let cityGrowth;
-            try {
-                cityGrowth = cityGrowthRegistry.getByCity(city);
-            }
-            catch (e) {
-                cityGrowth = new CityGrowth_1.default(city, ruleRegistry);
-                cityGrowthRegistry.register(cityGrowth);
-            }
             while (cityGrowth.size() < size) {
                 cityGrowth.grow();
             }

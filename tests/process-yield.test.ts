@@ -41,6 +41,7 @@ import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import unitUnsupported from '../Rules/Unit/unsupported';
 import { CityImprovementRegistry } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
+import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
 
 describe('city:process-yield', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -53,7 +54,8 @@ describe('city:process-yield', (): void => {
     playerGovernmentRegistry = new PlayerGovernmentRegistry(),
     availableGovernmentRegistry = new AvailableGovernmentRegistry(),
     terrainFeatureRegistry = new TerrainFeatureRegistry(),
-    cityImprovementRegistry = new CityImprovementRegistry();
+    cityImprovementRegistry = new CityImprovementRegistry(),
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
   availableGovernmentRegistry.register(
     Anarchy,
@@ -87,11 +89,14 @@ describe('city:process-yield', (): void => {
       cityGrowthRegistry,
       cityRegistry,
       playerWorldRegistry,
-      ruleRegistry
+      ruleRegistry,
+      undefined,
+      undefined,
+      workedTileRegistry
     ),
     ...foodExhausted(),
     ...foodStorage(ruleRegistry),
-    ...grow(cityGrowthRegistry, playerWorldRegistry),
+    ...grow(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
     ...growthCost(),
     ...processYield(
       cityBuildRegistry,
@@ -99,7 +104,7 @@ describe('city:process-yield', (): void => {
       unitRegistry,
       ruleRegistry
     ),
-    ...shrink(cityGrowthRegistry, playerWorldRegistry),
+    ...shrink(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
     ...tileYield(
       tileImprovementRegistry,
       terrainFeatureRegistry,
@@ -116,6 +121,7 @@ describe('city:process-yield', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityYield = new Food(20),
       cityGrowth = cityGrowthRegistry.getByCity(city);
@@ -134,6 +140,7 @@ describe('city:process-yield', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityYield = new Food(-1),
       cityGrowth = cityGrowthRegistry.getByCity(city);
@@ -152,6 +159,7 @@ describe('city:process-yield', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityBuild = cityBuildRegistry.getByCity(city);
 
@@ -166,6 +174,7 @@ describe('city:process-yield', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       cityYield = new Production(-1),
       supportedUnit = new Warrior(
@@ -206,6 +215,7 @@ describe('city:process-yield', (): void => {
         tileImprovementRegistry,
         playerWorldRegistry,
         cityGrowthRegistry,
+        workedTileRegistry,
       }),
       food1 = reduceYield(city.yields(), Food);
 
