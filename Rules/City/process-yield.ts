@@ -88,8 +88,8 @@ export const getRules: (
           )
           .sort(
             (yieldA, yieldB) =>
-              (yieldA.unit()?.tile().distanceFrom(city.tile()) ?? 0) -
-              (yieldB.unit()?.tile().distanceFrom(city.tile()) ?? 0)
+              (yieldB.unit()?.tile().distanceFrom(city.tile()) ?? 0) -
+              (yieldA.unit()?.tile().distanceFrom(city.tile()) ?? 0)
           )
           .forEach((cityYield) => {
             if (availableProduction.value() >= 0) {

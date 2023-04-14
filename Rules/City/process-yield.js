@@ -36,8 +36,8 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRe
             .filter((cityYield) => cityYield instanceof Yields_2.UnitSupportProduction)
             .sort((yieldA, yieldB) => {
             var _a, _b, _c, _d;
-            return ((_b = (_a = yieldA.unit()) === null || _a === void 0 ? void 0 : _a.tile().distanceFrom(city.tile())) !== null && _b !== void 0 ? _b : 0) -
-                ((_d = (_c = yieldB.unit()) === null || _c === void 0 ? void 0 : _c.tile().distanceFrom(city.tile())) !== null && _d !== void 0 ? _d : 0);
+            return ((_b = (_a = yieldB.unit()) === null || _a === void 0 ? void 0 : _a.tile().distanceFrom(city.tile())) !== null && _b !== void 0 ? _b : 0) -
+                ((_d = (_c = yieldA.unit()) === null || _c === void 0 ? void 0 : _c.tile().distanceFrom(city.tile())) !== null && _d !== void 0 ? _d : 0);
         })
             .forEach((cityYield) => {
             if (availableProduction.value() >= 0) {
