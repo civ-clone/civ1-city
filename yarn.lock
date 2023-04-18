@@ -201,6 +201,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@civ-clone/base-city-yield-city-improvement-content@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@civ-clone/base-city-yield-city-improvement-content@npm:0.1.1"
+  dependencies:
+    "@civ-clone/base-city-yield-unhappiness": ^0.1.1
+    "@civ-clone/core-city-improvement": ^0.1.2
+    "@civ-clone/core-yield": ^0.1.4
+  checksum: 5a7eef718dc7b5aa9f99a45954b9ed1bce48289551011a7cde73d9a2d52b29733c14c219f6c49d64ccbddd14bc0225aa31f6bf2e1f670e2eee69bff2b0aa2bc3
+  languageName: node
+  linkType: hard
+
 "@civ-clone/base-city-yield-city-improvement-maintenance-gold@npm:^0.1.0":
   version: 0.1.1
   resolution: "@civ-clone/base-city-yield-city-improvement-maintenance-gold@npm:0.1.1"
@@ -249,6 +260,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@civ-clone/base-city-yield-luxury-happiness@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@civ-clone/base-city-yield-luxury-happiness@npm:0.1.0"
+  dependencies:
+    "@civ-clone/base-city-yield-happiness": ^0.1.0
+  checksum: b5e636eb406aba0dc9930a5abd4577997f1b182c1cb917480e17d314ee8efe33f4dd319d8ed047f79c7cd0e2ac90d678d18f7baa1732e1702591cf9acebd61c6
+  languageName: node
+  linkType: hard
+
+"@civ-clone/base-city-yield-martial-law-content@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@civ-clone/base-city-yield-martial-law-content@npm:0.1.1"
+  dependencies:
+    "@civ-clone/base-city-yield-unhappiness": ^0.1.1
+    "@civ-clone/core-unit": ^0.1.14
+    "@civ-clone/core-yield": ^0.1.4
+  checksum: 39b2cad4fde3df3f37d2a9f399012bd3beffb144eb127ac5f592015649f5ac1835e2f8feb380533b6850df8aca600d24a5346cb38d9478cbf4e402169d20b7b9
+  languageName: node
+  linkType: hard
+
+"@civ-clone/base-city-yield-military-unhappiness@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@civ-clone/base-city-yield-military-unhappiness@npm:0.1.1"
+  dependencies:
+    "@civ-clone/base-city-yield-unhappiness": ^0.1.1
+    "@civ-clone/core-unit": ^0.1.14
+    "@civ-clone/core-yield": ^0.1.4
+  checksum: 62b7fc7954f45a5302fc7910b8962b7cfd38c0f4aeeee0e96cf1e242f7c007c79b66d56f05499e7c69f198cefc51715e10cec2100b0c6e79624161e28de02d47
+  languageName: node
+  linkType: hard
+
 "@civ-clone/base-city-yield-population-support-food@npm:^0.1.0":
   version: 0.1.1
   resolution: "@civ-clone/base-city-yield-population-support-food@npm:0.1.1"
@@ -256,6 +298,15 @@ __metadata:
     "@civ-clone/base-terrain-yield-food": ^0.1.0
     "@civ-clone/core-yield": ^0.1.2
   checksum: 18c6922b3bef2d2586977dad0f9578fc88adab1a21281eee2af6fa8d528d4030ba96d61c221fc80c4bc7d7bbfb6a5ec46fbeca5f5828e9f9e0400b6e3f1e067a
+  languageName: node
+  linkType: hard
+
+"@civ-clone/base-city-yield-population-unhappiness@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@civ-clone/base-city-yield-population-unhappiness@npm:0.1.0"
+  dependencies:
+    "@civ-clone/base-city-yield-unhappiness": ^0.1.1
+  checksum: c4bd107639e86e91febeaf119d40c4803294c77b9da82a2bf6b5a3ecce3ded9836e5c2d30735773d13569ce6a82e36788da969f3d3dec3713dfcba2c2fffc645
   languageName: node
   linkType: hard
 
@@ -268,7 +319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civ-clone/base-city-yield-unhappiness@npm:^0.1.0":
+"@civ-clone/base-city-yield-unhappiness@npm:^0.1.0, @civ-clone/base-city-yield-unhappiness@npm:^0.1.1":
   version: 0.1.1
   resolution: "@civ-clone/base-city-yield-unhappiness@npm:0.1.1"
   dependencies:
@@ -2107,6 +2158,7 @@ __metadata:
     "@civ-clone/core-unit": ^0.1.0
     "@civ-clone/core-world": ^0.1.0
     "@civ-clone/core-yield": ^0.1.0
+    "@civ-clone/library-city": ^0.1.0
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator"
     "@types/chai": ^4.0.0
     "@types/mocha": ^10.0.0
@@ -2580,7 +2632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civ-clone/core-player-world@npm:^0.1.0":
+"@civ-clone/core-player-world@npm:^0.1.0, @civ-clone/core-player-world@npm:^0.1.9":
   version: 0.1.9
   resolution: "@civ-clone/core-player-world@npm:0.1.9"
   dependencies:
@@ -2722,7 +2774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civ-clone/core-unit@npm:^0.1.0, @civ-clone/core-unit@npm:^0.1.12, @civ-clone/core-unit@npm:^0.1.15":
+"@civ-clone/core-unit@npm:^0.1.0, @civ-clone/core-unit@npm:^0.1.12, @civ-clone/core-unit@npm:^0.1.14, @civ-clone/core-unit@npm:^0.1.15":
   version: 0.1.16
   resolution: "@civ-clone/core-unit@npm:0.1.16"
   dependencies:
@@ -2767,13 +2819,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@civ-clone/core-yield@npm:^0.1.0, @civ-clone/core-yield@npm:^0.1.2, @civ-clone/core-yield@npm:^0.1.3":
+"@civ-clone/core-yield@npm:^0.1.0, @civ-clone/core-yield@npm:^0.1.2, @civ-clone/core-yield@npm:^0.1.3, @civ-clone/core-yield@npm:^0.1.4":
   version: 0.1.4
   resolution: "@civ-clone/core-yield@npm:0.1.4"
   dependencies:
     "@civ-clone/core-data-object": ^0.1.0
     "@civ-clone/core-registry": ^0.1.0
   checksum: 42ee571552acdc0bf039f98ef6b5b0b11b6f691a716eb027ecbc3f4215c63cb0db0793718dc08f1a27bc85accf39b67a834529eb17f5d4aab4d40e5df4e0e0a1
+  languageName: node
+  linkType: hard
+
+"@civ-clone/library-city@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@civ-clone/library-city@npm:0.1.0"
+  dependencies:
+    "@civ-clone/base-city-improvement-aqueduct": ^0.1.0
+    "@civ-clone/base-city-improvement-bank": ^0.1.0
+    "@civ-clone/base-city-improvement-barracks": ^0.1.0
+    "@civ-clone/base-city-improvement-cathedral": ^0.1.0
+    "@civ-clone/base-city-improvement-citywalls": ^0.1.0
+    "@civ-clone/base-city-improvement-colosseum": ^0.1.0
+    "@civ-clone/base-city-improvement-courthouse": ^0.1.0
+    "@civ-clone/base-city-improvement-factory": ^0.1.0
+    "@civ-clone/base-city-improvement-granary": ^0.1.0
+    "@civ-clone/base-city-improvement-hydroplant": ^0.1.0
+    "@civ-clone/base-city-improvement-library": ^0.1.0
+    "@civ-clone/base-city-improvement-manufacturingplant": ^0.1.0
+    "@civ-clone/base-city-improvement-marketplace": ^0.1.0
+    "@civ-clone/base-city-improvement-masstransit": ^0.1.0
+    "@civ-clone/base-city-improvement-nuclearplant": ^0.1.0
+    "@civ-clone/base-city-improvement-palace": ^0.1.0
+    "@civ-clone/base-city-improvement-powerplant": ^0.1.0
+    "@civ-clone/base-city-improvement-recyclingcenter": ^0.1.0
+    "@civ-clone/base-city-improvement-sdidefence": ^0.1.0
+    "@civ-clone/base-city-improvement-temple": ^0.1.0
+    "@civ-clone/base-city-improvement-university": ^0.1.0
+    "@civ-clone/base-city-yield-city-improvement-content": ^0.1.1
+    "@civ-clone/base-city-yield-city-improvement-maintenance-gold": ^0.1.0
+    "@civ-clone/base-city-yield-corruption": ^0.1.0
+    "@civ-clone/base-city-yield-gold": ^0.1.0
+    "@civ-clone/base-city-yield-happiness": ^0.1.0
+    "@civ-clone/base-city-yield-luxuries": ^0.1.0
+    "@civ-clone/base-city-yield-luxury-happiness": ^0.1.0
+    "@civ-clone/base-city-yield-martial-law-content": ^0.1.1
+    "@civ-clone/base-city-yield-military-unhappiness": ^0.1.1
+    "@civ-clone/base-city-yield-population-support-food": ^0.1.0
+    "@civ-clone/base-city-yield-population-unhappiness": ^0.1.0
+    "@civ-clone/base-city-yield-research": ^0.1.0
+    "@civ-clone/base-city-yield-unhappiness": ^0.1.0
+    "@civ-clone/base-city-yield-unit-support-food": ^0.1.0
+    "@civ-clone/base-city-yield-unit-support-production": ^0.1.0
+    "@civ-clone/base-terrain-yield-food": ^0.1.0
+    "@civ-clone/base-terrain-yield-production": ^0.1.0
+    "@civ-clone/base-terrain-yield-trade": ^0.1.0
+    "@civ-clone/core-city-growth": ^0.1.0
+    "@civ-clone/core-player-world": ^0.1.9
+  checksum: f0d2f274168454a08b1b120282052f3f27c28a70f9e4c4bce7efdd8bac5eadda0db5c83744305dfdcca56a8725f65549804215b97505fc0929854d55ce34f3c3
   languageName: node
   linkType: hard
 

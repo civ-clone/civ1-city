@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const CityBuildRegistry_1 = require("@civ-clone/core-city-build/CityBuildRegistry");
 const CityGrowthRegistry_1 = require("@civ-clone/core-city-growth/CityGrowthRegistry");
-const Yields_1 = require("@civ-clone/civ1-world/Yields");
+const Yields_1 = require("../..//Yields");
 const Yields_2 = require("../../Yields");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");

@@ -6,7 +6,7 @@ import {
   CityGrowthRegistry,
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
-import { Food, Production } from '@civ-clone/civ1-world/Yields';
+import { Food, Production } from '../..//Yields';
 import {
   FoodStorage,
   UnitSupportFood,

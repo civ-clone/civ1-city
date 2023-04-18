@@ -7,7 +7,7 @@ const Yields_1 = require("../../Yields");
 const PlayerGovernmentRegistry_1 = require("@civ-clone/core-government/PlayerGovernmentRegistry");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Priorities_1 = require("@civ-clone/core-rule/Priorities");
-const Palace_1 = require("@civ-clone/base-city-improvement-palace/Palace");
+const CityImprovements_1 = require("@civ-clone/library-city/CityImprovements");
 const Priority_1 = require("@civ-clone/core-rule/Priority");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
@@ -15,7 +15,7 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
     new Yield_1.default(new Priorities_1.High(), new Effect_1.default((city, yields) => {
         // Corruption Formula: p223-224, Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
         const playerGovernment = playerGovernmentRegistry.getByPlayer(city.player()), [capital] = cityImprovementRegistry
-            .filter((cityImprovement) => cityImprovement instanceof Palace_1.default &&
+            .filter((cityImprovement) => cityImprovement instanceof CityImprovements_1.Palace &&
             city.player() === cityImprovement.city().player())
             .map((cityImprovement) => cityImprovement.city()), currentTrade = (0, reduceYields_1.reduceYield)(yields, Yields_1.Trade), distanceFromCapital = playerGovernment.is(Governments_1.Communism)
             ? 10

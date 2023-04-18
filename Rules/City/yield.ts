@@ -19,7 +19,7 @@ import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
 import Government from '@civ-clone/core-government/Government';
 import { High } from '@civ-clone/core-rule/Priorities';
-import Palace from '@civ-clone/base-city-improvement-palace/Palace';
+import { Palace } from '@civ-clone/library-city/CityImprovements';
 import Priority from '@civ-clone/core-rule/Priority';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';

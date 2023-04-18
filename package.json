@@ -34,19 +34,6 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "@civ-clone/base-city-improvement-courthouse": "^0.1.0",
-    "@civ-clone/base-city-improvement-palace": "^0.1.0",
-    "@civ-clone/base-city-yield-corruption": "^0.1.0",
-    "@civ-clone/base-city-yield-gold": "^0.1.0",
-    "@civ-clone/base-city-yield-happiness": "^0.1.0",
-    "@civ-clone/base-city-yield-luxuries": "^0.1.0",
-    "@civ-clone/base-city-yield-population-support-food": "^0.1.0",
-    "@civ-clone/base-city-yield-research": "^0.1.0",
-    "@civ-clone/base-city-yield-unhappiness": "^0.1.0",
-    "@civ-clone/base-city-yield-unit-support-food": "^0.1.0",
-    "@civ-clone/base-city-yield-unit-support-production": "^0.1.0",
-    "@civ-clone/base-terrain-yield-trade": "^0.1.0",
-    "@civ-clone/civ1-city-improvement": "github:civ-clone/civ1-city-improvement",
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
@@ -62,6 +49,7 @@
     "@civ-clone/core-tile-improvement": "^0.1.0",
     "@civ-clone/core-unit": "^0.1.0",
     "@civ-clone/core-world": "^0.1.0",
-    "@civ-clone/core-yield": "^0.1.0"
+    "@civ-clone/core-yield": "^0.1.0",
+    "@civ-clone/library-city": "^0.1.0"
   }
 }

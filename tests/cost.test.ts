@@ -23,7 +23,6 @@ import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityImprovementRegistry from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
-import Courthouse from '@civ-clone/base-city-improvement-courthouse/Courthouse';
 import Effect from '@civ-clone/core-rule/Effect';
 import Government from '@civ-clone/core-government/Government';
 import { Grassland } from '@civ-clone/civ1-world/Terrains';
