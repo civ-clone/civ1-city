@@ -51,7 +51,7 @@ export const getRules: (
     [
       [Settlers, 1, Anarchy, Despotism],
       [Settlers, 2, Communism, Democracy, Monarchy, Republic],
-    ] as [typeof Unit, number, ...typeof Government[]][]
+    ] as [typeof Unit, number, ...(typeof Government)[]][]
   ).map(
     ([UnitType, cost, ...governments]) =>
       new Cost(

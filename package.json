@@ -18,9 +18,13 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/base-city-yield-population-support-food": "github:civ-clone/base-city-yield-population-support-food",
+    "@civ-clone/base-city-yield-unit-support-food": "github:civ-clone/base-city-yield-unit-support-food",
+    "@civ-clone/base-city-yield-unit-support-production": "github:civ-clone/base-city-yield-unit-support-production",
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
     "@civ-clone/core-player-world": "^0.1.0",
+    "@civ-clone/core-terrain": "^0.1.0",
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",

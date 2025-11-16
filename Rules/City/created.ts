@@ -68,7 +68,7 @@ export const getRules: (
   engine: Engine = engineInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Created[] => [
-  ...([Irrigation, Road] as typeof TileImprovement[]).map(
+  ...([Irrigation, Road] as (typeof TileImprovement)[]).map(
     (TileImprovementType) =>
       new Created(
         new Criterion((city: City) =>
