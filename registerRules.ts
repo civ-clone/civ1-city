@@ -13,30 +13,67 @@ import cityShrink from './Rules/City/shrink';
 import cityTileReassigned from './Rules/City/tile-reassigned';
 import cityTiles from './Rules/City/tiles';
 import cityYield from './Rules/City/yield';
-import { instance as ruleRegistryInstance } from '@civ-clone/core-rule/RuleRegistry';
 import playerAction from './Rules/Player/action';
 import unitDefeated from './Rules/Unit/defeated';
 import unitMoved from './Rules/Unit/moved';
 import unitUnsupported from './Rules/Unit/unsupported';
+import { Game, defaultGame } from '@civ-clone/core-game';
 
-ruleRegistryInstance.register(
-  ...cityBuildingComplete(),
-  ...cityCanBeWorked(),
-  ...cityCaptured(),
-  ...cityCost(),
-  ...cityCreated(),
-  ...cityDestroyed(),
-  ...cityFoodExhausted(),
-  ...cityFoodStorage(),
-  ...cityGrow(),
-  ...cityGrowthCost(),
-  ...cityProcessYield(),
-  ...cityShrink(),
-  ...cityTiles(),
-  ...cityTileReassigned(),
-  ...cityYield(),
-  ...playerAction(),
-  ...unitDefeated(),
-  ...unitMoved(),
-  ...unitUnsupported()
-);
+export const register = (game: Game): void =>
+  game.rules.register(
+    ...cityBuildingComplete(game.engine),
+    ...cityCanBeWorked(game.cities, game.units, game.workedTiles),
+    ...cityCaptured(
+      game.cities,
+      game.units,
+      game.cityGrowth,
+      game.cityBuilds,
+      game.engine,
+      game.playerWorlds,
+      game.workedTiles
+    ),
+    ...cityCost(game.cityGrowth, game.playerGovernments, game.units),
+    ...cityCreated(
+      game.tileImprovements,
+      game.cityBuilds,
+      game.cityGrowth,
+      game.cities,
+      game.playerWorlds,
+      game.rules,
+      game.availableCityBuildItems,
+      game.engine,
+      game.workedTiles
+    ),
+    ...cityDestroyed(
+      game.tileImprovements,
+      game.cities,
+      game.engine,
+      game.units,
+      game.workedTiles
+    ),
+    ...cityFoodExhausted(),
+    ...cityFoodStorage(game.rules),
+    ...cityGrow(game.cityGrowth, game.playerWorlds, game.workedTiles),
+    ...cityGrowthCost(),
+    ...cityProcessYield(
+      game.cityBuilds,
+      game.cityGrowth,
+      game.units,
+      game.rules
+    ),
+    ...cityShrink(game.cityGrowth, game.playerWorlds, game.workedTiles),
+    ...cityTiles(),
+    ...cityTileReassigned(game.playerWorlds, game.cityGrowth, game.workedTiles),
+    ...cityYield(game.cityImprovements, game.playerGovernments),
+    ...playerAction(game.cityBuilds, game.cities),
+    ...unitDefeated(game.cities, game.cityGrowth, game.engine),
+    ...unitMoved(game.rules, game.workedTiles),
+    ...unitUnsupported()
+  );
+
+// The plugin loader imports each package for this side effect. Until it passes
+// a `Game` of its own, dropping it would produce a game with silently absent
+// rules — no error, just wrong behaviour.
+register(defaultGame);
+
+export default register;
