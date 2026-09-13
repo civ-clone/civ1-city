@@ -2,9 +2,12 @@ import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import Player from '@civ-clone/core-player/Player';
+import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
+import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
+import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
 import captured from '../Rules/City/captured';
 import created from '../Rules/City/created';
@@ -20,22 +23,32 @@ describe('city:captured', (): void => {
     cityRegistry = new CityRegistry(),
     tileImprovementRegistry = new TileImprovementRegistry(),
     cityBuildRegistry = new CityBuildRegistry(),
-    cityGrowthRegistry = new CityGrowthRegistry();
+    cityGrowthRegistry = new CityGrowthRegistry(),
+    playerWorldRegistry = new PlayerWorldRegistry(),
+    workedTileRegistry = new WorkedTileRegistry();
 
   ruleRegistry.register(
     ...captured(
       cityRegistry,
       unitRegistry,
       cityGrowthRegistry,
-      cityBuildRegistry
+      cityBuildRegistry,
+      undefined,
+      playerWorldRegistry,
+      workedTileRegistry
     ),
     ...created(
       tileImprovementRegistry,
       cityBuildRegistry,
       cityGrowthRegistry,
-      cityRegistry
+      cityRegistry,
+      playerWorldRegistry,
+      ruleRegistry,
+      undefined,
+      undefined,
+      workedTileRegistry
     ),
-    ...shrink(cityGrowthRegistry),
+    ...shrink(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
     ...unitCreated(unitRegistry),
     ...unitDestroyed(unitRegistry)
   );
@@ -46,9 +59,15 @@ describe('city:captured', (): void => {
         ruleRegistry,
         tileImprovementRegistry,
         cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
       }),
       enemy = new Player(),
+      world = city.tile().map(),
+      enemyWorld = new PlayerWorld(enemy, world, ruleRegistry),
       cityGrowth = cityGrowthRegistry.getByCity(city);
+
+    playerWorldRegistry.register(enemyWorld);
 
     expect(cityGrowth.size()).to.equal(2);
 
@@ -63,9 +82,17 @@ describe('city:captured', (): void => {
         ruleRegistry,
         tileImprovementRegistry,
         cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
       }),
       enemy = new Player(),
       unit = new Warrior(city, city.player(), city.tile(), ruleRegistry);
+
+    // `captured` looks up a `PlayerWorld` for the capturing player. It used to
+    // find one only because another test file had left it in the singleton.
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
 
     unitRegistry.register(unit);
 
@@ -81,9 +108,15 @@ describe('city:captured', (): void => {
         ruleRegistry,
         tileImprovementRegistry,
         cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
       }),
       enemy = new Player(),
       cityBuild = cityBuildRegistry.getByCity(city);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
 
     expect(cityBuild.progress().value()).to.equal(0);
 
