@@ -25,7 +25,7 @@ describe('city:captured', (): void => {
     cityBuildRegistry = new CityBuildRegistry(),
     cityGrowthRegistry = new CityGrowthRegistry(),
     playerWorldRegistry = new PlayerWorldRegistry(),
-    workedTileRegistry = new WorkedTileRegistry();
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
   ruleRegistry.register(
     ...captured(
