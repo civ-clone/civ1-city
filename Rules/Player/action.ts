@@ -26,6 +26,7 @@ export const getRules: (
 ): Action[] => {
   return [
     new Action(
+      'civ1-city:player/action/choose-production',
       new Criterion((player: Player): boolean =>
         cityRegistry
           .getByPlayer(player)
@@ -44,6 +45,7 @@ export const getRules: (
       )
     ),
     new Action(
+      'civ1-city:player/action/change-production',
       new Criterion((player: Player): boolean =>
         cityRegistry
           .getByPlayer(player)

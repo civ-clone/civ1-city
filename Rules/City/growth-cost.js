@@ -4,7 +4,7 @@ exports.getRules = void 0;
 const Cost_1 = require("@civ-clone/core-city-growth/Rules/Cost");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const getRules = () => [
-    new Cost_1.default(new Effect_1.default((cityGrowth) => 10 * (cityGrowth.size() + 1))),
+    new Cost_1.default('civ1-city:city/growth-cost/by-size', new Effect_1.default((cityGrowth) => 10 * (cityGrowth.size() + 1))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

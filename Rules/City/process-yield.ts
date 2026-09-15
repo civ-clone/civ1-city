@@ -40,6 +40,7 @@ export const getRules: (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): ProcessYield[] => [
   new ProcessYield(
+    'civ1-city:city/process-yield/food',
     new Criterion(
       (cityYield: Yield): cityYield is Food => cityYield instanceof Food
     ),
@@ -72,6 +73,7 @@ export const getRules: (
   ),
 
   new ProcessYield(
+    'civ1-city:city/process-yield/production',
     new Criterion(
       (cityYield: Yield): cityYield is Production =>
         cityYield instanceof Production

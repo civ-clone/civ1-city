@@ -5,6 +5,7 @@ import Tileset from '@civ-clone/core-world/Tileset';
 
 export const getRules = (): Tiles[] => [
   new Tiles(
+    'civ1-city:city/tiles/fat-cross',
     new Effect(
       (city: City): Tileset =>
         Tileset.from(

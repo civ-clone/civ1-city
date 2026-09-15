@@ -30,13 +30,18 @@ export const getRules: (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Grow[] => [
-  new Grow(new Effect((cityGrowth: CityGrowth): void => cityGrowth.empty())),
   new Grow(
+    'civ1-city:city/grow/empty-food-store',
+    new Effect((cityGrowth: CityGrowth): void => cityGrowth.empty())
+  ),
+  new Grow(
+    'civ1-city:city/grow/set-growth-cost',
     new Effect((cityGrowth: CityGrowth): void =>
       cityGrowth.cost().set((cityGrowth.size() + 1) * 10, 'city-grow')
     )
   ),
   new Grow(
+    'civ1-city:city/grow/assign-worker',
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
         cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1
@@ -52,6 +57,7 @@ export const getRules: (
   ),
 
   new Grow(
+    'civ1-city:city/grow/reduce-workers',
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
         cityGrowth.city().tilesWorked().length > cityGrowth.size() + 1

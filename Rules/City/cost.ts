@@ -41,6 +41,7 @@ export const getRules: (
   unitRegistry: UnitRegistry = unitRegistryInstance
 ): Cost[] => [
   new Cost(
+    'civ1-city:city/cost/population-support-food',
     new Effect(
       (city: City): Yield =>
         new PopulationSupportFood(cityGrowthRegistry.getByCity(city).size() * 2)
@@ -55,6 +56,7 @@ export const getRules: (
   ).map(
     ([UnitType, cost, ...governments]) =>
       new Cost(
+        `civ1-city:city/cost/unit-support-food/${UnitType.name}/${cost}`,
         new Criterion((city: City): boolean =>
           unitRegistry
             .getByCity(city)
@@ -73,6 +75,7 @@ export const getRules: (
   ),
 
   new Cost(
+    'civ1-city:city/cost/unit-support-production/anarchy-despotism',
     new Criterion((city: City): boolean =>
       playerGovernmentRegistry.getByPlayer(city.player()).is(Anarchy, Despotism)
     ),
@@ -105,6 +108,7 @@ export const getRules: (
   ),
 
   new Cost(
+    'civ1-city:city/cost/unit-support-production/communism-democracy-monarchy-republic',
     new Criterion((city: City): boolean =>
       playerGovernmentRegistry
         .getByPlayer(city.player())

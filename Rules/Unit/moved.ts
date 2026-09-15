@@ -18,6 +18,7 @@ export const getRules = (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Moved[] => [
   new Moved(
+    'civ1-city:unit/moved/release-occupied-worked-tile',
     new Criterion((unit: Unit): boolean => unit.moves().value() === 0),
     new Criterion((unit: Unit, action: Action): boolean =>
       workedTileRegistry.tileIsWorked(action.to())

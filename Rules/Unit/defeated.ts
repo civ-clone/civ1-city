@@ -25,6 +25,7 @@ export const getRules: (
   engine: Engine = engineInstance
 ): Defeated[] => [
   new Defeated(
+    'civ1-city:unit/defeated/shrink-defended-city',
     new Criterion(
       (defeated, by, action) =>
         action instanceof Attack &&
@@ -39,6 +40,7 @@ export const getRules: (
     })
   ),
   new Defeated(
+    'civ1-city:unit/defeated/emit',
     new Effect((defeated, by, action) =>
       engine.emit('unit:defeated', defeated, by, action)
     )

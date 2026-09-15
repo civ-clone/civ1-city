@@ -22,9 +22,11 @@ export const getRules = (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): CanBeWorked[] => [
   new CanBeWorked(
+    'civ1-city:city/can-be-worked/not-already-worked',
     new Effect((tile: Tile): boolean => !workedTileRegistry.tileIsWorked(tile))
   ),
   new CanBeWorked(
+    'civ1-city:city/can-be-worked/not-occupied-by-enemy',
     new Effect(
       (tile: Tile, city: City): boolean =>
         !unitRegistry
@@ -33,6 +35,7 @@ export const getRules = (
     )
   ),
   new CanBeWorked(
+    'civ1-city:city/can-be-worked/not-another-city',
     new Effect((tile: Tile, city: City): boolean => {
       const otherTileCity = cityRegistry.getByTile(tile);
 

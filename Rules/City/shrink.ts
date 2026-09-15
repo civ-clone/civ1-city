@@ -27,6 +27,7 @@ export const getRules: (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Shrink[] => [
   new Shrink(
+    'civ1-city:city/shrink/set-growth-cost',
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Effect((cityGrowth: CityGrowth): void =>
       cityGrowth.cost().set((cityGrowth.size() + 1) * 10, 'city-shrink')
@@ -34,6 +35,7 @@ export const getRules: (
   ),
 
   new Shrink(
+    'civ1-city:city/shrink/reduce-workers',
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
@@ -48,6 +50,7 @@ export const getRules: (
 
   // TODO: this needs to potentially be associated to an attacking user...
   new Shrink(
+    'civ1-city:city/shrink/destroy-empty-city',
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() <= 0),
     new Effect((cityGrowth: CityGrowth): void => cityGrowth.city().destroy())
   ),

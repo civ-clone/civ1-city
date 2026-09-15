@@ -12,7 +12,7 @@ const Priority_1 = require("@civ-clone/core-rule/Priority");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance) => [
-    new Yield_1.default(new Priorities_1.High(), new Effect_1.default((city, yields) => {
+    new Yield_1.default('civ1-city:city/yield/corruption', new Priorities_1.High(), new Effect_1.default((city, yields) => {
         // Corruption Formula: p223-224, Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
         const playerGovernment = playerGovernmentRegistry.getByPlayer(city.player()), [capital] = cityImprovementRegistry
             .filter((cityImprovement) => cityImprovement instanceof CityImprovements_1.Palace &&
@@ -41,7 +41,7 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
                     (10 * governmentModifier)), currentTrade)
             : 0, distanceFromCapital.toFixed(2));
     })),
-    new Yield_1.default(new Priority_1.default(0), // X High
+    new Yield_1.default('civ1-city:city/yield/worked-tiles', new Priority_1.default(0), // X High
     new Effect_1.default((city) => city
         .tilesWorked()
         .entries()

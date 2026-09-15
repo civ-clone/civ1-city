@@ -71,6 +71,7 @@ export const getRules: (
   ...([Irrigation, Road] as (typeof TileImprovement)[]).map(
     (TileImprovementType) =>
       new Created(
+        `civ1-city:city/created/add-improvement/${TileImprovementType.name}`,
         new Criterion((city: City) =>
           tileImprovementRegistry
             .getByTile(city.tile())
@@ -85,6 +86,7 @@ export const getRules: (
       )
   ),
   new Created(
+    'civ1-city:city/created/register-city-build',
     new Effect((city: City): void =>
       cityBuildRegistry.register(
         new CityBuild(city, availableBuildItemsRegistry, ruleRegistry)
@@ -92,17 +94,23 @@ export const getRules: (
     )
   ),
   new Created(
+    'civ1-city:city/created/register-city-growth',
     new Effect((city: City): void =>
       cityGrowthRegistry.register(new CityGrowth(city, ruleRegistry))
     )
   ),
-  new Created(new Effect((city: City): void => cityRegistry.register(city))),
   new Created(
+    'civ1-city:city/created/register',
+    new Effect((city: City): void => cityRegistry.register(city))
+  ),
+  new Created(
+    'civ1-city:city/created/emit',
     new Effect((city: City): void => {
       engine.emit('city:created', city);
     })
   ),
   new Created(
+    'civ1-city:city/created/work-city-tile',
     new Effect((city: City): void => {
       const existingWorkedTile = workedTileRegistry.getByTile(city.tile());
 

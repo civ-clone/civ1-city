@@ -21,6 +21,7 @@ export const getRules = (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): TileReassigned[] => [
   new TileReassigned(
+    'civ1-city:city/tile-reassigned/assign-workers',
     new Effect((city: City): void =>
       assignWorkers(
         city,

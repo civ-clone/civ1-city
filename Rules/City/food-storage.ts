@@ -12,6 +12,7 @@ export const getRules: (ruleRegistry?: RuleRegistry) => FoodStorage[] = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): FoodStorage[] => [
   new FoodStorage(
+    'civ1-city:city/food-storage/grow',
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
         cityGrowth.progress().value() >= cityGrowth.cost().value()
@@ -19,6 +20,7 @@ export const getRules: (ruleRegistry?: RuleRegistry) => FoodStorage[] = (
     new Effect((cityGrowth: CityGrowth): void => cityGrowth.grow())
   ),
   new FoodStorage(
+    'civ1-city:city/food-storage/exhausted',
     new Criterion(
       (cityGrowth: CityGrowth): boolean => cityGrowth.progress().value() < 0
     ),

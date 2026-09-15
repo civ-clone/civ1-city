@@ -10,6 +10,7 @@ export const getRules: (engine?: Engine) => BuildingComplete[] = (
   engine: Engine = engineInstance
 ): BuildingComplete[] => [
   new BuildingComplete(
+    'civ1-city:city/building-complete/emit',
     new Effect((cityBuild: CityBuild, built: any): void => {
       engine.emit('city:building-complete', cityBuild, built);
     })

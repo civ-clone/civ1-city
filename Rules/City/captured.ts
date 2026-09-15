@@ -51,16 +51,19 @@ export const getRules: (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Captured[] => [
   new Captured(
+    'civ1-city:city/captured/reset-build-progress',
     new Effect((capturedCity: City): void =>
       cityBuildRegistry.getByCity(capturedCity).progress().set(0)
     )
   ),
   new Captured(
+    'civ1-city:city/captured/shrink',
     new Effect((capturedCity: City): void =>
       cityGrowthRegistry.getByCity(capturedCity).shrink()
     )
   ),
   new Captured(
+    'civ1-city:city/captured/emit',
     new Effect(
       (capturedCity: City, capturingPlayer: Player, player: Player): void => {
         engine.emit('city:captured', capturedCity, capturingPlayer, player);
@@ -68,6 +71,7 @@ export const getRules: (
     )
   ),
   new Captured(
+    'civ1-city:city/captured/destroy-supported-units',
     new Effect((capturedCity: City): void =>
       unitRegistry
         .getByCity(capturedCity)
@@ -75,6 +79,7 @@ export const getRules: (
     )
   ),
   new Captured(
+    'civ1-city:city/captured/reassign-workers',
     new Effect((capturedCity: City): void =>
       reassignWorkers(
         capturedCity,

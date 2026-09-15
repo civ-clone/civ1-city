@@ -4,7 +4,10 @@ import Unit from '@civ-clone/core-unit/Unit';
 import Unsupported from '@civ-clone/core-unit/Rules/Unsupported';
 
 export const getRules = (): Unsupported[] => [
-  new Unsupported(new Effect((city: City, unit: Unit) => unit.destroy())),
+  new Unsupported(
+    'civ1-city:unit/unsupported/destroy',
+    new Effect((city: City, unit: Unit) => unit.destroy())
+  ),
 ];
 
 export default getRules;

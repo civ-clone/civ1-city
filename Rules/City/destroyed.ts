@@ -40,6 +40,7 @@ export const getRules: (
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
+    'civ1-city:city/destroyed/remove-irrigation',
     new Effect((city: City): void =>
       tileImprovementRegistry
         .getByTile(city.tile())
@@ -54,18 +55,21 @@ export const getRules: (
   ),
 
   new Destroyed(
+    'civ1-city:city/destroyed/emit',
     new Effect((city: City, player: Player | null): void => {
       engine.emit('city:destroyed', city, player);
     })
   ),
 
   new Destroyed(
+    'civ1-city:city/destroyed/destroy-supported-units',
     new Effect((city: City): void =>
       unitRegistry.getByCity(city).forEach((unit: Unit) => unit.destroy())
     )
   ),
 
   new Destroyed(
+    'civ1-city:city/destroyed/release-worked-tiles',
     new Effect((city: City): void =>
       workedTileRegistry
         .getByCity(city)

@@ -13,7 +13,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const ProcessYield_1 = require("@civ-clone/core-city/Rules/ProcessYield");
 const Unsupported_1 = require("@civ-clone/core-unit/Rules/Unsupported");
 const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
-    new ProcessYield_1.default(new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Food), new Effect_1.default((cityYield, city, cityYields) => {
+    new ProcessYield_1.default('civ1-city:city/process-yield/food', new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Food), new Effect_1.default((cityYield, city, cityYields) => {
         const cityGrowth = cityGrowthRegistry.getByCity(city), foodStorage = new Yields_2.FoodStorage(cityYield);
         cityYields.forEach((cityYield) => {
             if (!(cityYield instanceof Yields_2.UnitSupportFood) ||
@@ -30,7 +30,7 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRe
         cityGrowth.add(foodStorage);
         cityGrowth.check();
     })),
-    new ProcessYield_1.default(new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Effect_1.default((cityYield, city, cityYields) => {
+    new ProcessYield_1.default('civ1-city:city/process-yield/production', new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Effect_1.default((cityYield, city, cityYields) => {
         const cityBuild = cityBuildRegistry.getByCity(city), availableProduction = cityYield.clone();
         cityYields
             .filter((cityYield) => cityYield instanceof Yields_2.UnitSupportProduction)

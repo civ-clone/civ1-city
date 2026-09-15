@@ -4,6 +4,7 @@ import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 
 export const getRules: () => Cost[] = (): Cost[] => [
   new Cost(
+    'civ1-city:city/growth-cost/by-size',
     new Effect((cityGrowth: CityGrowth): number => 10 * (cityGrowth.size() + 1))
   ),
 ];

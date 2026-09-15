@@ -33,6 +33,7 @@ export const getRules: (
   playerGovernmentRegistry: PlayerGovernmentRegistry = playerGovernmentRegistryInstance
 ): YieldRule[] => [
   new YieldRule(
+    'civ1-city:city/yield/corruption',
     new High(),
     new Effect((city: City, yields: Yield[]) => {
       // Corruption Formula: p223-224, Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
@@ -85,6 +86,7 @@ export const getRules: (
   ),
 
   new YieldRule(
+    'civ1-city:city/yield/worked-tiles',
     new Priority(0), // X High
     new Effect((city: City) =>
       city

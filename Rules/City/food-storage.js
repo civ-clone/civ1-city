@@ -7,8 +7,8 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const FoodStorage_1 = require("@civ-clone/core-city-growth/Rules/FoodStorage");
 const FoodExhausted_1 = require("@civ-clone/core-city-growth/Rules/FoodExhausted");
 const getRules = (ruleRegistry = RuleRegistry_1.instance) => [
-    new FoodStorage_1.default(new Criterion_1.default((cityGrowth) => cityGrowth.progress().value() >= cityGrowth.cost().value()), new Effect_1.default((cityGrowth) => cityGrowth.grow())),
-    new FoodStorage_1.default(new Criterion_1.default((cityGrowth) => cityGrowth.progress().value() < 0), new Effect_1.default((cityGrowth) => {
+    new FoodStorage_1.default('civ1-city:city/food-storage/grow', new Criterion_1.default((cityGrowth) => cityGrowth.progress().value() >= cityGrowth.cost().value()), new Effect_1.default((cityGrowth) => cityGrowth.grow())),
+    new FoodStorage_1.default('civ1-city:city/food-storage/exhausted', new Criterion_1.default((cityGrowth) => cityGrowth.progress().value() < 0), new Effect_1.default((cityGrowth) => {
         ruleRegistry.process(FoodExhausted_1.default, cityGrowth);
     })),
 ];

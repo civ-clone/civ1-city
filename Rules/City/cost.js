@@ -14,17 +14,17 @@ const Units_1 = require("@civ-clone/civ1-unit/Units");
 const UnitSupportFood_1 = require("@civ-clone/base-city-yield-unit-support-food/UnitSupportFood");
 const UnitSupportProduction_1 = require("@civ-clone/base-city-yield-unit-support-production/UnitSupportProduction");
 const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => [
-    new Cost_1.default(new Effect_1.default((city) => new PopulationSupportFood_1.default(cityGrowthRegistry.getByCity(city).size() * 2))),
+    new Cost_1.default('civ1-city:city/cost/population-support-food', new Effect_1.default((city) => new PopulationSupportFood_1.default(cityGrowthRegistry.getByCity(city).size() * 2))),
     ...[
         [Units_1.Settlers, 1, Governments_1.Anarchy, Governments_1.Despotism],
         [Units_1.Settlers, 2, Governments_1.Communism, Governments_1.Democracy, Governments_1.Monarchy, Governments_1.Republic],
-    ].map(([UnitType, cost, ...governments]) => new Cost_1.default(new Criterion_1.default((city) => unitRegistry
+    ].map(([UnitType, cost, ...governments]) => new Cost_1.default(`civ1-city:city/cost/unit-support-food/${UnitType.name}/${cost}`, new Criterion_1.default((city) => unitRegistry
         .getByCity(city)
         .some((unit) => unit instanceof UnitType)), new Criterion_1.default((city) => playerGovernmentRegistry.getByPlayer(city.player()).is(...governments)), new Effect_1.default((city) => unitRegistry
         .getByCity(city)
         .filter((unit) => unit instanceof UnitType)
         .map((unit) => new UnitSupportFood_1.default(cost, unit))))),
-    new Cost_1.default(new Criterion_1.default((city) => playerGovernmentRegistry.getByPlayer(city.player()).is(Governments_1.Anarchy, Governments_1.Despotism)), new Criterion_1.default((city) => {
+    new Cost_1.default('civ1-city:city/cost/unit-support-production/anarchy-despotism', new Criterion_1.default((city) => playerGovernmentRegistry.getByPlayer(city.player()).is(Governments_1.Anarchy, Governments_1.Despotism)), new Criterion_1.default((city) => {
         const cityGrowth = cityGrowthRegistry.getByCity(city);
         return (unitRegistry
             .getByCity(city)
@@ -37,7 +37,7 @@ const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, playerGove
             .slice(cityGrowth.size())
             .map((unit) => new UnitSupportProduction_1.default(1, unit));
     })),
-    new Cost_1.default(new Criterion_1.default((city) => playerGovernmentRegistry
+    new Cost_1.default('civ1-city:city/cost/unit-support-production/communism-democracy-monarchy-republic', new Criterion_1.default((city) => playerGovernmentRegistry
         .getByPlayer(city.player())
         .is(Governments_1.Communism, Governments_1.Democracy, Governments_1.Monarchy, Governments_1.Republic)), new Effect_1.default((city) => unitRegistry
         .getByCity(city)
