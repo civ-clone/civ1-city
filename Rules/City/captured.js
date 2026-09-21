@@ -20,7 +20,15 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     new Captured_1.default('civ1-city:city/captured/destroy-supported-units', new Effect_1.default((capturedCity) => unitRegistry
         .getByCity(capturedCity)
         .forEach((unit) => unit.destroy()))),
-    new Captured_1.default('civ1-city:city/captured/reassign-workers', new Effect_1.default((capturedCity) => (0, assignWorkers_1.reassignWorkers)(capturedCity, playerWorldRegistry, cityGrowthRegistry, workedTileRegistry))),
+    new Captured_1.default('civ1-city:city/captured/reassign-workers', new Effect_1.default((capturedCity) => {
+        // `shrink` above destroys a size 1 `City`, which releases its tiles, and assigning any now would leave them held
+        // by a `City` that no longer exists. Checked here rather than as a `Criterion`: every `Criterion` is evaluated
+        // before any `Effect` runs, so one would still see the `City` as it was before `shrink`.
+        if (capturedCity.destroyed()) {
+            return;
+        }
+        (0, assignWorkers_1.reassignWorkers)(capturedCity, playerWorldRegistry, cityGrowthRegistry, workedTileRegistry);
+    })),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

@@ -10,10 +10,13 @@ import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
 import captured from '../Rules/City/captured';
+import WorkedTile from '@civ-clone/core-city/WorkedTile';
 import created from '../Rules/City/created';
+import destroyed from '../Rules/City/destroyed';
 import { expect } from 'chai';
 import setUpCity from './lib/setUpCity';
 import shrink from '../Rules/City/shrink';
+import tileReassigned from '../Rules/City/tile-reassigned';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 
@@ -48,7 +51,19 @@ describe('city:captured', (): void => {
       undefined,
       workedTileRegistry
     ),
+    ...destroyed(
+      tileImprovementRegistry,
+      cityRegistry,
+      undefined,
+      unitRegistry,
+      workedTileRegistry
+    ),
     ...shrink(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
+    ...tileReassigned(
+      playerWorldRegistry,
+      cityGrowthRegistry,
+      workedTileRegistry
+    ),
     ...unitCreated(unitRegistry),
     ...unitDestroyed(unitRegistry)
   );
@@ -127,5 +142,61 @@ describe('city:captured', (): void => {
     city.capture(enemy);
 
     expect(cityBuild.progress().value()).to.equal(0);
+  });
+
+  it('should not leave a destroyed `City` working any tiles', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      enemy = new Player();
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+
+    expect(workedTileRegistry.getByCity(city)).to.not.be.empty;
+
+    // Capturing a size 1 `City` shrinks it to nothing, which destroys it and
+    // releases its tiles: `reassign-workers` used to hand it its centre back.
+    city.capture(enemy);
+
+    expect(city.destroyed()).to.true;
+    expect(workedTileRegistry.getByCity(city)).to.be.empty;
+  });
+
+  it('should not give a destroyed `City` a tile when a new `City` is founded on its site', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      world = city.tile().map();
+
+    city.destroy();
+
+    // The centre tile a destroyed `City` was left holding before the fix
+    // above, as it would still be in an existing save.
+    workedTileRegistry.register(new WorkedTile(city.tile(), city));
+
+    const newCity = await setUpCity({
+      ruleRegistry,
+      tileImprovementRegistry,
+      cityGrowthRegistry,
+      playerWorldRegistry,
+      workedTileRegistry,
+      world,
+      tile: city.tile(),
+    });
+
+    // Founding takes the centre back and processes `TileReassigned` for the
+    // destroyed `City`, which used to give it the best tile that was left.
+    expect(workedTileRegistry.getByCity(city)).to.be.empty;
+    expect(workedTileRegistry.getByTile(city.tile())?.city()).to.equal(newCity);
   });
 });

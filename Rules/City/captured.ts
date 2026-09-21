@@ -80,14 +80,21 @@ export const getRules: (
   ),
   new Captured(
     'civ1-city:city/captured/reassign-workers',
-    new Effect((capturedCity: City): void =>
+    new Effect((capturedCity: City): void => {
+      // `shrink` above destroys a size 1 `City`, which releases its tiles, and assigning any now would leave them held
+      // by a `City` that no longer exists. Checked here rather than as a `Criterion`: every `Criterion` is evaluated
+      // before any `Effect` runs, so one would still see the `City` as it was before `shrink`.
+      if (capturedCity.destroyed()) {
+        return;
+      }
+
       reassignWorkers(
         capturedCity,
         playerWorldRegistry,
         cityGrowthRegistry,
         workedTileRegistry
-      )
-    )
+      );
+    })
   ),
 ];
 
