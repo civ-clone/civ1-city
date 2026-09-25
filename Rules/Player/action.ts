@@ -11,6 +11,7 @@ import {
   instance as cityRegistryInstance,
 } from '@civ-clone/core-city/CityRegistry';
 import Action from '@civ-clone/core-player/Rules/Action';
+import ChangeWorkedTile from '@civ-clone/core-city/PlayerActions/ChangeWorkedTile';
 import City from '@civ-clone/core-city/City';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import Criterion from '@civ-clone/core-rule/Criterion';
@@ -60,6 +61,19 @@ export const getRules: (
           .map(
             (cityBuild: CityBuild): ChangeProduction =>
               new ChangeProduction(player, cityBuild)
+          )
+      )
+    ),
+    new Action(
+      'civ1-city:player/action/change-worked-tile',
+      new Criterion(
+        (player: Player): boolean => cityRegistry.getByPlayer(player).length > 0
+      ),
+      new Effect((player: Player) =>
+        cityRegistry
+          .getByPlayer(player)
+          .map(
+            (city: City): ChangeWorkedTile => new ChangeWorkedTile(player, city)
           )
       )
     ),
