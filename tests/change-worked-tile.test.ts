@@ -6,6 +6,7 @@ import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistr
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import Tile from '@civ-clone/core-world/Tile';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
+import WorkedTile from '@civ-clone/core-city/WorkedTile';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
 import action from '../Rules/Player/action';
 import canBeWorked from '../Rules/City/can-be-worked';
@@ -13,7 +14,7 @@ import { changeWorkedTile } from '../lib/assignWorkers';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
 import grow from '../Rules/City/grow';
-import setUpCity from './lib/setUpCity';
+import setUpCity, { setUpCityOptions } from './lib/setUpCity';
 import tiles from '../Rules/City/tiles';
 
 describe('changeWorkedTile', () => {
@@ -31,17 +32,20 @@ describe('changeWorkedTile', () => {
         cityGrowthRegistry,
         workedTileRegistry
       ),
-    setUp = async (size: number) => {
-      const city = await setUpCity({
+    setUp = (size: number, options: setUpCityOptions = {}) =>
+      setUpCity({
+        ...options,
         size,
         ruleRegistry,
         cityGrowthRegistry,
         playerWorldRegistry,
         workedTileRegistry,
-      });
-
-      return city;
-    },
+      }),
+    // Tiles and cities reference their world, so compare them by position or id: a failing assertion would otherwise
+    //  print the whole object graph.
+    at = (tile: Tile): string => `${tile.x()},${tile.y()}`,
+    workedAt = (city: Awaited<ReturnType<typeof setUp>>): string[] =>
+      city.tilesWorked().entries().map(at),
     unworked = (city: Awaited<ReturnType<typeof setUp>>) =>
       city
         .tiles()
@@ -68,17 +72,27 @@ describe('changeWorkedTile', () => {
 
   it("is offered for each of a player's cities", async () => {
     const city = await setUp(1),
+      world = city.tile().map(),
+      secondCity = await setUp(1, {
+        player: city.player(),
+        world,
+        tile: world.get(0, 0),
+      }),
       actions = city
         .player()
         .actions()
         .filter((action) => action instanceof ChangeWorkedTile);
 
-    expect(actions.map((action) => action.value())).eql([city]);
+    expect(actions.map((action) => action.value().id())).members([
+      city.id(),
+      secondCity.id(),
+    ]);
+    expect(actions.length).equal(2);
     expect(
       new Player(ruleRegistry)
         .actions()
-        .filter((action) => action instanceof ChangeWorkedTile)
-    ).empty;
+        .filter((action) => action instanceof ChangeWorkedTile).length
+    ).equal(0);
   });
 
   it('takes the worker off a worked tile', async () => {
@@ -86,7 +100,7 @@ describe('changeWorkedTile', () => {
       [, worked] = city.tilesWorked().entries();
 
     expect(change(city, worked)).equal('removed');
-    expect(city.tilesWorked().entries()).not.include(worked);
+    expect(workedAt(city)).not.include(at(worked));
     expect(city.tilesWorked().length).equal(2);
   });
 
@@ -99,7 +113,7 @@ describe('changeWorkedTile', () => {
     const [target] = unworked(city).filter((tile) => tile !== worked);
 
     expect(change(city, target)).equal('added');
-    expect(city.tilesWorked().entries()).include(target);
+    expect(workedAt(city)).include(at(target));
     expect(city.tilesWorked().length).equal(3);
   });
 
@@ -109,7 +123,7 @@ describe('changeWorkedTile', () => {
 
     expect(change(city, target)).equal('reassigned');
     expect(city.tilesWorked().length).equal(3);
-    expect(city.tilesWorked().entries()).include(city.tile());
+    expect(workedAt(city)).include(at(city.tile()));
   });
 
   it('leaves the city centre, and tiles it cannot work, alone', async () => {
@@ -118,18 +132,24 @@ describe('changeWorkedTile', () => {
 
     change(city, worked);
 
-    const before = city.tilesWorked().entries(),
+    const before = workedAt(city),
       outside = city
         .tile()
         .getSurroundingArea(3)
         .entries()
         .find((tile: Tile) => !city.tiles().includes(tile)) as Tile,
-      otherCity = await setUp(1),
-      [, otherCitysTile] = otherCity.tilesWorked().entries();
+      // A free worker, but the tile is already worked by another city.
+      [otherCitysTile] = unworked(city).filter((tile) => tile !== worked),
+      otherCity = await setUp(1);
+
+    workedTileRegistry.register(new WorkedTile(otherCitysTile, otherCity));
 
     expect(change(city, city.tile())).equal('none');
     expect(change(city, outside)).equal('none');
     expect(change(city, otherCitysTile)).equal('none');
-    expect(city.tilesWorked().entries()).eql(before);
+    expect(workedTileRegistry.getByTile(otherCitysTile)?.city().id()).equal(
+      otherCity.id()
+    );
+    expect(workedAt(city)).eql(before);
   });
 });
