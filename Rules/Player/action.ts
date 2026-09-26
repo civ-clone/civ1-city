@@ -10,7 +10,12 @@ import {
   CityRegistry,
   instance as cityRegistryInstance,
 } from '@civ-clone/core-city/CityRegistry';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
 import Action from '@civ-clone/core-player/Rules/Action';
+import ChangeSpecialist from '@civ-clone/core-city/PlayerActions/ChangeSpecialist';
 import ChangeWorkedTile from '@civ-clone/core-city/PlayerActions/ChangeWorkedTile';
 import City from '@civ-clone/core-city/City';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
@@ -20,10 +25,12 @@ import Player from '@civ-clone/core-player/Player';
 
 export const getRules: (
   cityBuildRegistry?: CityBuildRegistry,
-  cityRegistry?: CityRegistry
+  cityRegistry?: CityRegistry,
+  specialistRegistry?: SpecialistRegistry
 ) => Action[] = (
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
-  cityRegistry: CityRegistry = cityRegistryInstance
+  cityRegistry: CityRegistry = cityRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
 ): Action[] => {
   return [
     new Action(
@@ -75,6 +82,20 @@ export const getRules: (
           .map(
             (city: City): ChangeWorkedTile => new ChangeWorkedTile(player, city)
           )
+      )
+    ),
+    new Action(
+      'civ1-city:player/action/change-specialist',
+      new Criterion((player: Player): boolean =>
+        cityRegistry
+          .getByPlayer(player)
+          .some((city: City) => specialistRegistry.getByCity(city).length > 0)
+      ),
+      new Effect((player: Player) =>
+        cityRegistry
+          .getByPlayer(player)
+          .flatMap((city: City) => specialistRegistry.getByCity(city))
+          .map((specialist) => new ChangeSpecialist(player, specialist))
       )
     ),
   ];

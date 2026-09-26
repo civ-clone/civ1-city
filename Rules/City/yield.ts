@@ -10,27 +10,40 @@ import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
 } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
-import { Corruption, Trade } from '../../Yields';
+import { Corruption, Gold, Luxuries, Research, Trade } from '../../Yields';
+import {
+  Entertainer,
+  Scientist,
+  TaxCollector,
+} from '@civ-clone/library-city/Specialists';
 import {
   PlayerGovernmentRegistry,
   instance as playerGovernmentRegistryInstance,
 } from '@civ-clone/core-government/PlayerGovernmentRegistry';
 import City from '@civ-clone/core-city/City';
+import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Government from '@civ-clone/core-government/Government';
 import { High } from '@civ-clone/core-rule/Priorities';
 import { Palace } from '@civ-clone/library-city/CityImprovements';
 import Priority from '@civ-clone/core-rule/Priority';
 import Yield from '@civ-clone/core-yield/Yield';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
+import Specialist from '@civ-clone/core-city/Specialist';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry,
-  playerGovernmentRegistry?: PlayerGovernmentRegistry
+  playerGovernmentRegistry?: PlayerGovernmentRegistry,
+  specialistRegistry?: SpecialistRegistry
 ) => YieldRule[] = (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
-  playerGovernmentRegistry: PlayerGovernmentRegistry = playerGovernmentRegistryInstance
+  playerGovernmentRegistry: PlayerGovernmentRegistry = playerGovernmentRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
 ): YieldRule[] => [
   new YieldRule(
     'civ1-city:city/yield/corruption',
@@ -107,6 +120,37 @@ export const getRules: (
           )
         )
     )
+  ),
+
+  // Each specialist gives 2 of its yield, before improvements: p46 (Table 4-1), Wilson, J.L & Emrich A. (1992). Sid
+  // Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing. The Marketplace, Bank, Library and
+  // University modifiers then take them to 3 and 4, as the table has it.
+  ...(
+    [
+      [Entertainer, Luxuries],
+      [TaxCollector, Gold],
+      [Scientist, Research],
+    ] as [typeof Specialist, typeof Yield][]
+  ).map(
+    ([SpecialistType, YieldType]) =>
+      new YieldRule(
+        `civ1-city:city/yield/specialist/${SpecialistType.name}`,
+        new Criterion((city: City): boolean =>
+          specialistRegistry
+            .getByCity(city)
+            .some((specialist) => specialist instanceof SpecialistType)
+        ),
+        new Effect(
+          (city: City): Yield =>
+            new YieldType(
+              specialistRegistry
+                .getByCity(city)
+                .filter((specialist) => specialist instanceof SpecialistType)
+                .length * 2,
+              SpecialistType.name
+            )
+        )
+      )
   ),
 ];
 

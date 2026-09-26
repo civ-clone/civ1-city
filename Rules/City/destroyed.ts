@@ -25,19 +25,25 @@ import {
   instance as workedTileRegistryInstance,
   WorkedTileRegistry,
 } from '@civ-clone/core-city/WorkedTileRegistry';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   cityRegistry?: CityRegistry,
   engine?: Engine,
   unitRegistry?: UnitRegistry,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry
 ) => Destroyed[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
   engine: Engine = engineInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
     'civ1-city:city/destroyed/remove-irrigation',
@@ -74,6 +80,15 @@ export const getRules: (
       workedTileRegistry
         .getByCity(city)
         .forEach((workedTile) => workedTileRegistry.unregister(workedTile))
+    )
+  ),
+
+  new Destroyed(
+    'civ1-city:city/destroyed/release-specialists',
+    new Effect((city: City): void =>
+      specialistRegistry
+        .getByCity(city)
+        .forEach((specialist) => specialistRegistry.unregister(specialist))
     )
   ),
 ];

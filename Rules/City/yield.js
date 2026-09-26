@@ -4,14 +4,17 @@ exports.getRules = void 0;
 const Governments_1 = require("@civ-clone/civ1-government/Governments");
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
 const Yields_1 = require("../../Yields");
+const Specialists_1 = require("@civ-clone/library-city/Specialists");
 const PlayerGovernmentRegistry_1 = require("@civ-clone/core-government/PlayerGovernmentRegistry");
+const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Priorities_1 = require("@civ-clone/core-rule/Priorities");
 const CityImprovements_1 = require("@civ-clone/library-city/CityImprovements");
 const Priority_1 = require("@civ-clone/core-rule/Priority");
+const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
-const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance) => [
+const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance) => [
     new Yield_1.default('civ1-city:city/yield/corruption', new Priorities_1.High(), new Effect_1.default((city, yields) => {
         // Corruption Formula: p223-224, Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
         const playerGovernment = playerGovernmentRegistry.getByPlayer(city.player()), [capital] = cityImprovementRegistry
@@ -51,6 +54,19 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
             .values()
             .map(([, provider]) => provider)
             .join('-')))))),
+    // Each specialist gives 2 of its yield, before improvements: p46 (Table 4-1), Wilson, J.L & Emrich A. (1992). Sid
+    // Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing. The Marketplace, Bank, Library and
+    // University modifiers then take them to 3 and 4, as the table has it.
+    ...[
+        [Specialists_1.Entertainer, Yields_1.Luxuries],
+        [Specialists_1.TaxCollector, Yields_1.Gold],
+        [Specialists_1.Scientist, Yields_1.Research],
+    ].map(([SpecialistType, YieldType]) => new Yield_1.default(`civ1-city:city/yield/specialist/${SpecialistType.name}`, new Criterion_1.default((city) => specialistRegistry
+        .getByCity(city)
+        .some((specialist) => specialist instanceof SpecialistType)), new Effect_1.default((city) => new YieldType(specialistRegistry
+        .getByCity(city)
+        .filter((specialist) => specialist instanceof SpecialistType)
+        .length * 2, SpecialistType.name)))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

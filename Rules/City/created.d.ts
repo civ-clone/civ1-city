@@ -8,6 +8,8 @@ import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
 import Created from '@civ-clone/core-city/Rules/Created';
+import { AvailableSpecialistRegistry } from '@civ-clone/core-city/AvailableSpecialistRegistry';
+import { SpecialistRegistry } from '@civ-clone/core-city/SpecialistRegistry';
 export declare const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   cityBuildRegistry?: CityBuildRegistry,
@@ -17,6 +19,8 @@ export declare const getRules: (
   ruleRegistry?: RuleRegistry,
   availableBuildItemsRegistry?: AvailableCityBuildItemsRegistry,
   engine?: Engine,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry,
+  availableSpecialistRegistry?: AvailableSpecialistRegistry
 ) => Created[];
 export default getRules;
