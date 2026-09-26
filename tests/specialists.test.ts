@@ -23,17 +23,33 @@ import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import SpecialistRegistry from '@civ-clone/core-city/SpecialistRegistry';
 import Tile from '@civ-clone/core-world/Tile';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import { Game } from '@civ-clone/core-game/Game';
 import action from '../Rules/Player/action';
 import created from '../Rules/City/created';
 import destroyed from '../Rules/City/destroyed';
 import { expect } from 'chai';
 import grow from '../Rules/City/grow';
+import register from '../registerRules';
+import registerAvailableSpecialists from '../registerAvailableSpecialists';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 import shrink from '../Rules/City/shrink';
 import tiles from '../Rules/City/tiles';
 import yieldRules from '../Rules/City/yield';
 
 describe('specialists', () => {
+  it("offers the three kinds in each game it's registered with, once", () => {
+    const game = new Game();
+
+    register(game);
+    registerAvailableSpecialists(game.availableSpecialists);
+
+    expect(game.availableSpecialists.entries()).eql([
+      Entertainer,
+      TaxCollector,
+      Scientist,
+    ]);
+  });
+
   const setUp = (
     size: number,
     { tilesAvailable = true }: { tilesAvailable?: boolean } = {},
@@ -47,7 +63,7 @@ describe('specialists', () => {
       specialistRegistry = new SpecialistRegistry(),
       availableSpecialistRegistry = new AvailableSpecialistRegistry();
 
-    availableSpecialistRegistry.register(Entertainer, TaxCollector, Scientist);
+    registerAvailableSpecialists(availableSpecialistRegistry);
 
     ruleRegistry.register(
       ...action(undefined, cityRegistry, specialistRegistry),

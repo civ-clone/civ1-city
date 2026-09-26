@@ -1,2 +1,1 @@
-import './registerAvailableSpecialists';
 import './registerRules';
