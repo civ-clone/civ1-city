@@ -18,8 +18,11 @@ import unitDefeated from './Rules/Unit/defeated';
 import unitMoved from './Rules/Unit/moved';
 import unitUnsupported from './Rules/Unit/unsupported';
 import { Game, defaultGame } from '@civ-clone/core-game';
+import registerAvailableSpecialists from './registerAvailableSpecialists';
 
-export const register = (game: Game): void =>
+export const register = (game: Game): void => {
+  registerAvailableSpecialists(game.availableSpecialists);
+
   game.rules.register(
     ...cityBuildingComplete(game.engine),
     ...cityCanBeWorked(game.cities, game.units, game.workedTiles),
@@ -96,6 +99,7 @@ export const register = (game: Game): void =>
     ...unitMoved(game.rules, game.workedTiles),
     ...unitUnsupported()
   );
+};
 
 // The plugin loader imports each package for this side effect. Until it passes
 // a `Game` of its own, dropping it would produce a game with silently absent
