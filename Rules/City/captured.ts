@@ -18,6 +18,14 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
+import {
+  AvailableSpecialistRegistry,
+  instance as availableSpecialistRegistryInstance,
+} from '@civ-clone/core-city/AvailableSpecialistRegistry';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
 import Captured from '@civ-clone/core-city/Rules/Captured';
 import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -40,7 +48,9 @@ export const getRules: (
   cityBuildRegistry?: CityBuildRegistry,
   engine?: Engine,
   playerWorldRegistry?: PlayerWorldRegistry,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry,
+  availableSpecialistRegistry?: AvailableSpecialistRegistry
 ) => Captured[] = (
   cityRegistry: CityRegistry = cityRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
@@ -48,7 +58,9 @@ export const getRules: (
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
   engine: Engine = engineInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): Captured[] => [
   new Captured(
     'civ1-city:city/captured/reset-build-progress',
@@ -92,7 +104,9 @@ export const getRules: (
         capturedCity,
         playerWorldRegistry,
         cityGrowthRegistry,
-        workedTileRegistry
+        workedTileRegistry,
+        specialistRegistry,
+        availableSpecialistRegistry
       );
     })
   ),

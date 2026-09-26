@@ -1,4 +1,8 @@
 import {
+  AvailableSpecialistRegistry,
+  instance as availableSpecialistRegistryInstance,
+} from '@civ-clone/core-city/AvailableSpecialistRegistry';
+import {
   CityGrowthRegistry,
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
@@ -6,29 +10,41 @@ import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
-import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
-import Criterion from '@civ-clone/core-rule/Criterion';
-import Effect from '@civ-clone/core-rule/Effect';
-import Grow from '@civ-clone/core-city-growth/Rules/Grow';
-import Tile from '@civ-clone/core-world/Tile';
-import assignWorkers, {
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
+import {
+  addSpecialist,
   assignWorker,
-  reduceWorkers,
-  sortTiles,
+  citizenCount,
+  releaseCitizens,
 } from '../../lib/assignWorkers';
 import {
   instance as workedTileRegistryInstance,
   WorkedTileRegistry,
 } from '@civ-clone/core-city/WorkedTileRegistry';
+import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
+import Criterion from '@civ-clone/core-rule/Criterion';
+import Effect from '@civ-clone/core-rule/Effect';
+import Grow from '@civ-clone/core-city-growth/Rules/Grow';
+
+// From a city's 21st citizen, new citizens are born as Entertainers: p240, Wilson, J.L & Emrich A. (1992). Sid Meier's
+// Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
+const largestWorkingSize = 20;
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry,
+  availableSpecialistRegistry?: AvailableSpecialistRegistry
 ) => Grow[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): Grow[] => [
   new Grow(
     'civ1-city:city/grow/empty-food-store',
@@ -44,27 +60,70 @@ export const getRules: (
     'civ1-city:city/grow/assign-worker',
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.city().tilesWorked().length < cityGrowth.size() + 1
+        cityGrowth.size() <= largestWorkingSize
+    ),
+    new Criterion(
+      (cityGrowth: CityGrowth): boolean =>
+        citizenCount(
+          cityGrowth.city(),
+          workedTileRegistry,
+          specialistRegistry
+        ) <
+        cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
       assignWorker(
         cityGrowth.city(),
         playerWorldRegistry,
         cityGrowthRegistry,
-        workedTileRegistry
+        workedTileRegistry,
+        specialistRegistry,
+        availableSpecialistRegistry
       )
     )
+  ),
+
+  new Grow(
+    'civ1-city:city/grow/born-entertainer',
+    new Criterion(
+      (cityGrowth: CityGrowth): boolean =>
+        cityGrowth.size() > largestWorkingSize
+    ),
+    new Criterion(
+      (cityGrowth: CityGrowth): boolean =>
+        citizenCount(
+          cityGrowth.city(),
+          workedTileRegistry,
+          specialistRegistry
+        ) <
+        cityGrowth.size() + 1
+    ),
+    new Effect((cityGrowth: CityGrowth): void => {
+      addSpecialist(
+        cityGrowth.city(),
+        specialistRegistry,
+        availableSpecialistRegistry
+      );
+    })
   ),
 
   new Grow(
     'civ1-city:city/grow/reduce-workers',
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.city().tilesWorked().length > cityGrowth.size() + 1
+        citizenCount(
+          cityGrowth.city(),
+          workedTileRegistry,
+          specialistRegistry
+        ) >
+        cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      reduceWorkers(cityGrowth.city(), cityGrowth).forEach((tile: Tile): void =>
-        workedTileRegistry.unregisterByTile(tile)
+      releaseCitizens(
+        cityGrowth.city(),
+        cityGrowth,
+        workedTileRegistry,
+        specialistRegistry
       )
     )
   ),

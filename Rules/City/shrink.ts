@@ -10,8 +10,11 @@ import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Shrink from '@civ-clone/core-city-growth/Rules/Shrink';
-import Tile from '@civ-clone/core-world/Tile';
-import { reduceWorkers } from '../../lib/assignWorkers';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
+import { citizenCount, releaseCitizens } from '../../lib/assignWorkers';
 import {
   instance as workedTileRegistryInstance,
   WorkedTileRegistry,
@@ -20,11 +23,13 @@ import {
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry
 ) => Shrink[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
 ): Shrink[] => [
   new Shrink(
     'civ1-city:city/shrink/set-growth-cost',
@@ -39,11 +44,19 @@ export const getRules: (
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.city().tilesWorked().length > cityGrowth.size() + 1
+        citizenCount(
+          cityGrowth.city(),
+          workedTileRegistry,
+          specialistRegistry
+        ) >
+        cityGrowth.size() + 1
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      reduceWorkers(cityGrowth.city(), cityGrowth).forEach((tile: Tile): void =>
-        workedTileRegistry.unregisterByTile(tile)
+      releaseCitizens(
+        cityGrowth.city(),
+        cityGrowth,
+        workedTileRegistry,
+        specialistRegistry
       )
     )
   ),
