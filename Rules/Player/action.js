@@ -4,11 +4,13 @@ exports.getRules = void 0;
 const PlayerActions_1 = require("@civ-clone/core-city-build/PlayerActions");
 const CityBuildRegistry_1 = require("@civ-clone/core-city-build/CityBuildRegistry");
 const CityRegistry_1 = require("@civ-clone/core-city/CityRegistry");
+const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const Action_1 = require("@civ-clone/core-player/Rules/Action");
+const ChangeSpecialist_1 = require("@civ-clone/core-city/PlayerActions/ChangeSpecialist");
 const ChangeWorkedTile_1 = require("@civ-clone/core-city/PlayerActions/ChangeWorkedTile");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
-const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityRegistry = CityRegistry_1.instance) => {
+const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityRegistry = CityRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance) => {
     return [
         new Action_1.default('civ1-city:player/action/choose-production', new Criterion_1.default((player) => cityRegistry
             .getByPlayer(player)
@@ -29,6 +31,12 @@ const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityRegistry
         new Action_1.default('civ1-city:player/action/change-worked-tile', new Criterion_1.default((player) => cityRegistry.getByPlayer(player).length > 0), new Effect_1.default((player) => cityRegistry
             .getByPlayer(player)
             .map((city) => new ChangeWorkedTile_1.default(player, city)))),
+        new Action_1.default('civ1-city:player/action/change-specialist', new Criterion_1.default((player) => cityRegistry
+            .getByPlayer(player)
+            .some((city) => specialistRegistry.getByCity(city).length > 0)), new Effect_1.default((player) => cityRegistry
+            .getByPlayer(player)
+            .flatMap((city) => specialistRegistry.getByCity(city))
+            .map((specialist) => new ChangeSpecialist_1.default(player, specialist)))),
     ];
 };
 exports.getRules = getRules;

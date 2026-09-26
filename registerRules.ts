@@ -30,7 +30,9 @@ export const register = (game: Game): void =>
       game.cityBuilds,
       game.engine,
       game.playerWorlds,
-      game.workedTiles
+      game.workedTiles,
+      game.specialists,
+      game.availableSpecialists
     ),
     ...cityCost(game.cityGrowth, game.playerGovernments, game.units),
     ...cityCreated(
@@ -42,18 +44,27 @@ export const register = (game: Game): void =>
       game.rules,
       game.availableCityBuildItems,
       game.engine,
-      game.workedTiles
+      game.workedTiles,
+      game.specialists,
+      game.availableSpecialists
     ),
     ...cityDestroyed(
       game.tileImprovements,
       game.cities,
       game.engine,
       game.units,
-      game.workedTiles
+      game.workedTiles,
+      game.specialists
     ),
     ...cityFoodExhausted(),
     ...cityFoodStorage(game.rules),
-    ...cityGrow(game.cityGrowth, game.playerWorlds, game.workedTiles),
+    ...cityGrow(
+      game.cityGrowth,
+      game.playerWorlds,
+      game.workedTiles,
+      game.specialists,
+      game.availableSpecialists
+    ),
     ...cityGrowthCost(),
     ...cityProcessYield(
       game.cityBuilds,
@@ -61,11 +72,26 @@ export const register = (game: Game): void =>
       game.units,
       game.rules
     ),
-    ...cityShrink(game.cityGrowth, game.playerWorlds, game.workedTiles),
+    ...cityShrink(
+      game.cityGrowth,
+      game.playerWorlds,
+      game.workedTiles,
+      game.specialists
+    ),
     ...cityTiles(),
-    ...cityTileReassigned(game.playerWorlds, game.cityGrowth, game.workedTiles),
-    ...cityYield(game.cityImprovements, game.playerGovernments),
-    ...playerAction(game.cityBuilds, game.cities),
+    ...cityTileReassigned(
+      game.playerWorlds,
+      game.cityGrowth,
+      game.workedTiles,
+      game.specialists,
+      game.availableSpecialists
+    ),
+    ...cityYield(
+      game.cityImprovements,
+      game.playerGovernments,
+      game.specialists
+    ),
+    ...playerAction(game.cityBuilds, game.cities, game.specialists),
     ...unitDefeated(game.cities, game.cityGrowth, game.engine),
     ...unitMoved(game.rules, game.workedTiles),
     ...unitUnsupported()

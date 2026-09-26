@@ -4,11 +4,13 @@ import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileIm
 import { UnitRegistry } from '@civ-clone/core-unit/UnitRegistry';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import { SpecialistRegistry } from '@civ-clone/core-city/SpecialistRegistry';
 export declare const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   cityRegistry?: CityRegistry,
   engine?: Engine,
   unitRegistry?: UnitRegistry,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry
 ) => Destroyed[];
 export default getRules;

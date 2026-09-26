@@ -1,12 +1,16 @@
 export {
-  getHighestValueCityTiles,
-  sortTiles,
-  getHighestValueAvailableCityTiles,
-  reassignWorkers,
-  assignWorkers,
+  addSpecialist,
   assignWorker,
-  reduceWorkers,
+  assignWorkers,
+  changeSpecialist,
   changeWorkedTile,
+  citizenCount,
+  getHighestValueAvailableCityTiles,
+  getHighestValueCityTiles,
+  reassignWorkers,
+  reduceWorkers,
+  releaseCitizens,
+  sortTiles,
   WorkedTileChange,
 } from '@civ-clone/library-city/lib/assignWorkers';
 

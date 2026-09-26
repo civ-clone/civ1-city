@@ -10,6 +10,14 @@ import {
   WorkedTileRegistry,
   instance as workedTileRegistryInstance,
 } from '@civ-clone/core-city/WorkedTileRegistry';
+import {
+  AvailableSpecialistRegistry,
+  instance as availableSpecialistRegistryInstance,
+} from '@civ-clone/core-city/AvailableSpecialistRegistry';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -19,7 +27,9 @@ import assignWorkers from '../../lib/assignWorkers';
 export const getRules = (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): TileReassigned[] => [
   new TileReassigned(
     'civ1-city:city/tile-reassigned/assign-workers',
@@ -31,7 +41,9 @@ export const getRules = (
         city,
         playerWorldRegistry,
         cityGrowthRegistry,
-        workedTileRegistry
+        workedTileRegistry,
+        specialistRegistry,
+        availableSpecialistRegistry
       )
     )
   ),

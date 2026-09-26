@@ -46,6 +46,14 @@ import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import TileReassigned from '@civ-clone/core-city/Rules/TileReassigned';
 import WorkedTile from '@civ-clone/core-city/WorkedTile';
 import assignWorkers from '../../lib/assignWorkers';
+import {
+  AvailableSpecialistRegistry,
+  instance as availableSpecialistRegistryInstance,
+} from '@civ-clone/core-city/AvailableSpecialistRegistry';
+import {
+  SpecialistRegistry,
+  instance as specialistRegistryInstance,
+} from '@civ-clone/core-city/SpecialistRegistry';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -56,7 +64,9 @@ export const getRules: (
   ruleRegistry?: RuleRegistry,
   availableBuildItemsRegistry?: AvailableCityBuildItemsRegistry,
   engine?: Engine,
-  workedTileRegistry?: WorkedTileRegistry
+  workedTileRegistry?: WorkedTileRegistry,
+  specialistRegistry?: SpecialistRegistry,
+  availableSpecialistRegistry?: AvailableSpecialistRegistry
 ) => Created[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityBuildRegistry: CityBuildRegistry = cityBuildRegistryInstance,
@@ -66,7 +76,9 @@ export const getRules: (
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   availableBuildItemsRegistry: AvailableCityBuildItemsRegistry = availableCityBuildItemsRegistryInstance,
   engine: Engine = engineInstance,
-  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance
+  workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): Created[] => [
   ...([Irrigation, Road] as (typeof TileImprovement)[]).map(
     (TileImprovementType) =>
@@ -134,7 +146,9 @@ export const getRules: (
         city,
         playerWorldRegistry,
         cityGrowthRegistry,
-        workedTileRegistry
+        workedTileRegistry,
+        specialistRegistry,
+        availableSpecialistRegistry
       );
     })
   ),

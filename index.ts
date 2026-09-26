@@ -1,1 +1,2 @@
+import './registerAvailableSpecialists';
 import './registerRules';
