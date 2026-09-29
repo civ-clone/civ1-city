@@ -17,6 +17,8 @@ import Player from '@civ-clone/core-player/Player';
 import Action from '@civ-clone/core-unit/Action';
 import Moved from '@civ-clone/core-unit/Rules/Moved';
 import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
+import Effect from '@civ-clone/core-rule/Effect';
+import High from '@civ-clone/core-rule/Priorities/High';
 import WorkedTile from '@civ-clone/core-city/WorkedTile';
 import { citizenCount } from '../lib/assignWorkers';
 import { instance as cityGrowthRegistryInstance } from '@civ-clone/core-city-growth/CityGrowthRegistry';
@@ -212,7 +214,7 @@ describe('City.workedTiles', () => {
     expect(city.tilesWorked().entries()).include(city.tile());
   });
 
-  it('should release worked `Tile`s occupied by an enemy `Unit` at the start of the turn, and offer them again once it has left', async () => {
+  it('should release worked `Tile`s occupied by an enemy `Unit` at the start of the turn, before the yields are processed, and offer them again once it has left', async () => {
     const city = await setUpCity({
         size: 3,
         ruleRegistry,
@@ -222,28 +224,67 @@ describe('City.workedTiles', () => {
         .tiles()
         .entries()
         .filter((tile) => !workedTileRegistry.tileIsWorked(tile)),
-      unit = new Warrior(
-        null,
-        new Player(ruleRegistry),
-        freeTile,
+      enemy = new Player(ruleRegistry),
+      unit = new Warrior(null, enemy, freeTile, ruleRegistry),
+      // Neither of these is released: a `City` always works its centre, and its own `Unit`s don't block it.
+      enemyOnCentre = new Warrior(null, enemy, city.tile(), ruleRegistry),
+      [friendlyTile] = city
+        .tilesWorked()
+        .entries()
+        .filter((tile) => tile !== city.tile()),
+      friendlyUnit = new Warrior(
+        city,
+        city.player(),
+        friendlyTile,
         ruleRegistry
       );
 
+    let workedWhenYieldsProcessed: boolean | null = null;
+
+    // Stands in for `civ1-player:player/turn-start/process-city-yields`, which is `High`.
+    ruleRegistry.register(
+      new TurnStart(
+        new High(),
+        new Effect((player: Player): void => {
+          if (player === city.player()) {
+            workedWhenYieldsProcessed =
+              workedTileRegistry.getByTile(freeTile)?.city() === city;
+          }
+        })
+      )
+    );
+
     // A worked `Tile` with an enemy `Unit` already on it, as a loaded game can have: no `Moved` rule has run.
-    unitRegistry.register(unit);
+    unitRegistry.register(unit, enemyOnCentre, friendlyUnit);
     workedTileRegistry.unregister(
       workedTileRegistry
         .getByCity(city)
-        .find((workedTile) => workedTile.tile() !== city.tile())!
+        .find(
+          (workedTile) =>
+            workedTile.tile() !== city.tile() &&
+            workedTile.tile() !== friendlyTile
+        )!
     );
     workedTileRegistry.register(new WorkedTile(freeTile, city));
 
     expect(city.tilesWorked().entries()).include(freeTile);
 
+    // Released and taken straight back would look the same by `Tile`, so compare the `WorkedTile`s themselves.
+    const centreWorkedTile = workedTileRegistry.getByTile(city.tile()),
+      friendlyWorkedTile = workedTileRegistry.getByTile(friendlyTile);
+
     ruleRegistry.process(TurnStart, city.player());
 
+    expect(workedWhenYieldsProcessed).to.equal(false);
     expect(city.tilesWorked().entries()).not.include(freeTile);
-    expect(city.tilesWorked().entries()).include(city.tile());
+    expect(
+      workedTileRegistry.getByTile(city.tile()) === centreWorkedTile,
+      'the centre was released'
+    ).to.be.true;
+    expect(
+      workedTileRegistry.getByTile(friendlyTile) === friendlyWorkedTile,
+      'the tile under a friendly unit was released'
+    ).to.be.true;
     expect(citizenCount(city, workedTileRegistry)).to.equal(
       cityGrowthRegistryInstance.getByCity(city).size() + 1
     );
