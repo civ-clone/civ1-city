@@ -14,6 +14,7 @@ import cityTileReassigned from './Rules/City/tile-reassigned';
 import cityTiles from './Rules/City/tiles';
 import cityYield from './Rules/City/yield';
 import playerAction from './Rules/Player/action';
+import playerTurnStart from './Rules/Player/turn-start';
 import unitDefeated from './Rules/Unit/defeated';
 import unitMoved from './Rules/Unit/moved';
 import unitUnsupported from './Rules/Unit/unsupported';
@@ -95,6 +96,7 @@ export const register = (game: Game): void => {
       game.specialists
     ),
     ...playerAction(game.cityBuilds, game.cities, game.specialists),
+    ...playerTurnStart(game.cities, game.units, game.workedTiles, game.rules),
     ...unitDefeated(game.cities, game.cityGrowth, game.engine),
     ...unitMoved(game.rules, game.workedTiles),
     ...unitUnsupported()

@@ -19,22 +19,21 @@ export const getRules = (
 ): Moved[] => [
   new Moved(
     'civ1-city:unit/moved/release-occupied-worked-tile',
-    new Criterion((unit: Unit): boolean => unit.moves().value() === 0),
     new Criterion((unit: Unit, action: Action): boolean =>
       workedTileRegistry.tileIsWorked(action.to())
     ),
     new Criterion((unit: Unit, action: Action): boolean => {
-      const workedTile = workedTileRegistry.getByTile(action.to())!;
+      const workedTile = workedTileRegistry.getByTile(action.to())!,
+        city = workedTile.city();
 
-      // If this isn't an enemy `Player` we don't care.
-      if (workedTile.city().player() === unit.player()) {
+      // A `City` always works its own centre, even while a `Unit` capturing it is moving in.
+      if (workedTile.tile() === city.tile()) {
         return false;
       }
 
-      return !workedTileRegistry.tileCanBeWorkedBy(
-        workedTile.tile(),
-        workedTile.city()
-      );
+      // Released whether or not the `Unit` has moves left: one that stops here to fortify, sleep or wait still occupies
+      // the `Tile`.
+      return city.player() !== unit.player();
     }),
     new Effect((unit: Unit, action: Action) => {
       const workedTile = workedTileRegistry.getByTile(action.to())!;
