@@ -180,9 +180,9 @@ describe('city:cost', (): void => {
       [Anarchy, 0, 6, 6, 8, true],
       [Communism, 1, 1, 1, 1, true],
       [Democracy, 0, 0, 0, 0, true],
-      [Despotism, 0, 4, 4, 5, true],
+      [Despotism, 0, 4, 4, 6, true],
       [Monarchy, 0, 3, 3, 4, true],
-      [Republic, 0, 2, 2, 2, true],
+      [Republic, 0, 2, 2, 3, true],
 
       [Anarchy, 8, 8, 8, 8, false],
       [Communism, 1, 1, 1, 1, false],
@@ -256,6 +256,82 @@ describe('city:cost', (): void => {
         expect(actualCity1Corruption).equal(-city1Corruption);
         expect(actualCity2Corruption).equal(-city2Corruption);
         expect(actualCity3Corruption).equal(-city3Corruption);
+      })
+  );
+
+  (
+    [
+      // A destroyed Palace in a captured city is no one's capital, even when it's the first Palace registered.
+      [false, 6, 6, 6, 6],
+      [true, 0, 4, 4, 6],
+    ] as [boolean, number, number, number, number][]
+  ).forEach(
+    ([
+      hasCapital,
+      capitalCorruption,
+      city1Corruption,
+      city2Corruption,
+      city3Corruption,
+    ]) =>
+      it(`should ignore a destroyed Palace ${
+        hasCapital ? 'alongside a capital city' : 'without a capital city'
+      }`, async (): Promise<void> => {
+        const world = await generateWorld(
+            generateGenerator(50, 50, Grassland),
+            ruleRegistry
+          ),
+          capital = await setUpCity({
+            playerWorldRegistry,
+            ruleRegistry,
+            tile: world.get(2, 2),
+            world,
+          }),
+          otherCity1 = await setUpCity({
+            player: capital.player(),
+            playerWorldRegistry,
+            ruleRegistry,
+            tile: world.get(22, 4),
+            world,
+          }),
+          otherCity2 = await setUpCity({
+            player: capital.player(),
+            playerWorldRegistry,
+            ruleRegistry,
+            tile: world.get(4, 22),
+            world,
+          }),
+          otherCity3 = await setUpCity({
+            player: capital.player(),
+            playerWorldRegistry,
+            ruleRegistry,
+            tile: world.get(22, 22),
+            world,
+          }),
+          capturedPalace = new Palace(otherCity3, ruleRegistry);
+
+        capturedPalace.destroy();
+        cityImprovementRegistry.register(capturedPalace);
+
+        if (hasCapital) {
+          cityImprovementRegistry.register(new Palace(capital, ruleRegistry));
+        }
+
+        playerGovernmentRegistry
+          .getByPlayer(capital.player())
+          .set(new Despotism());
+
+        expect(reduceYield(capital.yields(), Corruption)).equal(
+          -capitalCorruption
+        );
+        expect(reduceYield(otherCity1.yields(), Corruption)).equal(
+          -city1Corruption
+        );
+        expect(reduceYield(otherCity2.yields(), Corruption)).equal(
+          -city2Corruption
+        );
+        expect(reduceYield(otherCity3.yields(), Corruption)).equal(
+          -city3Corruption
+        );
       })
   );
 });

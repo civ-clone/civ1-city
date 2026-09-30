@@ -13,19 +13,22 @@ const CityImprovements_1 = require("@civ-clone/library-city/CityImprovements");
 const Priority_1 = require("@civ-clone/core-rule/Priority");
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
+const civ1Distance_1 = require("@civ-clone/civ1-world/lib/civ1Distance");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance) => [
     new Yield_1.default('civ1-city:city/yield/corruption', new Priorities_1.High(), new Effect_1.default((city, yields) => {
         // Corruption Formula: p223-224, Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing
         const playerGovernment = playerGovernmentRegistry.getByPlayer(city.player()), [capital] = cityImprovementRegistry
             .filter((cityImprovement) => cityImprovement instanceof CityImprovements_1.Palace &&
+            // A Palace is destroyed when its city is captured, but stays registered: it's no one's capital.
+            !cityImprovement.destroyed() &&
             city.player() === cityImprovement.city().player())
             .map((cityImprovement) => cityImprovement.city()), currentTrade = (0, reduceYields_1.reduceYield)(yields, Yields_1.Trade), distanceFromCapital = playerGovernment.is(Governments_1.Communism)
             ? 10
             : playerGovernment.is(Governments_1.Democracy)
                 ? 0
                 : capital
-                    ? capital.tile().distanceFrom(city.tile())
+                    ? (0, civ1Distance_1.default)(capital.tile(), city.tile())
                     : 32, 
         // These values could be provided by `Rule`s to allow other government types to be created
         [governmentModifier] = [

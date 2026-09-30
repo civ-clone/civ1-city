@@ -34,6 +34,7 @@ import {
 } from '@civ-clone/core-city/SpecialistRegistry';
 import Specialist from '@civ-clone/core-city/Specialist';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
+import civ1Distance from '@civ-clone/civ1-world/lib/civ1Distance';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 export const getRules: (
@@ -57,6 +58,8 @@ export const getRules: (
           .filter(
             (cityImprovement) =>
               cityImprovement instanceof Palace &&
+              // A Palace is destroyed when its city is captured, but stays registered: it's no one's capital.
+              !cityImprovement.destroyed() &&
               city.player() === cityImprovement.city().player()
           )
           .map((cityImprovement) => cityImprovement.city()),
@@ -66,7 +69,7 @@ export const getRules: (
           : playerGovernment.is(Democracy)
           ? 0
           : capital
-          ? capital.tile().distanceFrom(city.tile())
+          ? civ1Distance(capital.tile(), city.tile())
           : 32,
         // These values could be provided by `Rule`s to allow other government types to be created
         [governmentModifier] = (
