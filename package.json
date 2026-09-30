@@ -11,13 +11,14 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run ts:compile && npm run prettier:format",
-    "prettier:check": "prettier --config .prettierrc '**/*.ts'",
+    "prettier:check": "prettier --config .prettierrc --check '**/*.ts'",
     "prettier:format": "prettier --config .prettierrc '**/*.ts' --write",
     "test": "ts-mocha ./tests/*.test.ts",
     "test:coverage": "c8 --all -x '**/*.ts' -x 'index.*' -x 'register*.*' ts-mocha ./tests/*.test.ts",
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/base-city-improvement-palace": "^0.1.0",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
     "@civ-clone/base-city-yield-unit-support-food": "^0.1.2",
     "@civ-clone/base-city-yield-unit-support-production": "^0.1.2",
