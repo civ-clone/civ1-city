@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@civ-clone/base-city-improvement-palace": "^0.1.0",
+    "@civ-clone/base-unit-action-incite-revolt": "^0.1.0",
     "@civ-clone/core-terrain": "^0.1.3",
     "@civ-clone/core-terrain-feature": "^0.1.4",
     "@civ-clone/core-unit-improvement": "^0.1.3",
