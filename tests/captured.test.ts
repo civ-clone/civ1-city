@@ -10,6 +10,8 @@ import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
 import captured from '../Rules/City/captured';
+import InciteRevolt from '@civ-clone/base-unit-action-incite-revolt/InciteRevolt';
+import defectingUnits from '@civ-clone/civ1-unit/Rules/City/captured';
 import WorkedTile from '@civ-clone/core-city/WorkedTile';
 import created from '../Rules/City/created';
 import destroyed from '../Rules/City/destroyed';
@@ -65,7 +67,9 @@ describe('city:captured', (): void => {
       workedTileRegistry
     ),
     ...unitCreated(unitRegistry),
-    ...unitDestroyed(unitRegistry)
+    ...unitDestroyed(unitRegistry),
+    // civ1-unit's, which brings an incited city's units over.
+    ...defectingUnits(cityRegistry, unitRegistry, cityGrowthRegistry)
   );
 
   it('should cause a city to lose a population point', async (): Promise<void> => {
@@ -195,6 +199,34 @@ describe('city:captured', (): void => {
     expect(loyal.destroyed()).to.true;
 
     unitRegistry.unregister(defector, loyal);
+  });
+
+  it('should keep the units an incited city of size 1 brings over, though the city is destroyed', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      enemy = new Player(),
+      garrison = new Warrior(city, city.player(), city.tile(), ruleRegistry),
+      // Only the cause's class matters to the rules.
+      incite = Object.create(InciteRevolt.prototype);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+    unitRegistry.register(garrison);
+
+    city.capture(enemy, incite);
+
+    expect(city.destroyed()).to.true;
+    expect(garrison.destroyed()).to.false;
+    expect(garrison.player()).to.equal(enemy);
+    expect(garrison.city()).to.null;
+
+    unitRegistry.unregister(garrison);
   });
 
   it('should not give a destroyed `City` a tile when a new `City` is founded on its site', async (): Promise<void> => {
