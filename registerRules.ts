@@ -58,7 +58,8 @@ export const register = (game: Game): void => {
       game.engine,
       game.units,
       game.workedTiles,
-      game.specialists
+      game.specialists,
+      game.tradeRoutes
     ),
     ...cityFoodExhausted(),
     ...cityFoodStorage(game.rules),
@@ -93,7 +94,8 @@ export const register = (game: Game): void => {
     ...cityYield(
       game.cityImprovements,
       game.playerGovernments,
-      game.specialists
+      game.specialists,
+      game.tradeRoutes
     ),
     ...playerAction(game.cityBuilds, game.cities, game.specialists),
     ...playerTurnStart(game.cities, game.units, game.workedTiles, game.rules),
