@@ -14,6 +14,10 @@ import {
   UnitRegistry,
   instance as unitRegistryInstance,
 } from '@civ-clone/core-unit/UnitRegistry';
+import {
+  TradeRouteRegistry,
+  instance as tradeRouteRegistryInstance,
+} from '@civ-clone/core-city/TradeRouteRegistry';
 import City from '@civ-clone/core-city/City';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -36,14 +40,16 @@ export const getRules: (
   engine?: Engine,
   unitRegistry?: UnitRegistry,
   workedTileRegistry?: WorkedTileRegistry,
-  specialistRegistry?: SpecialistRegistry
+  specialistRegistry?: SpecialistRegistry,
+  tradeRouteRegistry?: TradeRouteRegistry
 ) => Destroyed[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
   engine: Engine = engineInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
-  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  tradeRouteRegistry: TradeRouteRegistry = tradeRouteRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
     'civ1-city:city/destroyed/remove-irrigation',
@@ -89,6 +95,18 @@ export const getRules: (
       specialistRegistry
         .getByCity(city)
         .forEach((specialist) => specialistRegistry.unregister(specialist))
+    )
+  ),
+
+  // A destroyed city is cleared from every route, both the ones it held and the ones held to it (v474.05
+  //  `Segment_1ade.cs` `F0_1ade_018e`, civ-clone/web-renderer#57).
+  new Destroyed(
+    'civ1-city:city/destroyed/remove-trade-routes',
+    new Effect((city: City): void =>
+      tradeRouteRegistry.unregister(
+        ...tradeRouteRegistry.getByCity(city),
+        ...tradeRouteRegistry.getByPartner(city)
+      )
     )
   ),
 ];

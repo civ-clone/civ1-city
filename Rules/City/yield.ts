@@ -32,7 +32,16 @@ import {
   SpecialistRegistry,
   instance as specialistRegistryInstance,
 } from '@civ-clone/core-city/SpecialistRegistry';
+import {
+  TradeRouteRegistry,
+  instance as tradeRouteRegistryInstance,
+} from '@civ-clone/core-city/TradeRouteRegistry';
+import {
+  baseTrade,
+  computingBaseTrade,
+} from '@civ-clone/civ1-unit/lib/baseTrade';
 import Specialist from '@civ-clone/core-city/Specialist';
+import TradeRoute from '@civ-clone/core-city/TradeRoute';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
 import civ1Distance from '@civ-clone/civ1-world/lib/civ1Distance';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
@@ -40,11 +49,13 @@ import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry,
   playerGovernmentRegistry?: PlayerGovernmentRegistry,
-  specialistRegistry?: SpecialistRegistry
+  specialistRegistry?: SpecialistRegistry,
+  tradeRouteRegistry?: TradeRouteRegistry
 ) => YieldRule[] = (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
   playerGovernmentRegistry: PlayerGovernmentRegistry = playerGovernmentRegistryInstance,
-  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  tradeRouteRegistry: TradeRouteRegistry = tradeRouteRegistryInstance
 ): YieldRule[] => [
   new YieldRule(
     'civ1-city:city/yield/corruption',
@@ -123,6 +134,36 @@ export const getRules: (
           )
         )
     )
+  ),
+
+  // Each trade route adds (the partner's base trade + the city's trade so far + 4) / 8, or / 16 when the partner has
+  //  the same owner, in route order, so each builds on the last (v474.05 `CityWorker.cs` L1268-L1300,
+  //  civ-clone/web-renderer#57). After the worked tiles and before corruption, which is then worked out on the total.
+  //  Left out while a partner's `baseTrade` is being worked out, so two cities routed to each other don't recurse.
+  new YieldRule(
+    'civ1-city:city/yield/trade-routes',
+    new Priority(500),
+    new Criterion((): boolean => !computingBaseTrade()),
+    new Criterion(
+      (city: City): boolean => tradeRouteRegistry.getByCity(city).length > 0
+    ),
+    new Effect((city: City, yields: Yield[]): Yield[] => {
+      let total = reduceYield(yields, Trade);
+
+      return tradeRouteRegistry
+        .getByCity(city)
+        .map((route: TradeRoute): Yield => {
+          const partner = route.to(),
+            value = Math.floor(
+              (baseTrade(partner) + total + 4) /
+                (partner.player() === city.player() ? 16 : 8)
+            );
+
+          total += value;
+
+          return new Trade(value, partner.id());
+        });
+    })
   ),
 
   // Each specialist gives 2 of its yield, before improvements: p46 (Table 4-1), Wilson, J.L & Emrich A. (1992). Sid
