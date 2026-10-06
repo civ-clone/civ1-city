@@ -13,7 +13,12 @@ import {
   UnitSupportFood,
   UnitSupportProduction,
 } from '../Yields';
-import { Settlers, Warrior } from '@civ-clone/civ1-unit/Units';
+import {
+  Caravan,
+  Diplomat,
+  Settlers,
+  Warrior,
+} from '@civ-clone/civ1-unit/Units';
 import {
   generateGenerator,
   generateWorld,
@@ -172,6 +177,56 @@ describe('city:cost', (): void => {
         unitSupportProduction.value(),
         `expected to cost ${expectedCost} for 2 Warriors under ${TargetGovernment.name}`
       ).to.equal(-expectedCost);
+    });
+  });
+
+  it('should not cost Production to support Caravans or Diplomats, or count them against free units', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+      }),
+      playerGovernment = playerGovernmentRegistry.getByPlayer(city.player());
+
+    // Size 1, so under Anarchy and Despotism the Warrior is the city's one free unit.
+    new Warrior(city, city.player(), city.tile(), ruleRegistry);
+    new Caravan(city, city.player(), city.tile(), ruleRegistry);
+    new Diplomat(city, city.player(), city.tile(), ruleRegistry);
+
+    (
+      [
+        [Anarchy, 0],
+        [Communism, 1],
+        [Democracy, 1],
+        [Despotism, 0],
+        [Monarchy, 1],
+        [Republic, 1],
+      ] as [typeof Government, number][]
+    ).forEach(([TargetGovernment, expectedCost]): void => {
+      playerGovernment.set(new TargetGovernment());
+
+      const unitSupportProduction = city
+        .yields()
+        .filter((cityYield) => cityYield instanceof UnitSupportProduction);
+
+      expect(
+        unitSupportProduction.reduce(
+          (total, cityYield) => total + cityYield.value(),
+          0
+        ),
+        `expected to cost ${expectedCost} under ${TargetGovernment.name}`
+      ).to.equal(-expectedCost);
+      expect(
+        unitSupportProduction.every(
+          (cityYield) =>
+            (cityYield as UnitSupportProduction).unit() instanceof Warrior
+        )
+      ).to.true;
+      expect(
+        city
+          .yields()
+          .filter((cityYield) => cityYield instanceof UnitSupportFood)
+      ).to.be.empty;
     });
   });
 

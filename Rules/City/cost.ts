@@ -1,4 +1,10 @@
-import { Air, Fortifiable, Naval, Worker } from '@civ-clone/civ1-unit/Types';
+import {
+  Air,
+  Diplomatic,
+  Fortifiable,
+  Naval,
+  Worker,
+} from '@civ-clone/civ1-unit/Types';
 import {
   Anarchy,
   Communism,
@@ -30,6 +36,13 @@ import Unit from '@civ-clone/core-unit/Unit';
 import UnitSupportFood from '@civ-clone/base-city-yield-unit-support-food/UnitSupportFood';
 import UnitSupportProduction from '@civ-clone/base-city-yield-unit-support-production/UnitSupportProduction';
 import Yield from '@civ-clone/core-yield/Yield';
+
+// Diplomats and Caravans cost no shield under any government, and don't use up a free unit under Anarchy or Despotism
+//  (v474.05: OpenCivOne `CityWorker.cs` L422-L430).
+const supported = (unit: Unit): boolean =>
+  [Air, Fortifiable, Naval, Worker].some(
+    (UnitType: typeof Unit): boolean => unit instanceof UnitType
+  ) && !(unit instanceof Diplomatic);
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
@@ -83,13 +96,8 @@ export const getRules: (
       const cityGrowth = cityGrowthRegistry.getByCity(city);
 
       return (
-        unitRegistry
-          .getByCity(city)
-          .filter((unit: Unit): boolean =>
-            [Air, Fortifiable, Naval, Worker].some(
-              (UnitType) => unit instanceof UnitType
-            )
-          ).length > cityGrowth.size()
+        unitRegistry.getByCity(city).filter(supported).length >
+        cityGrowth.size()
       );
     }),
     new Effect((city: City): Yield[] => {
@@ -97,11 +105,7 @@ export const getRules: (
 
       return unitRegistry
         .getByCity(city)
-        .filter((unit: Unit): boolean =>
-          [Air, Fortifiable, Naval, Worker].some(
-            (UnitType) => unit instanceof UnitType
-          )
-        )
+        .filter(supported)
         .slice(cityGrowth.size())
         .map((unit) => new UnitSupportProduction(1, unit) as Yield);
     })
@@ -117,11 +121,7 @@ export const getRules: (
     new Effect((city: City): Yield[] =>
       unitRegistry
         .getByCity(city)
-        .filter((unit: Unit): boolean =>
-          [Air, Fortifiable, Naval, Worker].some(
-            (UnitType) => unit instanceof UnitType
-          )
-        )
+        .filter(supported)
         .map((unit) => new UnitSupportProduction(1, unit) as Yield)
     )
   ),
