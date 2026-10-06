@@ -19,8 +19,12 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     new Captured_1.default('civ1-city:city/captured/emit', new Effect_1.default((capturedCity, capturingPlayer, player) => {
         engine.emit('city:captured', capturedCity, capturingPlayer, player);
     })),
-    new Captured_1.default('civ1-city:city/captured/destroy-supported-units', new Effect_1.default((capturedCity) => unitRegistry
+    new Captured_1.default('civ1-city:city/captured/destroy-supported-units', 
+    // Not the units now the capturer's, which defected with an incited city (civ-clone/web-renderer#58). After a
+    //  conquest there are none.
+    new Effect_1.default((capturedCity, capturingPlayer) => unitRegistry
         .getByCity(capturedCity)
+        .filter((unit) => unit.player() !== capturingPlayer)
         .forEach((unit) => unit.destroy()))),
     new Captured_1.default('civ1-city:city/captured/reassign-workers', new Effect_1.default((capturedCity) => {
         // `shrink` above destroys a size 1 `City`, which releases its tiles, and assigning any now would leave them held

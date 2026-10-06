@@ -168,6 +168,35 @@ describe('city:captured', (): void => {
     expect(workedTileRegistry.getByCity(city)).to.be.empty;
   });
 
+  it("should disband the city's supported units, but not those that have gone over to the capturer", async (): Promise<void> => {
+    const city = await setUpCity({
+        size: 3,
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      enemy = new Player(),
+      defector = new Warrior(city, city.player(), city.tile(), ruleRegistry),
+      loyal = new Warrior(city, city.player(), city.tile(), ruleRegistry);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+    unitRegistry.register(defector, loyal);
+
+    // As an incited city's nearby units do, before the city changes hands (civ1-unit's `defecting-units`).
+    defector.transfer(enemy, city);
+
+    city.capture(enemy);
+
+    expect(defector.destroyed()).to.false;
+    expect(loyal.destroyed()).to.true;
+
+    unitRegistry.unregister(defector, loyal);
+  });
+
   it('should not give a destroyed `City` a tile when a new `City` is founded on its site', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,

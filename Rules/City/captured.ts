@@ -84,9 +84,12 @@ export const getRules: (
   ),
   new Captured(
     'civ1-city:city/captured/destroy-supported-units',
-    new Effect((capturedCity: City): void =>
+    // Not the units now the capturer's, which defected with an incited city (civ-clone/web-renderer#58). After a
+    //  conquest there are none.
+    new Effect((capturedCity: City, capturingPlayer: Player): void =>
       unitRegistry
         .getByCity(capturedCity)
+        .filter((unit: Unit): boolean => unit.player() !== capturingPlayer)
         .forEach((unit: Unit) => unit.destroy())
     )
   ),
