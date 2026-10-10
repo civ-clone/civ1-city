@@ -1,3 +1,4 @@
+import cityBuildingCancelled from './Rules/City/building-cancelled';
 import cityBuildingComplete from './Rules/City/building-complete';
 import cityCanBeWorked from './Rules/City/can-be-worked';
 import cityCaptured from './Rules/City/captured';
@@ -25,7 +26,8 @@ export const register = (game: Game): void => {
   registerAvailableSpecialists(game.availableSpecialists);
 
   game.rules.register(
-    ...cityBuildingComplete(game.engine),
+    ...cityBuildingCancelled(game.rules),
+    ...cityBuildingComplete(game.engine, game.rules),
     ...cityCanBeWorked(game.cities, game.units, game.workedTiles),
     ...cityCaptured(
       game.cities,
