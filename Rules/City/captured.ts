@@ -69,6 +69,13 @@ export const getRules: (
     )
   ),
   new Captured(
+    // Auto is the previous owner's standing order, not the city's (civ-clone/web-renderer#194).
+    'civ1-city:city/captured/stop-auto',
+    new Effect((capturedCity: City): void =>
+      cityBuildRegistry.getByCity(capturedCity).setAuto(false)
+    )
+  ),
+  new Captured(
     'civ1-city:city/captured/shrink',
     new Effect((capturedCity: City): void =>
       cityGrowthRegistry.getByCity(capturedCity).shrink()

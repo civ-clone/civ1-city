@@ -148,6 +148,29 @@ describe('city:captured', (): void => {
     expect(cityBuild.progress().value()).to.equal(0);
   });
 
+  it('should take a captured city off Auto', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+        size: 2,
+      }),
+      enemy = new Player(),
+      cityBuild = cityBuildRegistry.getByCity(city);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+
+    cityBuild.setAuto(true);
+
+    city.capture(enemy);
+
+    expect(cityBuild.auto()).false;
+  });
+
   it('should not leave a destroyed `City` working any tiles', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,
