@@ -70,7 +70,7 @@ export const register = (game: Game): void => {
       game.specialists,
       game.availableSpecialists
     ),
-    ...cityGrowthCost(),
+    ...cityGrowthCost(game.difficulty, game.clients),
     ...cityProcessYield(
       game.cityBuilds,
       game.cityGrowth,
