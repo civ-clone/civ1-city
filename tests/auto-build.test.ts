@@ -10,6 +10,12 @@ import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
 import buildingCancelled from '../Rules/City/building-cancelled';
 import buildingComplete from '../Rules/City/building-complete';
+import playerTurnStart from '../Rules/Player/turn-start';
+import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
+import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
+import CityRegistry from '@civ-clone/core-city/CityRegistry';
+import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
+import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import { buildCosts } from '@civ-clone/core-city-build/Rules/BuildCost';
 import { expect } from 'chai';
 import setUpCity from './lib/setUpCity';
@@ -69,7 +75,7 @@ describe('city:auto-build', (): void => {
       ...buildingCancelled(ruleRegistry)
     );
 
-    return { cityBuild, unavailable };
+    return { cityBuild, ruleRegistry, unavailable };
   };
 
   it('should start what a city on Auto needs most once its build is complete, but never a unit', async (): Promise<void> => {
@@ -102,5 +108,34 @@ describe('city:auto-build', (): void => {
     cityBuild.revalidate();
 
     expect(cityBuild.building()!.item()).equal(Granary);
+  });
+
+  it('should choose at the start of a turn in a city on Auto that had nothing it would choose', async (): Promise<void> => {
+    const { cityBuild, ruleRegistry, unavailable } = await setUp(),
+      city = cityBuild.city();
+
+    ruleRegistry.register(
+      ...playerTurnStart(
+        { getByPlayer: () => [city] } as unknown as CityRegistry,
+        new UnitRegistry(),
+        new WorkedTileRegistry(ruleRegistry),
+        ruleRegistry,
+        { getByCity: () => cityBuild } as unknown as CityBuildRegistry
+      )
+    );
+
+    unavailable.add(Granary);
+    unavailable.add(Temple);
+    cityBuild.setAuto(true);
+
+    ruleRegistry.process(TurnStart, city.player());
+
+    expect(cityBuild.building()).null;
+
+    unavailable.delete(Temple);
+
+    ruleRegistry.process(TurnStart, city.player());
+
+    expect(cityBuild.building()!.item()).equal(Temple);
   });
 });

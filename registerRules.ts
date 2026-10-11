@@ -100,7 +100,13 @@ export const register = (game: Game): void => {
       game.tradeRoutes
     ),
     ...playerAction(game.cityBuilds, game.cities, game.specialists),
-    ...playerTurnStart(game.cities, game.units, game.workedTiles, game.rules),
+    ...playerTurnStart(
+      game.cities,
+      game.units,
+      game.workedTiles,
+      game.rules,
+      game.cityBuilds
+    ),
     ...unitDefeated(game.cities, game.cityGrowth, game.engine),
     ...unitMoved(game.rules, game.workedTiles),
     ...unitUnsupported()
