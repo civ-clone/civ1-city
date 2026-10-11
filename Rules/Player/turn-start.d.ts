@@ -1,3 +1,4 @@
+import { CityBuildRegistry } from '@civ-clone/core-city-build/CityBuildRegistry';
 import { CityRegistry } from '@civ-clone/core-city/CityRegistry';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { UnitRegistry } from '@civ-clone/core-unit/UnitRegistry';
@@ -7,6 +8,7 @@ export declare const getRules: (
   cityRegistry?: CityRegistry,
   unitRegistry?: UnitRegistry,
   workedTileRegistry?: WorkedTileRegistry,
-  ruleRegistry?: RuleRegistry
+  ruleRegistry?: RuleRegistry,
+  cityBuildRegistry?: CityBuildRegistry
 ) => TurnStart[];
 export default getRules;
