@@ -1,8 +1,9 @@
 import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
 import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
 import BuildPriority from '@civ-clone/core-city-build/Rules/BuildPriority';
-import Buildable from '@civ-clone/core-city-build/Buildable';
+import Buildable, { IBuildable } from '@civ-clone/core-city-build/Buildable';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
+import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Engine from '@civ-clone/core-engine/Engine';
@@ -21,14 +22,12 @@ import { expect } from 'chai';
 import setUpCity from './lib/setUpCity';
 
 describe('city:auto-build', (): void => {
-  class Granary extends Buildable {
-    static build(): Granary {
-      return new Granary();
-    }
-  }
-  class Temple extends Buildable {
-    static build(): Temple {
-      return new Temple();
+  class Granary extends CityImprovement {}
+  class Temple extends CityImprovement {}
+  // Neither a unit nor an improvement, like a spaceship part.
+  class Part extends Buildable {
+    static build(): Part {
+      return new Part();
     }
   }
 
@@ -40,11 +39,11 @@ describe('city:auto-build', (): void => {
         availableBuildItemsRegistry,
         ruleRegistry
       ),
-      unavailable = new Set<typeof Buildable>(),
-      priority = (Item: typeof Buildable, score: number): BuildPriority =>
+      unavailable = new Set<IBuildable>(),
+      priority = (Item: IBuildable, score: number): BuildPriority =>
         new BuildPriority(
           new Criterion(
-            (cityBuild: CityBuild, BuildItem: typeof Buildable): boolean =>
+            (cityBuild: CityBuild, BuildItem: IBuildable): boolean =>
               BuildItem === Item
           ),
           new Effect((): number => score)
@@ -52,6 +51,7 @@ describe('city:auto-build', (): void => {
 
     availableBuildItemsRegistry.register(
       Granary,
+      Part,
       Temple,
       Warrior as unknown as typeof Buildable
     );
@@ -59,16 +59,18 @@ describe('city:auto-build', (): void => {
     ruleRegistry.register(
       new Build(
         new Effect(
-          (city, BuildItem: typeof Buildable): IBuildCriterion =>
+          (city, BuildItem: IBuildable): IBuildCriterion =>
             new Criterion((): boolean => !unavailable.has(BuildItem))
         )
       ),
       ...buildCosts([
         [Granary, 40],
+        [Part, 20],
         [Temple, 30],
         [Warrior as unknown as typeof Buildable, 10],
       ]),
       priority(Warrior as unknown as typeof Buildable, 5),
+      priority(Part, 4),
       priority(Temple, 2),
       priority(Granary, 1),
       ...buildingComplete(new Engine(), ruleRegistry),
@@ -78,7 +80,7 @@ describe('city:auto-build', (): void => {
     return { cityBuild, ruleRegistry, unavailable };
   };
 
-  it('should start what a city on Auto needs most once its build is complete, but never a unit', async (): Promise<void> => {
+  it('should start what a city on Auto needs most once its build is complete, but only an improvement', async (): Promise<void> => {
     const { cityBuild } = await setUp();
 
     cityBuild.setAuto(true);
