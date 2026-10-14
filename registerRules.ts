@@ -12,6 +12,8 @@ import cityGrowthCost from './Rules/City/growth-cost';
 import cityProcessYield from './Rules/City/process-yield';
 import cityShrink from './Rules/City/shrink';
 import cityTileReassigned from './Rules/City/tile-reassigned';
+import cityTileReleased from './Rules/City/tile-released';
+import cityTileWorked from './Rules/City/tile-worked';
 import cityTiles from './Rules/City/tiles';
 import cityYield from './Rules/City/yield';
 import playerAction from './Rules/Player/action';
@@ -93,6 +95,8 @@ export const register = (game: Game): void => {
       game.specialists,
       game.availableSpecialists
     ),
+    ...cityTileReleased(game.engine),
+    ...cityTileWorked(game.engine),
     ...cityYield(
       game.cityImprovements,
       game.playerGovernments,
