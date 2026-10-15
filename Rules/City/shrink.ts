@@ -6,6 +6,10 @@ import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
+import {
+  Engine,
+  instance as engineInstance,
+} from '@civ-clone/core-engine/Engine';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -24,12 +28,14 @@ export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
   workedTileRegistry?: WorkedTileRegistry,
-  specialistRegistry?: SpecialistRegistry
+  specialistRegistry?: SpecialistRegistry,
+  engine?: Engine
 ) => Shrink[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
-  specialistRegistry: SpecialistRegistry = specialistRegistryInstance
+  specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
+  engine: Engine = engineInstance
 ): Shrink[] => [
   new Shrink(
     'civ1-city:city/shrink/set-growth-cost',
@@ -59,6 +65,15 @@ export const getRules: (
         specialistRegistry
       )
     )
+  ),
+
+  // A city shrunk to nothing is destroyed instead, which emits `city:destroyed` (civ-clone/web-renderer#400).
+  new Shrink(
+    'civ1-city:city/shrink/emit',
+    new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
+    new Effect((cityGrowth: CityGrowth): void => {
+      engine.emit('city:shrink', cityGrowth.city());
+    })
   ),
 
   // TODO: this needs to potentially be associated to an attacking user...
