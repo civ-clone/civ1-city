@@ -14,9 +14,10 @@ const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, playerWorl
     new Shrink_1.default('civ1-city:city/shrink/set-growth-cost', new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Effect_1.default((cityGrowth) => cityGrowth.cost().set((cityGrowth.size() + 1) * 10, 'city-shrink'))),
     new Shrink_1.default('civ1-city:city/shrink/reduce-workers', new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Criterion_1.default((cityGrowth) => (0, assignWorkers_1.citizenCount)(cityGrowth.city(), workedTileRegistry, specialistRegistry) >
         cityGrowth.size() + 1), new Effect_1.default((cityGrowth) => (0, assignWorkers_1.releaseCitizens)(cityGrowth.city(), cityGrowth, workedTileRegistry, specialistRegistry))),
-    // A city shrunk to nothing is destroyed instead, which emits `city:destroyed` (civ-clone/web-renderer#400).
-    new Shrink_1.default('civ1-city:city/shrink/emit', new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Effect_1.default((cityGrowth) => {
-        engine.emit('city:shrink', cityGrowth.city());
+    // With what caused it, so a listener can tell Settlers built from a battle lost. A city shrunk to nothing is destroyed
+    //  instead, which emits `city:destroyed` (civ-clone/web-renderer#400).
+    new Shrink_1.default('civ1-city:city/shrink/emit', new Criterion_1.default((cityGrowth) => cityGrowth.size() > 0), new Effect_1.default((cityGrowth, cause) => {
+        engine.emit('city:shrink', cityGrowth.city(), cause);
     })),
     // TODO: this needs to potentially be associated to an attacking user...
     new Shrink_1.default('civ1-city:city/shrink/destroy-empty-city', new Criterion_1.default((cityGrowth) => cityGrowth.size() <= 0), new Effect_1.default((cityGrowth) => cityGrowth.city().destroy())),

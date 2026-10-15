@@ -20,7 +20,7 @@ describe('city:grow, city:shrink and city:food-storage-exhausted', (): void => {
       cityGrowthRegistry = new CityGrowthRegistry(),
       playerWorldRegistry = new PlayerWorldRegistry(),
       workedTileRegistry = new WorkedTileRegistry(ruleRegistry),
-      events: [string, City][] = [];
+      events: [string, City, unknown][] = [];
 
     ruleRegistry.register(
       ...foodExhausted(engine),
@@ -52,7 +52,10 @@ describe('city:grow, city:shrink and city:food-storage-exhausted', (): void => {
       cityGrowth = cityGrowthRegistry.getByCity(city);
 
     ['city:grow', 'city:shrink', 'city:food-storage-exhausted'].forEach(
-      (event) => engine.on(event, (city: City) => events.push([event, city]))
+      (event) =>
+        engine.on(event, (city: City, cause: unknown = undefined) =>
+          events.push([event, city, cause])
+        )
     );
 
     return { city, cityGrowth, events, ruleRegistry };
@@ -63,16 +66,18 @@ describe('city:grow, city:shrink and city:food-storage-exhausted', (): void => {
 
     cityGrowth.grow();
 
-    expect(events).to.deep.equal([['city:grow', city]]);
+    expect(events).to.deep.equal([['city:grow', city, null]]);
   });
 
-  it('should emit city:shrink once, with the city, when it shrinks', async (): Promise<void> => {
+  it('should emit city:shrink once, with the city and what caused it, when it shrinks', async (): Promise<void> => {
     const { city, cityGrowth, events } = await setUp(3);
 
-    cityGrowth.shrink();
+    const cause = {};
+
+    cityGrowth.shrink(cause);
 
     expect(cityGrowth.size()).to.equal(2);
-    expect(events).to.deep.equal([['city:shrink', city]]);
+    expect(events).to.deep.equal([['city:shrink', city, cause]]);
   });
 
   it('should not emit city:shrink for a city shrunk to nothing', async (): Promise<void> => {
@@ -84,15 +89,15 @@ describe('city:grow, city:shrink and city:food-storage-exhausted', (): void => {
     expect(events).to.deep.equal([]);
   });
 
-  it('should announce the famine before the city shrinks', async (): Promise<void> => {
+  it('should announce the famine before the city shrinks, and shrink it for famine', async (): Promise<void> => {
     const { city, cityGrowth, events, ruleRegistry } = await setUp(2);
 
     ruleRegistry.process(FoodExhausted, cityGrowth);
 
     expect(cityGrowth.size()).to.equal(1);
     expect(events).to.deep.equal([
-      ['city:food-storage-exhausted', city],
-      ['city:shrink', city],
+      ['city:food-storage-exhausted', city, undefined],
+      ['city:shrink', city, FoodExhausted],
     ]);
   });
 });

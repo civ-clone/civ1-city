@@ -9,7 +9,7 @@ const getRules = (engine = Engine_1.instance) => [
     new FoodExhausted_1.default('civ1-city:city/food-exhausted/emit', new Effect_1.default((cityGrowth) => {
         engine.emit('city:food-storage-exhausted', cityGrowth.city());
     })),
-    new FoodExhausted_1.default('civ1-city:city/food-exhausted/shrink', new Effect_1.default((cityGrowth) => cityGrowth.shrink())),
+    new FoodExhausted_1.default('civ1-city:city/food-exhausted/shrink', new Effect_1.default((cityGrowth) => cityGrowth.shrink(FoodExhausted_1.default))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
