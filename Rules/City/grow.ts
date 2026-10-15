@@ -134,11 +134,11 @@ export const getRules: (
     )
   ),
 
-  // Last, so a listener sees the city with its new citizen already at work (civ-clone/web-renderer#400).
+  // Last, so a listener sees the city with its new citizen already at work, and is told why it grew (civ-clone/web-renderer#400).
   new Grow(
     'civ1-city:city/grow/emit',
-    new Effect((cityGrowth: CityGrowth): void => {
-      engine.emit('city:grow', cityGrowth.city());
+    new Effect((cityGrowth: CityGrowth, cause: unknown): void => {
+      engine.emit('city:grow', cityGrowth.city(), cause);
     })
   ),
 ];

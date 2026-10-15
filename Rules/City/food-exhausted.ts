@@ -18,7 +18,9 @@ export const getRules: (engine?: Engine) => FoodExhausted[] = (
   ),
   new FoodExhausted(
     'civ1-city:city/food-exhausted/shrink',
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink())
+    new Effect((cityGrowth: CityGrowth): void =>
+      cityGrowth.shrink(FoodExhausted)
+    )
   ),
 ];
 

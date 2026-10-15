@@ -78,7 +78,7 @@ export const getRules: (
   new Captured(
     'civ1-city:city/captured/shrink',
     new Effect((capturedCity: City): void =>
-      cityGrowthRegistry.getByCity(capturedCity).shrink()
+      cityGrowthRegistry.getByCity(capturedCity).shrink(Captured)
     )
   ),
   new Captured(

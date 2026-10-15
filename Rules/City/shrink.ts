@@ -67,12 +67,13 @@ export const getRules: (
     )
   ),
 
-  // A city shrunk to nothing is destroyed instead, which emits `city:destroyed` (civ-clone/web-renderer#400).
+  // With what caused it, so a listener can tell Settlers built from a battle lost. A city shrunk to nothing is destroyed
+  //  instead, which emits `city:destroyed` (civ-clone/web-renderer#400).
   new Shrink(
     'civ1-city:city/shrink/emit',
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 0),
-    new Effect((cityGrowth: CityGrowth): void => {
-      engine.emit('city:shrink', cityGrowth.city());
+    new Effect((cityGrowth: CityGrowth, cause: unknown): void => {
+      engine.emit('city:shrink', cityGrowth.city(), cause);
     })
   ),
 

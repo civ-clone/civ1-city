@@ -25,9 +25,9 @@ const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, playerWorl
     })),
     new Grow_1.default('civ1-city:city/grow/reduce-workers', new Criterion_1.default((cityGrowth) => (0, assignWorkers_1.citizenCount)(cityGrowth.city(), workedTileRegistry, specialistRegistry) >
         cityGrowth.size() + 1), new Effect_1.default((cityGrowth) => (0, assignWorkers_1.releaseCitizens)(cityGrowth.city(), cityGrowth, workedTileRegistry, specialistRegistry))),
-    // Last, so a listener sees the city with its new citizen already at work (civ-clone/web-renderer#400).
-    new Grow_1.default('civ1-city:city/grow/emit', new Effect_1.default((cityGrowth) => {
-        engine.emit('city:grow', cityGrowth.city());
+    // Last, so a listener sees the city with its new citizen already at work, and is told why it grew (civ-clone/web-renderer#400).
+    new Grow_1.default('civ1-city:city/grow/emit', new Effect_1.default((cityGrowth, cause) => {
+        engine.emit('city:grow', cityGrowth.city(), cause);
     })),
 ];
 exports.getRules = getRules;

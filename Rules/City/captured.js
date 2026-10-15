@@ -18,7 +18,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     new Captured_1.default(
     // Auto is the previous owner's standing order, not the city's (civ-clone/web-renderer#194).
     'civ1-city:city/captured/stop-auto', new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).setAuto(false))),
-    new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink())),
+    new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),
     new Captured_1.default('civ1-city:city/captured/emit', new Effect_1.default((capturedCity, capturingPlayer, player) => {
         engine.emit('city:captured', capturedCity, capturingPlayer, player);
     })),
