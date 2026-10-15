@@ -65,14 +65,15 @@ export const register = (game: Game): void => {
       game.specialists,
       game.tradeRoutes
     ),
-    ...cityFoodExhausted(),
+    ...cityFoodExhausted(game.engine),
     ...cityFoodStorage(game.rules),
     ...cityGrow(
       game.cityGrowth,
       game.playerWorlds,
       game.workedTiles,
       game.specialists,
-      game.availableSpecialists
+      game.availableSpecialists,
+      game.engine
     ),
     ...cityGrowthCost(game.difficulty, game.clients),
     ...cityProcessYield(
@@ -85,7 +86,8 @@ export const register = (game: Game): void => {
       game.cityGrowth,
       game.playerWorlds,
       game.workedTiles,
-      game.specialists
+      game.specialists,
+      game.engine
     ),
     ...cityTiles(),
     ...cityTileReassigned(

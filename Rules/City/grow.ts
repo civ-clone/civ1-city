@@ -24,6 +24,10 @@ import {
   instance as workedTileRegistryInstance,
   WorkedTileRegistry,
 } from '@civ-clone/core-city/WorkedTileRegistry';
+import {
+  Engine,
+  instance as engineInstance,
+} from '@civ-clone/core-engine/Engine';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -38,13 +42,15 @@ export const getRules: (
   playerWorldRegistry?: PlayerWorldRegistry,
   workedTileRegistry?: WorkedTileRegistry,
   specialistRegistry?: SpecialistRegistry,
-  availableSpecialistRegistry?: AvailableSpecialistRegistry
+  availableSpecialistRegistry?: AvailableSpecialistRegistry,
+  engine?: Engine
 ) => Grow[] = (
   cityGrowthRegistry: CityGrowthRegistry = cityGrowthRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
   specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
-  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
+  availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance,
+  engine: Engine = engineInstance
 ): Grow[] => [
   new Grow(
     'civ1-city:city/grow/empty-food-store',
@@ -126,6 +132,14 @@ export const getRules: (
         specialistRegistry
       )
     )
+  ),
+
+  // Last, so a listener sees the city with its new citizen already at work (civ-clone/web-renderer#400).
+  new Grow(
+    'civ1-city:city/grow/emit',
+    new Effect((cityGrowth: CityGrowth): void => {
+      engine.emit('city:grow', cityGrowth.city());
+    })
   ),
 ];
 
