@@ -76,7 +76,15 @@ export const getRules: (
   new Destroyed(
     'civ1-city:city/destroyed/destroy-supported-units',
     new Effect((city: City): void =>
-      unitRegistry.getByCity(city).forEach((unit: Unit) => unit.destroy())
+      unitRegistry.getByCity(city).forEach((unit: Unit): void => {
+        // Not one the disbanding of another took with it already: when the city was its player's last, the first unit
+        //  to go defeats the player, which destroys the rest (civ-clone/web-renderer#600).
+        if (unit.destroyed()) {
+          return;
+        }
+
+        unit.destroy();
+      })
     )
   ),
 
