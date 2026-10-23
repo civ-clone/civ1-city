@@ -21,6 +21,10 @@ import shrink from '../Rules/City/shrink';
 import tileReassigned from '../Rules/City/tile-reassigned';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
+import Criterion from '@civ-clone/core-rule/Criterion';
+import Destroyed from '@civ-clone/core-unit/Rules/Destroyed';
+import Effect from '@civ-clone/core-rule/Effect';
+import Unit from '@civ-clone/core-unit/Unit';
 
 describe('city:captured', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -223,6 +227,60 @@ describe('city:captured', (): void => {
 
     unitRegistry.unregister(defector, loyal);
   });
+
+  // Two units the city supports, where the first to be disbanded takes the other with it, as a player's defeat does
+  //  when the city was its last. Each should be destroyed once (civ-clone/web-renderer#600).
+  const disbandOnce = async (size: number): Promise<void> => {
+    const city = await setUpCity({
+        size,
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      enemy = new Player(),
+      first = new Warrior(city, city.player(), city.tile(), ruleRegistry),
+      second = new Warrior(city, city.player(), city.tile(), ruleRegistry),
+      destroyed: Unit[] = [];
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+    unitRegistry.register(first, second);
+
+    ruleRegistry.register(
+      new Destroyed(
+        new Criterion(
+          (unit: Unit): boolean => unit === first || unit === second
+        ),
+        new Effect((unit: Unit): void => {
+          const other = unit === first ? second : first;
+
+          destroyed.push(unit);
+
+          if (!other.destroyed()) {
+            other.destroy();
+          }
+        })
+      )
+    );
+
+    city.capture(enemy);
+
+    expect(city.destroyed()).to.equal(size === 1);
+    expect(first.destroyed()).to.true;
+    expect(second.destroyed()).to.true;
+    expect(destroyed).length(2);
+
+    unitRegistry.unregister(first, second);
+  };
+
+  it('should not disband a supported unit that another disbanding already took with it (civ-clone/web-renderer#600)', async (): Promise<void> =>
+    disbandOnce(2));
+
+  it('should not disband a supported unit twice when the captured city is destroyed either', async (): Promise<void> =>
+    disbandOnce(1));
 
   it('should keep the units an incited city of size 1 brings over, though the city is destroyed', async (): Promise<void> => {
     const city = await setUpCity({

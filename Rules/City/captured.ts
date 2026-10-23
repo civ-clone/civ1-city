@@ -97,7 +97,15 @@ export const getRules: (
       unitRegistry
         .getByCity(capturedCity)
         .filter((unit: Unit): boolean => unit.player() !== capturingPlayer)
-        .forEach((unit: Unit) => unit.destroy())
+        .forEach((unit: Unit): void => {
+          // Not one the disbanding of another took with it already: when the city was its player's last, the first
+          //  unit to go defeats the player, which destroys the rest (civ-clone/web-renderer#600).
+          if (unit.destroyed()) {
+            return;
+          }
+
+          unit.destroy();
+        })
     )
   ),
   new Captured(

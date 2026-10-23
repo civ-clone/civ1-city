@@ -19,7 +19,14 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     new Destroyed_1.default('civ1-city:city/destroyed/emit', new Effect_1.default((city, player) => {
         engine.emit('city:destroyed', city, player);
     })),
-    new Destroyed_1.default('civ1-city:city/destroyed/destroy-supported-units', new Effect_1.default((city) => unitRegistry.getByCity(city).forEach((unit) => unit.destroy()))),
+    new Destroyed_1.default('civ1-city:city/destroyed/destroy-supported-units', new Effect_1.default((city) => unitRegistry.getByCity(city).forEach((unit) => {
+        // Not one the disbanding of another took with it already: when the city was its player's last, the first unit
+        //  to go defeats the player, which destroys the rest (civ-clone/web-renderer#600).
+        if (unit.destroyed()) {
+            return;
+        }
+        unit.destroy();
+    }))),
     new Destroyed_1.default('civ1-city:city/destroyed/release-worked-tiles', new Effect_1.default((city) => workedTileRegistry
         .getByCity(city)
         .forEach((workedTile) => workedTileRegistry.unregister(workedTile)))),

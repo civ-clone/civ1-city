@@ -28,7 +28,14 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     new Effect_1.default((capturedCity, capturingPlayer) => unitRegistry
         .getByCity(capturedCity)
         .filter((unit) => unit.player() !== capturingPlayer)
-        .forEach((unit) => unit.destroy()))),
+        .forEach((unit) => {
+        // Not one the disbanding of another took with it already: when the city was its player's last, the first
+        //  unit to go defeats the player, which destroys the rest (civ-clone/web-renderer#600).
+        if (unit.destroyed()) {
+            return;
+        }
+        unit.destroy();
+    }))),
     new Captured_1.default('civ1-city:city/captured/reassign-workers', new Effect_1.default((capturedCity) => {
         // `shrink` above destroys a size 1 `City`, which releases its tiles, and assigning any now would leave them held
         // by a `City` that no longer exists. Checked here rather than as a `Criterion`: every `Criterion` is evaluated
