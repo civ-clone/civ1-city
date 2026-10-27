@@ -15,6 +15,7 @@ import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprov
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
+import buildingCancelled from '../Rules/City/building-cancelled';
 import captured from '../Rules/City/captured';
 import InciteRevolt from '@civ-clone/base-unit-action-incite-revolt/InciteRevolt';
 import defectingUnits from '@civ-clone/civ1-unit/Rules/City/captured';
@@ -158,7 +159,7 @@ describe('city:captured', (): void => {
     expect(cityBuild.progress().value()).to.equal(0);
   });
 
-  it('should price the item in progress for the new owner (civ-clone/web-renderer#500)', async (): Promise<void> => {
+  it('should clear the item in progress, so its new owner chooses at their own price, even when it was on Auto (civ-clone/web-renderer#670, #500)', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
@@ -178,6 +179,8 @@ describe('city:captured', (): void => {
     cityBuildRegistry.register(cityBuild);
 
     buildRules.register(
+      // civ1-city's, which chooses again for a city on Auto.
+      ...buildingCancelled(buildRules),
       new Build(new Effect((): IBuildCriterion => new Criterion(() => true))),
       ...buildCost(Warrior, 10),
       new BuildCostModifier(
@@ -195,12 +198,17 @@ describe('city:captured', (): void => {
     );
 
     cityBuild.build(Warrior);
+    cityBuild.setAuto(true);
 
     expect(cityBuild.cost().value()).to.equal(20);
 
     city.capture(enemy);
 
-    expect(cityBuild.building()!.item()).to.equal(Warrior);
+    expect(cityBuild.building()).null;
+    expect(cityBuild.cost().value()).to.equal(Infinity);
+
+    cityBuild.build(Warrior);
+
     expect(cityBuild.cost().value()).to.equal(10);
   });
 
