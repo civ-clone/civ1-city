@@ -16,6 +16,10 @@ const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
 const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, cityBuildRegistry = CityBuildRegistry_1.instance, engine = Engine_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, availableSpecialistRegistry = AvailableSpecialistRegistry_1.instance) => [
     new Captured_1.default('civ1-city:city/captured/reset-build-progress', new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).progress().set(0))),
     new Captured_1.default(
+    // What it costs can depend on who owns the city (the computer's difficulty multiplier), and the item in progress
+    //  was priced for its previous owner (civ-clone/web-renderer#500).
+    'civ1-city:city/captured/reprice-build', new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).reprice())),
+    new Captured_1.default(
     // Auto is the previous owner's standing order, not the city's (civ-clone/web-renderer#194).
     'civ1-city:city/captured/stop-auto', new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).setAuto(false))),
     new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),

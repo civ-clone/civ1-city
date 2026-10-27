@@ -1,4 +1,10 @@
+import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
+import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
+import BuildCostModifier from '@civ-clone/core-city-build/Rules/BuildCostModifier';
+import City from '@civ-clone/core-city/City';
+import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
+import { buildCost } from '@civ-clone/core-city-build/Rules/BuildCost';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import Player from '@civ-clone/core-player/Player';
@@ -150,6 +156,52 @@ describe('city:captured', (): void => {
     city.capture(enemy);
 
     expect(cityBuild.progress().value()).to.equal(0);
+  });
+
+  it('should price the item in progress for the new owner (civ-clone/web-renderer#500)', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+        size: 2,
+      }),
+      computer = city.player(),
+      enemy = new Player(),
+      availableBuildItemsRegistry = new AvailableCityBuildItemsRegistry(),
+      buildRules = new RuleRegistry(),
+      cityBuild = new CityBuild(city, availableBuildItemsRegistry, buildRules);
+
+    // Its own build rules, so the cost modifier stays out of the other tests' way.
+    cityBuildRegistry.unregister(cityBuildRegistry.getByCity(city));
+    cityBuildRegistry.register(cityBuild);
+
+    buildRules.register(
+      new Build(new Effect((): IBuildCriterion => new Criterion(() => true))),
+      ...buildCost(Warrior, 10),
+      new BuildCostModifier(
+        new Criterion(
+          (buildItem, buildCity: City | null): boolean =>
+            buildCity?.player() === computer
+        ),
+        new Effect((buildItem, buildCity, cost: number): number => cost * 2)
+      )
+    );
+    availableBuildItemsRegistry.register(Warrior);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+
+    cityBuild.build(Warrior);
+
+    expect(cityBuild.cost().value()).to.equal(20);
+
+    city.capture(enemy);
+
+    expect(cityBuild.building()!.item()).to.equal(Warrior);
+    expect(cityBuild.cost().value()).to.equal(10);
   });
 
   it('should take a captured city off Auto', async (): Promise<void> => {
