@@ -32,6 +32,8 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Destroyed from '@civ-clone/core-unit/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import Unit from '@civ-clone/core-unit/Unit';
+import BuildPriority from '@civ-clone/core-city-build/Rules/BuildPriority';
+import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 
 describe('city:captured', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -174,6 +176,8 @@ describe('city:captured', (): void => {
       buildRules = new RuleRegistry(),
       cityBuild = new CityBuild(city, availableBuildItemsRegistry, buildRules);
 
+    class Temple extends CityImprovement {}
+
     // Its own build rules, so the cost modifier stays out of the other tests' way.
     cityBuildRegistry.unregister(cityBuildRegistry.getByCity(city));
     cityBuildRegistry.register(cityBuild);
@@ -183,6 +187,12 @@ describe('city:captured', (): void => {
       ...buildingCancelled(buildRules),
       new Build(new Effect((): IBuildCriterion => new Criterion(() => true))),
       ...buildCost(Warrior, 10),
+      ...buildCost(Temple, 30),
+      // Something Auto would choose, if it were still on when the build is cleared.
+      new BuildPriority(
+        new Criterion((cityBuild, BuildItem): boolean => BuildItem === Temple),
+        new Effect((): number => 1)
+      ),
       new BuildCostModifier(
         new Criterion(
           (buildItem, buildCity: City | null): boolean =>
@@ -191,7 +201,7 @@ describe('city:captured', (): void => {
         new Effect((buildItem, buildCity, cost: number): number => cost * 2)
       )
     );
-    availableBuildItemsRegistry.register(Warrior);
+    availableBuildItemsRegistry.register(Warrior, Temple);
 
     playerWorldRegistry.register(
       new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
@@ -204,6 +214,7 @@ describe('city:captured', (): void => {
 
     city.capture(enemy);
 
+    expect(cityBuild.auto()).false;
     expect(cityBuild.building()).null;
     expect(cityBuild.cost().value()).to.equal(Infinity);
 
