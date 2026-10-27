@@ -69,18 +69,19 @@ export const getRules: (
     )
   ),
   new Captured(
-    // What it costs can depend on who owns the city (the computer's difficulty multiplier), and the item in progress
-    //  was priced for its previous owner (civ-clone/web-renderer#500).
-    'civ1-city:city/captured/reprice-build',
-    new Effect((capturedCity: City): void =>
-      cityBuildRegistry.getByCity(capturedCity).reprice()
-    )
-  ),
-  new Captured(
     // Auto is the previous owner's standing order, not the city's (civ-clone/web-renderer#194).
     'civ1-city:city/captured/stop-auto',
     new Effect((capturedCity: City): void =>
       cityBuildRegistry.getByCity(capturedCity).setAuto(false)
+    )
+  ),
+  new Captured(
+    // What it was building was its previous owner's choice, at its previous owner's price: one its new owner may not
+    //  be able to build, or want (civ-clone/web-renderer#670, #500). The new owner chooses. Civ1 keeps the item; this
+    //  is a deliberate change. After `stop-auto`, so the `BuildingCancelled` rules don't choose for the city.
+    'civ1-city:city/captured/clear-build',
+    new Effect((capturedCity: City): void =>
+      cityBuildRegistry.getByCity(capturedCity).cancel()
     )
   ),
   new Captured(
