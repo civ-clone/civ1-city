@@ -63,7 +63,8 @@ export const register = (game: Game): void => {
       game.units,
       game.workedTiles,
       game.specialists,
-      game.tradeRoutes
+      game.tradeRoutes,
+      game.rules
     ),
     ...cityFoodExhausted(game.engine),
     ...cityFoodStorage(game.rules),

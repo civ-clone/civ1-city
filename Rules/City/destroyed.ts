@@ -18,11 +18,16 @@ import {
   TradeRouteRegistry,
   instance as tradeRouteRegistryInstance,
 } from '@civ-clone/core-city/TradeRouteRegistry';
+import {
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
 import City from '@civ-clone/core-city/City';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import Player from '@civ-clone/core-player/Player';
+import Removed from '@civ-clone/core-tile-improvement/Rules/Removed';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import Unit from '@civ-clone/core-unit/Unit';
 import {
@@ -41,7 +46,8 @@ export const getRules: (
   unitRegistry?: UnitRegistry,
   workedTileRegistry?: WorkedTileRegistry,
   specialistRegistry?: SpecialistRegistry,
-  tradeRouteRegistry?: TradeRouteRegistry
+  tradeRouteRegistry?: TradeRouteRegistry,
+  ruleRegistry?: RuleRegistry
 ) => Destroyed[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
@@ -49,8 +55,11 @@ export const getRules: (
   unitRegistry: UnitRegistry = unitRegistryInstance,
   workedTileRegistry: WorkedTileRegistry = workedTileRegistryInstance,
   specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
-  tradeRouteRegistry: TradeRouteRegistry = tradeRouteRegistryInstance
+  tradeRouteRegistry: TradeRouteRegistry = tradeRouteRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [
+  // Through the `Removed` rules, as clearing pollution does, so the square's yields are worked out again and
+  //  `tile-improvement:removed` is raised for whoever shows the square (civ-clone/web-renderer#401).
   new Destroyed(
     'civ1-city:city/destroyed/remove-irrigation',
     new Effect((city: City): void =>
@@ -60,9 +69,9 @@ export const getRules: (
           (improvement: TileImprovement): boolean =>
             improvement instanceof Irrigation
         )
-        .forEach((irrigation: TileImprovement): void =>
-          tileImprovementRegistry.unregister(irrigation)
-        )
+        .forEach((irrigation: TileImprovement): void => {
+          ruleRegistry.process(Removed, city.tile(), irrigation);
+        })
     )
   ),
 

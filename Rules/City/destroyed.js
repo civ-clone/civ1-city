@@ -6,16 +6,22 @@ const Engine_1 = require("@civ-clone/core-engine/Engine");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");
 const TradeRouteRegistry_1 = require("@civ-clone/core-city/TradeRouteRegistry");
+const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Destroyed_1 = require("@civ-clone/core-city/Rules/Destroyed");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
+const Removed_1 = require("@civ-clone/core-tile-improvement/Rules/Removed");
 const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
-const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityRegistry = CityRegistry_1.instance, engine = Engine_1.instance, unitRegistry = UnitRegistry_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, tradeRouteRegistry = TradeRouteRegistry_1.instance) => [
+const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityRegistry = CityRegistry_1.instance, engine = Engine_1.instance, unitRegistry = UnitRegistry_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, tradeRouteRegistry = TradeRouteRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
+    // Through the `Removed` rules, as clearing pollution does, so the square's yields are worked out again and
+    //  `tile-improvement:removed` is raised for whoever shows the square (civ-clone/web-renderer#401).
     new Destroyed_1.default('civ1-city:city/destroyed/remove-irrigation', new Effect_1.default((city) => tileImprovementRegistry
         .getByTile(city.tile())
         .filter((improvement) => improvement instanceof TileImprovements_1.Irrigation)
-        .forEach((irrigation) => tileImprovementRegistry.unregister(irrigation)))),
+        .forEach((irrigation) => {
+        ruleRegistry.process(Removed_1.default, city.tile(), irrigation);
+    }))),
     new Destroyed_1.default('civ1-city:city/destroyed/emit', new Effect_1.default((city, player) => {
         engine.emit('city:destroyed', city, player);
     })),
