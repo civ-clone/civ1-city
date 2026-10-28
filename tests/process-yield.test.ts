@@ -37,6 +37,7 @@ import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 import setUpCity from './lib/setUpCity';
 import shrink from '../Rules/City/shrink';
 import tileYield from '@civ-clone/civ1-world/Rules/Tile/yield';
+import tileYieldModifier from '@civ-clone/civ1-world/Rules/Tile/yield-modifier';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import unitUnsupported from '../Rules/Unit/unsupported';
@@ -105,11 +106,8 @@ describe('city:process-yield', (): void => {
       ruleRegistry
     ),
     ...shrink(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
-    ...tileYield(
-      tileImprovementRegistry,
-      terrainFeatureRegistry,
-      playerGovernmentRegistry
-    ),
+    ...tileYield(tileImprovementRegistry, terrainFeatureRegistry),
+    ...tileYieldModifier(tileImprovementRegistry, playerGovernmentRegistry),
     ...unitCreated(unitRegistry),
     ...unitDestroyed(unitRegistry),
     ...unitUnsupported()
