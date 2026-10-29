@@ -22,7 +22,15 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
     // What it was building was its previous owner's choice, at its previous owner's price: one its new owner may not
     //  be able to build, or want (civ-clone/web-renderer#670, #500). The new owner chooses. Civ1 keeps the item; this
     //  is a deliberate change. After `stop-auto`, so the `BuildingCancelled` rules don't choose for the city.
-    'civ1-city:city/captured/clear-build', new Effect_1.default((capturedCity) => cityBuildRegistry.getByCity(capturedCity).cancel())),
+    'civ1-city:city/captured/clear-build', new Effect_1.default((capturedCity) => {
+        const cityBuild = cityBuildRegistry.getByCity(capturedCity);
+        // Asked for as a captured city's, even if its previous owner had chosen nothing (civ-clone/web-renderer#716).
+        if (cityBuild.building() === null) {
+            cityBuild.setCleared('captured');
+            return;
+        }
+        cityBuild.cancel('captured');
+    })),
     new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),
     new Captured_1.default('civ1-city:city/captured/emit', new Effect_1.default((capturedCity, capturingPlayer, player) => {
         engine.emit('city:captured', capturedCity, capturingPlayer, player);

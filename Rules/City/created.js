@@ -25,7 +25,12 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     ...[TileImprovements_1.Irrigation, TileImprovements_1.Road].map((TileImprovementType) => new Created_1.default(`civ1-city:city/created/add-improvement/${TileImprovementType.name}`, new Criterion_1.default((city) => tileImprovementRegistry
         .getByTile(city.tile())
         .every((tileImprovement) => !(tileImprovement instanceof TileImprovementType))), new Effect_1.default((city) => tileImprovementRegistry.register(new TileImprovementType(city.tile()))))),
-    new Created_1.default('civ1-city:city/created/register-city-build', new Effect_1.default((city) => cityBuildRegistry.register(new CityBuild_1.default(city, availableBuildItemsRegistry, ruleRegistry)))),
+    new Created_1.default('civ1-city:city/created/register-city-build', new Effect_1.default((city) => {
+        const cityBuild = new CityBuild_1.default(city, availableBuildItemsRegistry, ruleRegistry);
+        // Its first build is asked for as a new city's (civ-clone/web-renderer#716).
+        cityBuild.setCleared('created');
+        cityBuildRegistry.register(cityBuild);
+    })),
     new Created_1.default('civ1-city:city/created/register-city-growth', new Effect_1.default((city) => cityGrowthRegistry.register(new CityGrowth_1.default(city, ruleRegistry)))),
     new Created_1.default('civ1-city:city/created/register', new Effect_1.default((city) => cityRegistry.register(city))),
     new Created_1.default('civ1-city:city/created/emit', new Effect_1.default((city) => {

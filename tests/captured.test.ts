@@ -217,10 +217,35 @@ describe('city:captured', (): void => {
     expect(cityBuild.auto()).false;
     expect(cityBuild.building()).null;
     expect(cityBuild.cost().value()).to.equal(Infinity);
+    // Its new owner is told why they are asked (civ-clone/web-renderer#716).
+    expect(cityBuild.cleared()).eql({ reason: 'captured', item: Warrior });
 
     cityBuild.build(Warrior);
 
     expect(cityBuild.cost().value()).to.equal(10);
+  });
+
+  it("should ask for a new city's first build as a new city's, and a captured one's as a captured city's (civ-clone/web-renderer#716)", async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+        size: 2,
+      }),
+      enemy = new Player(),
+      cityBuild = cityBuildRegistry.getByCity(city);
+
+    expect(cityBuild.cleared()).eql({ reason: 'created', item: null });
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+
+    city.capture(enemy);
+
+    expect(cityBuild.cleared()).eql({ reason: 'captured', item: null });
   });
 
   it('should take a captured city off Auto', async (): Promise<void> => {

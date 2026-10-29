@@ -80,9 +80,18 @@ export const getRules: (
     //  be able to build, or want (civ-clone/web-renderer#670, #500). The new owner chooses. Civ1 keeps the item; this
     //  is a deliberate change. After `stop-auto`, so the `BuildingCancelled` rules don't choose for the city.
     'civ1-city:city/captured/clear-build',
-    new Effect((capturedCity: City): void =>
-      cityBuildRegistry.getByCity(capturedCity).cancel()
-    )
+    new Effect((capturedCity: City): void => {
+      const cityBuild = cityBuildRegistry.getByCity(capturedCity);
+
+      // Asked for as a captured city's, even if its previous owner had chosen nothing (civ-clone/web-renderer#716).
+      if (cityBuild.building() === null) {
+        cityBuild.setCleared('captured');
+
+        return;
+      }
+
+      cityBuild.cancel('captured');
+    })
   ),
   new Captured(
     'civ1-city:city/captured/shrink',
