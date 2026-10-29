@@ -99,11 +99,18 @@ export const getRules: (
   ),
   new Created(
     'civ1-city:city/created/register-city-build',
-    new Effect((city: City): void =>
-      cityBuildRegistry.register(
-        new CityBuild(city, availableBuildItemsRegistry, ruleRegistry)
-      )
-    )
+    new Effect((city: City): void => {
+      const cityBuild = new CityBuild(
+        city,
+        availableBuildItemsRegistry,
+        ruleRegistry
+      );
+
+      // Its first build is asked for as a new city's (civ-clone/web-renderer#716).
+      cityBuild.setCleared('created');
+
+      cityBuildRegistry.register(cityBuild);
+    })
   ),
   new Created(
     'civ1-city:city/created/register-city-growth',
