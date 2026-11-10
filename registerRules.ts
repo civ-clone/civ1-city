@@ -10,6 +10,7 @@ import cityFoodStorage from './Rules/City/food-storage';
 import cityGrow from './Rules/City/grow';
 import cityGrowthCost from './Rules/City/growth-cost';
 import cityProcessYield from './Rules/City/process-yield';
+import cityRenamed from './Rules/City/renamed';
 import cityShrink from './Rules/City/shrink';
 import cityTileReassigned from './Rules/City/tile-reassigned';
 import cityTileReleased from './Rules/City/tile-released';
@@ -77,6 +78,7 @@ export const register = (game: Game): void => {
       game.engine
     ),
     ...cityGrowthCost(game.difficulty, game.clients),
+    ...cityRenamed(game.cityNames),
     ...cityProcessYield(
       game.cityBuilds,
       game.cityGrowth,
