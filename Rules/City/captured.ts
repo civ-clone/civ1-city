@@ -129,6 +129,8 @@ export const getRules: (
         return;
       }
 
+      // The previous owner's queue goes, as it does when the build is cleared: v474.05 has none.
+      cityBuild.clearQueue();
       cityBuild.reprice();
     })
   ),

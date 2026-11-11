@@ -252,15 +252,18 @@ describe('city:captured', (): void => {
     expect(cityBuild.cleared()).eql({ reason: 'captured', item: Warrior });
   });
 
-  it("should leave the human building the item, from no shields, at the human's own price, off Auto, as v474.05 (civ-clone/web-renderer#954)", async (): Promise<void> => {
+  it("should leave the human building the item, from no shields, at the human's own price, off Auto and with no queue, as v474.05 (civ-clone/web-renderer#954)", async (): Promise<void> => {
     const { city, cityBuild, enemy } = await setUpBuild(),
       cleared = cityBuild.cleared();
 
     clientRegistry.register(new Client(enemy));
+    // The previous owner's queue.
+    cityBuild.enqueue(Warrior);
 
     city.capture(enemy);
 
     expect(cityBuild.auto()).false;
+    expect(cityBuild.queued()).to.eql([]);
     expect(cityBuild.building()!.item()).to.equal(Warrior);
     expect(cityBuild.progress().value()).to.equal(0);
     expect(cityBuild.cost().value()).to.equal(10);

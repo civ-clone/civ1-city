@@ -53,6 +53,8 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
             cityBuild.setCleared('captured');
             return;
         }
+        // The previous owner's queue goes, as it does when the build is cleared: v474.05 has none.
+        cityBuild.clearQueue();
         cityBuild.reprice();
     })),
     new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),
