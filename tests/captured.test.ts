@@ -1,4 +1,5 @@
 import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
+import AIClient from '@civ-clone/core-ai-client/AIClient';
 import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
 import BuildCostModifier from '@civ-clone/core-city-build/Rules/BuildCostModifier';
 import City from '@civ-clone/core-city/City';
@@ -7,8 +8,11 @@ import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import { buildCost } from '@civ-clone/core-city-build/Rules/BuildCost';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
+import Client from '@civ-clone/core-client/Client';
+import ClientRegistry from '@civ-clone/core-client/ClientRegistry';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
+import { Production } from '@civ-clone/civ1-world/Yields';
 import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
@@ -43,7 +47,8 @@ describe('city:captured', (): void => {
     cityBuildRegistry = new CityBuildRegistry(),
     cityGrowthRegistry = new CityGrowthRegistry(),
     playerWorldRegistry = new PlayerWorldRegistry(),
-    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry),
+    clientRegistry = new ClientRegistry();
 
   ruleRegistry.register(
     ...captured(
@@ -53,7 +58,10 @@ describe('city:captured', (): void => {
       cityBuildRegistry,
       undefined,
       playerWorldRegistry,
-      workedTileRegistry
+      workedTileRegistry,
+      undefined,
+      undefined,
+      clientRegistry
     ),
     ...created(
       tileImprovementRegistry,
@@ -161,7 +169,9 @@ describe('city:captured', (): void => {
     expect(cityBuild.progress().value()).to.equal(0);
   });
 
-  it('should clear the item in progress, so its new owner chooses at their own price, even when it was on Auto (civ-clone/web-renderer#670, #500)', async (): Promise<void> => {
+  // A city building Warrior at a price that is doubled for its owner, `computer`, on Auto, and something Auto would
+  //  choose if it were still on when the build is cleared.
+  const setUpBuild = async () => {
     const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
@@ -188,7 +198,6 @@ describe('city:captured', (): void => {
       new Build(new Effect((): IBuildCriterion => new Criterion(() => true))),
       ...buildCost(Warrior, 10),
       ...buildCost(Temple, 30),
-      // Something Auto would choose, if it were still on when the build is cleared.
       new BuildPriority(
         new Criterion((cityBuild, BuildItem): boolean => BuildItem === Temple),
         new Effect((): number => 1)
@@ -209,8 +218,17 @@ describe('city:captured', (): void => {
 
     cityBuild.build(Warrior);
     cityBuild.setAuto(true);
+    cityBuild.progress().add(5);
 
     expect(cityBuild.cost().value()).to.equal(20);
+
+    return { city, cityBuild, enemy };
+  };
+
+  it('should clear the item in progress for a computer player, so it chooses again at its own price, even when it was on Auto, as v474.05 (civ-clone/web-renderer#670, #500, #954)', async (): Promise<void> => {
+    const { city, cityBuild, enemy } = await setUpBuild();
+
+    clientRegistry.register(new AIClient(enemy));
 
     city.capture(enemy);
 
@@ -223,6 +241,60 @@ describe('city:captured', (): void => {
     cityBuild.build(Warrior);
 
     expect(cityBuild.cost().value()).to.equal(10);
+  });
+
+  it('should clear it for a player with no client, as for a computer player', async (): Promise<void> => {
+    const { city, cityBuild, enemy } = await setUpBuild();
+
+    city.capture(enemy);
+
+    expect(cityBuild.building()).null;
+    expect(cityBuild.cleared()).eql({ reason: 'captured', item: Warrior });
+  });
+
+  it("should leave the human building the item, from no shields, at the human's own price, off Auto and with no queue, as v474.05 (civ-clone/web-renderer#954)", async (): Promise<void> => {
+    const { city, cityBuild, enemy } = await setUpBuild(),
+      cleared = cityBuild.cleared();
+
+    clientRegistry.register(new Client(enemy));
+    // The previous owner's queue.
+    cityBuild.enqueue(Warrior);
+
+    city.capture(enemy);
+
+    expect(cityBuild.auto()).false;
+    expect(cityBuild.queued()).to.eql([]);
+    expect(cityBuild.building()!.item()).to.equal(Warrior);
+    expect(cityBuild.progress().value()).to.equal(0);
+    expect(cityBuild.cost().value()).to.equal(10);
+    expect(cityBuild.cleared()).to.equal(cleared);
+
+    cityBuild.add(new Production(10));
+
+    expect(cityBuild.check()).to.be.instanceOf(Warrior);
+  });
+
+  it("should ask the human for a captured city's build when nothing was being built (civ-clone/web-renderer#716)", async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        tileImprovementRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+        size: 2,
+      }),
+      enemy = new Player(),
+      cityBuild = cityBuildRegistry.getByCity(city);
+
+    playerWorldRegistry.register(
+      new PlayerWorld(enemy, city.tile().map(), ruleRegistry)
+    );
+    clientRegistry.register(new Client(enemy));
+
+    city.capture(enemy);
+
+    expect(cityBuild.building()).null;
+    expect(cityBuild.cleared()).eql({ reason: 'captured', item: null });
   });
 
   it("should ask for a new city's first build as a new city's, and a captured one's as a captured city's (civ-clone/web-renderer#716)", async (): Promise<void> => {

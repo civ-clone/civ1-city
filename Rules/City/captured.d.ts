@@ -5,6 +5,7 @@ import { UnitRegistry } from '@civ-clone/core-unit/UnitRegistry';
 import { Engine } from '@civ-clone/core-engine/Engine';
 import { AvailableSpecialistRegistry } from '@civ-clone/core-city/AvailableSpecialistRegistry';
 import { SpecialistRegistry } from '@civ-clone/core-city/SpecialistRegistry';
+import { ClientRegistry } from '@civ-clone/core-client/ClientRegistry';
 import Captured from '@civ-clone/core-city/Rules/Captured';
 import { PlayerWorldRegistry } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
@@ -17,6 +18,7 @@ export declare const getRules: (
   playerWorldRegistry?: PlayerWorldRegistry,
   workedTileRegistry?: WorkedTileRegistry,
   specialistRegistry?: SpecialistRegistry,
-  availableSpecialistRegistry?: AvailableSpecialistRegistry
+  availableSpecialistRegistry?: AvailableSpecialistRegistry,
+  clientRegistry?: ClientRegistry
 ) => Captured[];
 export default getRules;

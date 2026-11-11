@@ -41,7 +41,8 @@ export const register = (game: Game): void => {
       game.playerWorlds,
       game.workedTiles,
       game.specialists,
-      game.availableSpecialists
+      game.availableSpecialists,
+      game.clients
     ),
     ...cityCost(game.cityGrowth, game.playerGovernments, game.units),
     ...cityCreated(
