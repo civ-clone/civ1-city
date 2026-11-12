@@ -13,21 +13,13 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const ProcessYield_1 = require("@civ-clone/core-city/Rules/ProcessYield");
 const Unsupported_1 = require("@civ-clone/core-unit/Rules/Unsupported");
 const getRules = (cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
-    new ProcessYield_1.default('civ1-city:city/process-yield/food', new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Food), new Effect_1.default((cityYield, city, cityYields) => {
-        const cityGrowth = cityGrowthRegistry.getByCity(city), foodStorage = new Yields_2.FoodStorage(cityYield);
-        cityYields.forEach((cityYield) => {
-            if (!(cityYield instanceof Yields_2.UnitSupportFood) ||
-                foodStorage.value() >= 0) {
-                return;
-            }
-            const unit = cityYield.unit();
-            if (unit === null) {
-                return;
-            }
-            ruleRegistry.process(Unsupported_1.default, city, unit, cityYield);
-            foodStorage.subtract(cityYield);
-        });
-        cityGrowth.add(foodStorage);
+    new ProcessYield_1.default('civ1-city:city/process-yield/food', new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Food), 
+    // The city's food, net of what its citizens and units eat, goes into its store, which may run out: a city short of
+    //  food loses a unit it feeds (or a citizen) only when it does, not as soon as it is short (`FoodExhausted`,
+    //  civ-clone/web-renderer#969).
+    new Effect_1.default((cityYield, city) => {
+        const cityGrowth = cityGrowthRegistry.getByCity(city);
+        cityGrowth.add(new Yields_2.FoodStorage(cityYield));
         cityGrowth.check();
     })),
     new ProcessYield_1.default('civ1-city:city/process-yield/production', new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Effect_1.default((cityYield, city, cityYields) => {
