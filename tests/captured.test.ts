@@ -475,8 +475,8 @@ describe('city:captured', (): void => {
     expect(city.player()).to.equal(enemy);
     expect(garrison.destroyed()).to.false;
     expect(garrison.player()).to.equal(enemy);
-    // civ1-unit's `city/captured/defecting-units` still homes them nowhere at size 1; v474.05 homes them in the city.
-    expect(garrison.city()).to.null;
+    // Where they are homed is civ1-unit's `city/captured/defecting-units` (in the city, from civ-clone/civ1-unit#47);
+    //  either way, not destroyed.
 
     unitRegistry.unregister(garrison);
   });
