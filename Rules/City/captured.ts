@@ -31,6 +31,7 @@ import {
   instance as clientRegistryInstance,
 } from '@civ-clone/core-client/ClientRegistry';
 import Captured from '@civ-clone/core-city/Rules/Captured';
+import { InciteRevolt } from '@civ-clone/civ1-unit/Actions';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -134,8 +135,31 @@ export const getRules: (
       cityBuild.reprice();
     })
   ),
+  // A captured city loses a citizen, so one of size 1 is destroyed; but a city incited to revolt (or subverted) by a
+  //  Diplomat loses one only when it has one to spare, and so is never destroyed (civ-clone/web-renderer#969). v474.05
+  //  `CAPTURE.C` `capunit(a, b, c)`, which `city_revolt` (`DIPLOMAT.C`) calls with `c` set (`capunit(new_owner,
+  //  city_id, 1L);`, the flag `incited` "city taken by a diplomat: capture, never destroy" set around it), and a
+  //  conquest (`CONTROL.C`) with it clear:
+  //
+  //  ```c
+  //  if (c == 0 || townbuf[b].f7 > 1)
+  //      if (--townbuf[b].f7 == 0)
+  //          vanish(b, x, y);
+  //  ```
+  //
+  //  (`f7` is the city's size in `CAPTURE.C`'s view of `townbuf`.)
   new Captured(
     'civ1-city:city/captured/shrink',
+    new Criterion(
+      (
+        capturedCity: City,
+        capturingPlayer: Player,
+        player: Player,
+        cause: unknown
+      ): boolean =>
+        !(cause instanceof InciteRevolt) ||
+        cityGrowthRegistry.getByCity(capturedCity).size() > 1
+    ),
     new Effect((capturedCity: City): void =>
       cityGrowthRegistry.getByCity(capturedCity).shrink(Captured)
     )
