@@ -450,7 +450,7 @@ describe('city:captured', (): void => {
   it('should not disband a supported unit twice when the captured city is destroyed either', async (): Promise<void> =>
     disbandOnce(1));
 
-  it('should keep the units an incited city of size 1 brings over, though the city is destroyed', async (): Promise<void> => {
+  it('should keep an incited city of size 1, at size 1, and the units it brings over, as v474.05 (civ-clone/web-renderer#969)', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,
         tileImprovementRegistry,
@@ -470,9 +470,12 @@ describe('city:captured', (): void => {
 
     city.capture(enemy, incite);
 
-    expect(city.destroyed()).to.true;
+    expect(city.destroyed()).to.false;
+    expect(cityGrowthRegistry.getByCity(city).size()).to.equal(1);
+    expect(city.player()).to.equal(enemy);
     expect(garrison.destroyed()).to.false;
     expect(garrison.player()).to.equal(enemy);
+    // civ1-unit's `city/captured/defecting-units` still homes them nowhere at size 1; v474.05 homes them in the city.
     expect(garrison.city()).to.null;
 
     unitRegistry.unregister(garrison);

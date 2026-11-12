@@ -22,6 +22,7 @@ import destroyed from '../Rules/City/destroyed';
 import { expect } from 'chai';
 import foodExhausted from '../Rules/City/food-exhausted';
 import shrink from '../Rules/City/shrink';
+import tiles from '../Rules/City/tiles';
 import { Attack } from '@civ-clone/civ1-unit/Actions';
 import Defeated from '@civ-clone/core-unit/Rules/Defeated';
 import { Tank } from '@civ-clone/civ1-unit/Units';
@@ -30,6 +31,12 @@ import unitDefeated from '@civ-clone/civ1-unit/Rules/Unit/defeated';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import unitStowed from '@civ-clone/civ1-unit/Rules/Unit/stowed';
 import unitYield from '@civ-clone/civ1-unit/Rules/Unit/yield';
+import { InciteRevolt } from '@civ-clone/civ1-unit/Actions';
+import defectingUnits from '@civ-clone/civ1-unit/Rules/City/captured';
+import defendersLosing from '../lib/defendersLosing';
+import playerCityDestroyed from '@civ-clone/civ1-player/Rules/City/destroyed';
+import playerDefeated from '@civ-clone/civ1-player/Rules/Player/defeated';
+import playerUnitDestroyed from '@civ-clone/civ1-player/Rules/Unit/destroyed';
 
 // Ids, not the objects: chai prints what it compares when an assertion fails, and a unit leads to the whole game.
 const ids = (units: Unit[]): string[] => units.map((unit) => unit.id());
@@ -38,13 +45,21 @@ const ids = (units: Unit[]): string[] => units.map((unit) => unit.id());
 //  supported, wherever they are, and the ships and aircraft on its square, wherever their home; not the land units on
 //  its square from elsewhere, nor those aboard a ship there.
 describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void => {
-  const setUp = async () => {
+  // A size-1 city (or of `size`) with units on its square, its player's only one with `lastCity`, the units "from
+  //  elsewhere" then homed nowhere. The rules are registered in the order a game loads their packages: civ1-city's,
+  //  civ1-player's, civ1-unit's.
+  const setUp = async ({
+    lastCity = false,
+    size = 1,
+  }: { lastCity?: boolean; size?: number } = {}) => {
     const game = new Game();
 
     game.rules.register(
       // What a transport can carry, and how much.
       ...canStow(),
       ...unitStowed(),
+      // A city that is kept has its tiles worked again.
+      ...tiles(),
       ...captured(
         game.cities,
         game.units,
@@ -84,6 +99,30 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
         game.specialists,
         game.engine
       ),
+      // A player losing its last city is defeated, and its units with it.
+      ...playerCityDestroyed(
+        game.cities,
+        game.rules,
+        game.units,
+        game.clients,
+        game.players
+      ),
+      ...playerUnitDestroyed(
+        game.cities,
+        game.rules,
+        game.units,
+        game.clients,
+        game.players
+      ),
+      ...playerDefeated(
+        game.currentPlayers,
+        game.players,
+        game.rules,
+        game.units,
+        game.engine
+      ),
+      // The units an incited city takes with it.
+      ...defectingUnits(game.cities, game.units, game.cityGrowth),
       ...unitDestroyed(
         game.units,
         game.unitImprovements,
@@ -118,7 +157,9 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
         return city;
       },
       city = found(player, 4, 4),
-      elsewhere = found(player, 8, 8),
+      elsewhere = lastCity ? null : found(player, 8, 8),
+      // So that taking the city doesn't leave the other player with none, and defeat it, when the city goes.
+      enemyCity = found(enemy, 1, 8),
       make = <T extends Unit>(
         UnitType: new (...args: any[]) => T,
         home: City | null,
@@ -140,17 +181,26 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
       //  nowhere, and a loaded transport: a Trireme with a Warrior and Settlers aboard, and a Carrier with a Fighter.
       ship = make(Trireme, elsewhere),
       homelessShip = make(Trireme, null),
-      ownShip = make(Trireme, city),
+      // None homed in a player's last city, whose loss would defeat the player first (civ-clone/web-renderer#1000).
+      ownShip = make(Trireme, lastCity ? null : city),
       aircraft = make(Fighter, elsewhere),
       homelessAircraft = make(Fighter, null),
       land = make(Warrior, elsewhere),
       homelessLand = make(Warrior, null),
       transport = make(Trireme, elsewhere),
-      cargo = [make(Warrior, elsewhere), make(Settlers, null)],
+      // No Settlers for a player losing its last city, which would keep it in the game (`civ1-player`'s `isDefeated`).
+      cargo = [
+        make(Warrior, elsewhere),
+        make(lastCity ? Warrior : Settlers, null),
+      ],
       carrier = make(Carrier, elsewhere),
       carried = make(Fighter, elsewhere),
-      ownLand = make(Warrior, city),
+      ownLand = make(Warrior, lastCity ? null : city),
       lost: [Unit, Player | null][] = [];
+
+    for (let grown = 1; grown < size; grown++) {
+      game.cityGrowth.getByCity(city).grow();
+    }
 
     cargo.forEach((unit: Unit): void => {
       expect(transport.stow(unit)).true;
@@ -258,6 +308,7 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
     );
 
     expect(city.destroyed()).true;
+    expect(defendersLosing.size).equal(0);
     // The defender once, lost to the attacker, and counted as a loss, as v474.05's `battle` drops it before `vanish`.
     expect(
       lost.filter(([unit]) => unit === defender).map(([, by]) => by === enemy)
@@ -278,6 +329,64 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
       null,
       1
     );
+  });
+
+  it('should leave every unit with the player that incites a city of size 1 to revolt, which keeps it, as v474.05', async (): Promise<void> => {
+    const { city, enemy, game, gone, lost, stay } = await setUp(),
+      diplomat = new Warrior(null, enemy, city.tile(), game.rules);
+
+    city.capture(
+      enemy,
+      new InciteRevolt(city.tile(), city.tile(), diplomat, city, 0, game.rules)
+    );
+
+    expect(city.destroyed()).false;
+    expect(city.player() === enemy).true;
+    expect(game.cityGrowth.getByCity(city).size()).equal(1);
+    expect(lost).length(0);
+    [...gone, ...stay].forEach((unit: Unit): void => {
+      expect(unit.destroyed(), unit.constructor.name).false;
+      expect(unit.player() === enemy, unit.constructor.name).true;
+    });
+  });
+
+  it('should take a citizen from a larger city incited to revolt, as v474.05', async (): Promise<void> => {
+    const { city, enemy, game, lost } = await setUp({ size: 2 }),
+      diplomat = new Warrior(null, enemy, city.tile(), game.rules);
+
+    city.capture(
+      enemy,
+      new InciteRevolt(city.tile(), city.tile(), diplomat, city, 0, game.rules)
+    );
+
+    expect(city.destroyed()).false;
+    expect(game.cityGrowth.getByCity(city).size()).equal(1);
+    expect(lost).length(0);
+  });
+
+  it("should destroy and announce each unit once when it was its player's last city", async (): Promise<void> => {
+    const { city, game, gone, lost, player, stay } = await setUp({
+      lastCity: true,
+    });
+
+    game.rules.process(FoodExhausted, game.cityGrowth.getByCity(city));
+
+    expect(city.destroyed()).true;
+    // The player is defeated, and every unit of its goes with it.
+    expect(game.players.includes(player)).false;
+    expect(
+      [...gone, ...stay].filter((unit: Unit): boolean => !unit.destroyed())
+    ).length(0);
+    // Each once: none is destroyed here before the defeat, which would destroy it again from inside its own
+    //  destruction. (A unit homed in the city is, by `destroy-supported-units`: civ-clone/web-renderer#1000.)
+    const announced = lost.map(([unit]) => unit);
+
+    gone.concat(stay).forEach((unit: Unit): void => {
+      expect(
+        announced.filter((other) => other === unit),
+        unit.constructor.name
+      ).length(1);
+    });
   });
 
   it('should leave a city that only shrinks as it was', async (): Promise<void> => {

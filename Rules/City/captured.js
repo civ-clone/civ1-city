@@ -10,6 +10,7 @@ const AvailableSpecialistRegistry_1 = require("@civ-clone/core-city/AvailableSpe
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const ClientRegistry_1 = require("@civ-clone/core-client/ClientRegistry");
 const Captured_1 = require("@civ-clone/core-city/Rules/Captured");
+const Actions_1 = require("@civ-clone/civ1-unit/Actions");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const RuleIds_1 = require("../../RuleIds");
@@ -57,7 +58,21 @@ const getRules = (cityRegistry = CityRegistry_1.instance, unitRegistry = UnitReg
         cityBuild.clearQueue();
         cityBuild.reprice();
     })),
-    new Captured_1.default('civ1-city:city/captured/shrink', new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),
+    // A captured city loses a citizen, so one of size 1 is destroyed; but a city incited to revolt (or subverted) by a
+    //  Diplomat loses one only when it has one to spare, and so is never destroyed (civ-clone/web-renderer#969). v474.05
+    //  `CAPTURE.C` `capunit(a, b, c)`, which `city_revolt` (`DIPLOMAT.C`) calls with `c` set (`capunit(new_owner,
+    //  city_id, 1L);`, the flag `incited` "city taken by a diplomat: capture, never destroy" set around it), and a
+    //  conquest (`CONTROL.C`) with it clear:
+    //
+    //  ```c
+    //  if (c == 0 || townbuf[b].f7 > 1)
+    //      if (--townbuf[b].f7 == 0)
+    //          vanish(b, x, y);
+    //  ```
+    //
+    //  (`f7` is the city's size in `CAPTURE.C`'s view of `townbuf`.)
+    new Captured_1.default('civ1-city:city/captured/shrink', new Criterion_1.default((capturedCity, capturingPlayer, player, cause) => !(cause instanceof Actions_1.InciteRevolt) ||
+        cityGrowthRegistry.getByCity(capturedCity).size() > 1), new Effect_1.default((capturedCity) => cityGrowthRegistry.getByCity(capturedCity).shrink(Captured_1.default))),
     new Captured_1.default('civ1-city:city/captured/emit', new Effect_1.default((capturedCity, capturingPlayer, player) => {
         engine.emit('city:captured', capturedCity, capturingPlayer, player);
     })),

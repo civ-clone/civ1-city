@@ -25,6 +25,7 @@ import {
 import City from '@civ-clone/core-city/City';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
+import { Low } from '@civ-clone/core-rule/Priorities';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import { Land } from '@civ-clone/civ1-unit/Types';
 import defendersLosing from '../../lib/defendersLosing';
@@ -114,17 +115,26 @@ export const getRules: (
   //  aboard stay in the city, as `civ1-unit`'s `unit/destroyed/lose-cargo` leaves them; an aircraft aboard a Carrier
   //  goes, as an aircraft. Lost to no one, as the city's own units are: v474.05 counts a loss in `drop_u_stack` only
   //  while `see_fight_all` is set, and `CONTROL.C` clears it after a battle, before the city that lost it vanishes.
-  //  Only the city's player can have units on its square as it goes: a city is taken only once no one defends it.
+  //  Only the city's player can have units on its square as it goes: a city is conquered only once nothing defends it,
+  //  and one incited to revolt is never destroyed (`city/captured/shrink`).
+  //
+  //  Low, so after every other player's `Destroyed` rule whichever package loads first: when the city was its player's
+  //  last, `civ1-player`'s `city/destroyed/defeat-when-last-city` defeats the player first, which destroys all its
+  //  units, these among them, once each; destroying one here first would defeat the player from inside its own
+  //  destruction (`civ1-player`'s `unit/destroyed/defeat-when-no-cities`), and it would be destroyed, and announced,
+  //  twice.
   new Destroyed(
     'civ1-city:city/destroyed/destroy-ships-and-aircraft',
+    new Low(),
     new Effect((city: City): void =>
       unitRegistry
         .getByTile(city.tile())
         .filter((unit: Unit): boolean => !(unit instanceof Land))
         .forEach((unit: Unit): void => {
-          // Not one that went with the city already, as it supported it, or with its player, nor a defender whose
-          //  defeat destroyed the city, which is lost to the attacker (`lib/defendersLosing`).
-          if (unit.destroyed() || defendersLosing.has(unit)) {
+          // Not a defender whose defeat destroyed the city, which is lost to the attacker (`lib/defendersLosing`).
+          //  Those that went with the city already, as it supported them, or with its player, are no longer on the
+          //  square.
+          if (defendersLosing.has(unit)) {
             return;
           }
 
