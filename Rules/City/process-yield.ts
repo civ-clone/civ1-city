@@ -7,11 +7,7 @@ import {
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import { Food, Production } from '../..//Yields';
-import {
-  FoodStorage,
-  UnitSupportFood,
-  UnitSupportProduction,
-} from '../../Yields';
+import { FoodStorage, UnitSupportProduction } from '../../Yields';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -44,30 +40,13 @@ export const getRules: (
     new Criterion(
       (cityYield: Yield): cityYield is Food => cityYield instanceof Food
     ),
-    new Effect((cityYield: Food, city: City, cityYields: Yield[]): void => {
-      const cityGrowth = cityGrowthRegistry.getByCity(city),
-        foodStorage = new FoodStorage(cityYield);
+    // The city's food, net of what its citizens and units eat, goes into its store, which may run out: a city short of
+    //  food loses a unit it feeds (or a citizen) only when it does, not as soon as it is short (`FoodExhausted`,
+    //  civ-clone/web-renderer#969).
+    new Effect((cityYield: Food, city: City): void => {
+      const cityGrowth = cityGrowthRegistry.getByCity(city);
 
-      cityYields.forEach((cityYield) => {
-        if (
-          !(cityYield instanceof UnitSupportFood) ||
-          foodStorage.value() >= 0
-        ) {
-          return;
-        }
-
-        const unit = cityYield.unit();
-
-        if (unit === null) {
-          return;
-        }
-
-        ruleRegistry.process(Unsupported, city, unit, cityYield as Yield);
-
-        foodStorage.subtract(cityYield as Yield);
-      });
-
-      cityGrowth.add(foodStorage);
+      cityGrowth.add(new FoodStorage(cityYield));
       cityGrowth.check();
     })
   ),
