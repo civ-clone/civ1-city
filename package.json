@@ -39,8 +39,7 @@
   "dependencies": {
     "@civ-clone/base-city-tiles-fat-cross": "^0.1.0",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
-    "@civ-clone/base-city-yield-unit-support-food": "^0.1.2",
-    "@civ-clone/base-city-yield-unit-support-production": "^0.1.2",
+    "@civ-clone/base-government-unit-support": "github:civ-clone/base-government-unit-support#feat/unit-support",
     "@civ-clone/civ1-difficulty": "github:civ-clone/civ1-difficulty",
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",

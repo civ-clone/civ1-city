@@ -33,16 +33,21 @@ import Government from '@civ-clone/core-government/Government';
 import PopulationSupportFood from '@civ-clone/base-city-yield-population-support-food/PopulationSupportFood';
 import { Settlers } from '@civ-clone/civ1-unit/Units';
 import Unit from '@civ-clone/core-unit/Unit';
-import UnitSupportFood from '@civ-clone/base-city-yield-unit-support-food/UnitSupportFood';
-import UnitSupportProduction from '@civ-clone/base-city-yield-unit-support-production/UnitSupportProduction';
 import Yield from '@civ-clone/core-yield/Yield';
+import {
+  exceedsFreeSupport,
+  foodSupport,
+  isSupportedBy,
+  productionSupport,
+} from '@civ-clone/base-government-unit-support/lib/unitSupport';
+import { isUnderGovernment } from '@civ-clone/base-government-unit-support/lib/government';
 
 // Diplomats and Caravans cost no shield under any government, and don't use up a free unit under Anarchy or Despotism
 //  (v474.05: OpenCivOne `CityWorker.cs` L422-L430).
-const supported = (unit: Unit): boolean =>
-  [Air, Fortifiable, Naval, Worker].some(
-    (UnitType: typeof Unit): boolean => unit instanceof UnitType
-  ) && !(unit instanceof Diplomatic);
+const supported = isSupportedBy(
+  [Air, Fortifiable, Naval, Worker],
+  [Diplomatic]
+);
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,
@@ -76,13 +81,14 @@ export const getRules: (
             .some((unit: Unit): boolean => unit instanceof UnitType)
         ),
         new Criterion((city: City): boolean =>
-          playerGovernmentRegistry.getByPlayer(city.player()).is(...governments)
+          isUnderGovernment(city, governments, playerGovernmentRegistry)
         ),
         new Effect((city: City): Yield[] =>
-          unitRegistry
-            .getByCity(city)
-            .filter((unit: Unit): boolean => unit instanceof UnitType)
-            .map((unit: Unit) => new UnitSupportFood(cost, unit) as Yield)
+          foodSupport(
+            unitRegistry.getByCity(city),
+            (unit: Unit): boolean => unit instanceof UnitType,
+            cost
+          )
         )
       )
   ),
@@ -90,39 +96,37 @@ export const getRules: (
   new Cost(
     'civ1-city:city/cost/unit-support-production/anarchy-despotism',
     new Criterion((city: City): boolean =>
-      playerGovernmentRegistry.getByPlayer(city.player()).is(Anarchy, Despotism)
+      isUnderGovernment(city, [Anarchy, Despotism], playerGovernmentRegistry)
     ),
-    new Criterion((city: City): boolean => {
-      const cityGrowth = cityGrowthRegistry.getByCity(city);
-
-      return (
-        unitRegistry.getByCity(city).filter(supported).length >
-        cityGrowth.size()
-      );
-    }),
-    new Effect((city: City): Yield[] => {
-      const cityGrowth = cityGrowthRegistry.getByCity(city);
-
-      return unitRegistry
-        .getByCity(city)
-        .filter(supported)
-        .slice(cityGrowth.size())
-        .map((unit) => new UnitSupportProduction(1, unit) as Yield);
-    })
+    // As many units as the city has citizens are free.
+    new Criterion((city: City): boolean =>
+      exceedsFreeSupport(
+        unitRegistry.getByCity(city),
+        supported,
+        cityGrowthRegistry.getByCity(city).size()
+      )
+    ),
+    new Effect((city: City): Yield[] =>
+      productionSupport(
+        unitRegistry.getByCity(city),
+        supported,
+        cityGrowthRegistry.getByCity(city).size(),
+        1
+      )
+    )
   ),
 
   new Cost(
     'civ1-city:city/cost/unit-support-production/communism-democracy-monarchy-republic',
     new Criterion((city: City): boolean =>
-      playerGovernmentRegistry
-        .getByPlayer(city.player())
-        .is(Communism, Democracy, Monarchy, Republic)
+      isUnderGovernment(
+        city,
+        [Communism, Democracy, Monarchy, Republic],
+        playerGovernmentRegistry
+      )
     ),
     new Effect((city: City): Yield[] =>
-      unitRegistry
-        .getByCity(city)
-        .filter(supported)
-        .map((unit) => new UnitSupportProduction(1, unit) as Yield)
+      productionSupport(unitRegistry.getByCity(city), supported, 0, 1)
     )
   ),
 ];
