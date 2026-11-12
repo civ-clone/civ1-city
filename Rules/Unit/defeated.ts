@@ -14,6 +14,7 @@ import { Attack } from '@civ-clone/civ1-unit/Actions';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Defeated from '@civ-clone/core-unit/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
+import defendersLosing from '../../lib/defendersLosing';
 
 export const getRules: (
   cityRegistry?: CityRegistry,
@@ -36,7 +37,14 @@ export const getRules: (
       const city = cityRegistry.getByTile(defeated.tile())!,
         cityGrowth = cityGrowthRegistry.getByCity(city);
 
-      cityGrowth.shrink(action);
+      // Left to the attacker's win, should the city go (civ-clone/web-renderer#969).
+      defendersLosing.add(defeated);
+
+      try {
+        cityGrowth.shrink(action);
+      } finally {
+        defendersLosing.delete(defeated);
+      }
     })
   ),
   new Defeated(

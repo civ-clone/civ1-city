@@ -141,6 +141,38 @@ describe('city:cost', (): void => {
     });
   });
 
+  it('should cost nothing for units with no home, even standing in the city (civ-clone/web-renderer#969)', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+      }),
+      playerGovernment = playerGovernmentRegistry.getByPlayer(city.player());
+
+    // As Settlers that outlive their city with another player's city nearest are, and a bribed unit can be.
+    new Settlers(null, city.player(), city.tile(), ruleRegistry);
+    new Warrior(null, city.player(), city.tile(), ruleRegistry);
+    new Warrior(null, city.player(), city.tile(), ruleRegistry);
+
+    [Anarchy, Communism, Democracy, Despotism, Monarchy, Republic].forEach(
+      (TargetGovernment: typeof Government): void => {
+        playerGovernment.set(new TargetGovernment());
+
+        expect(
+          city
+            .yields()
+            .filter(
+              (cityYield) =>
+                cityYield instanceof UnitSupportFood ||
+                cityYield instanceof UnitSupportProduction
+            )
+            .filter((cityYield) => cityYield.value() !== 0),
+          TargetGovernment.name
+        ).to.have.length(0);
+      }
+    );
+  });
+
   it('should cost Production to support military units', async (): Promise<void> => {
     const city = await setUpCity({
         ruleRegistry,
