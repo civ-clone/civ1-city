@@ -1,5 +1,6 @@
 import cityBuildingCancelled from './Rules/City/building-cancelled';
 import cityBuildingComplete from './Rules/City/building-complete';
+import cityBuildingHeld from './Rules/City/building-held';
 import cityCanBeWorked from './Rules/City/can-be-worked';
 import cityCaptured from './Rules/City/captured';
 import cityCost from './Rules/City/cost';
@@ -31,6 +32,7 @@ export const register = (game: Game): void => {
   game.rules.register(
     ...cityBuildingCancelled(game.rules),
     ...cityBuildingComplete(game.engine, game.rules),
+    ...cityBuildingHeld(game.engine),
     ...cityCanBeWorked(game.cities, game.units, game.workedTiles),
     ...cityCaptured(
       game.cities,
