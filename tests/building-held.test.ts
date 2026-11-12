@@ -6,15 +6,18 @@ import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Engine from '@civ-clone/core-engine/Engine';
+import BuildingHeld from '@civ-clone/core-city-build/Rules/BuildingHeld';
+import { Game } from '@civ-clone/core-game/Game';
 import Hold from '@civ-clone/core-city-build/Rules/Hold';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import { Warrior } from '@civ-clone/civ1-unit/Units';
 import buildingHeld from '../Rules/City/building-held';
 import { buildCost } from '@civ-clone/core-city-build/Rules/BuildCost';
 import { expect } from 'chai';
+import register from '../registerRules';
 import setUpCity from './lib/setUpCity';
 
-// The event a client says a build is waiting by, once (civ-clone/web-renderer#970).
+// The event a client says a build is waiting by, each turn it waits (civ-clone/web-renderer#970).
 describe('city:building-held', (): void => {
   const setUp = async () => {
     const ruleRegistry = new RuleRegistry(),
@@ -57,19 +60,27 @@ describe('city:building-held', (): void => {
     return { cityBuild, events, holding };
   };
 
-  it('should emit once, with the build, the item and the holding rules, when shields pay for a held build', async (): Promise<void> => {
+  it('should emit, with the build, the item and the holding rules, on each check of a paid build that waits', async (): Promise<void> => {
     const { cityBuild, events } = await setUp();
 
+    cityBuild.add(new BuildProgress(5));
+    cityBuild.check();
+
+    expect(events).eql([]);
+
+    // Adding shields says nothing: checking does.
     cityBuild.add(new BuildProgress(5));
 
     expect(events).eql([]);
 
-    cityBuild.add(new BuildProgress(5));
     cityBuild.check();
     cityBuild.add(new BuildProgress(5));
     cityBuild.check();
 
-    expect(events).eql([[true, Warrior, ['test:city/hold/warrior']]]);
+    expect(events).eql([
+      [true, Warrior, ['test:city/hold/warrior']],
+      [true, Warrior, ['test:city/hold/warrior']],
+    ]);
   });
 
   it('should not emit for a build that completes', async (): Promise<void> => {
@@ -80,5 +91,21 @@ describe('city:building-held', (): void => {
 
     expect(cityBuild.check()).instanceof(Warrior);
     expect(events).eql([]);
+  });
+
+  it('should be `civ1-city:city/building-held/emit`', (): void => {
+    expect(buildingHeld(new Engine()).map((rule) => rule.id())).eql([
+      'civ1-city:city/building-held/emit',
+    ]);
+  });
+
+  it('should be registered with the rest of the package', (): void => {
+    const game = new Game();
+
+    register(game);
+
+    expect(
+      game.rules.get(BuildingHeld).map((rule: BuildingHeld) => rule.id())
+    ).eql(['civ1-city:city/building-held/emit']);
   });
 });

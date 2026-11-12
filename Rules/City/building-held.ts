@@ -10,8 +10,8 @@ import Effect from '@civ-clone/core-rule/Effect';
 export const getRules: (engine?: Engine) => BuildingHeld[] = (
   engine: Engine = engineInstance
 ): BuildingHeld[] => [
-  // A city's build is paid for and a `Hold` rule keeps it waiting: said once, with the item and the ids of the rules
-  //  holding it, for a client to word (civ-clone/web-renderer#970).
+  // A city's build is paid for and `Hold` rules keep it waiting: said each turn it waits, with the item and the ids of
+  //  the rules holding it, for a client to word, and to tell its player of once (civ-clone/web-renderer#970).
   new BuildingHeld(
     'civ1-city:city/building-held/emit',
     new Effect(
