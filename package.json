@@ -37,6 +37,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@civ-clone/base-city-tiles-fat-cross": "github:civ-clone/base-city-tiles-fat-cross#feat/fat-cross",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
     "@civ-clone/base-city-yield-unit-support-food": "^0.1.2",
     "@civ-clone/base-city-yield-unit-support-production": "^0.1.2",
