@@ -37,6 +37,7 @@ import defendersLosing from '../lib/defendersLosing';
 import playerCityDestroyed from '@civ-clone/civ1-player/Rules/City/destroyed';
 import playerDefeated from '@civ-clone/civ1-player/Rules/Player/defeated';
 import playerUnitDestroyed from '@civ-clone/civ1-player/Rules/Unit/destroyed';
+import traits from '@civ-clone/civ1-unit/Rules/Unit/traits';
 
 // Ids, not the objects: chai prints what it compares when an assertion fails, and a unit leads to the whole game.
 const ids = (units: Unit[]): string[] => units.map((unit) => unit.id());
@@ -55,6 +56,8 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
     const game = new Game();
 
     game.rules.register(
+      // civ1-unit's unit traits, registered first as in a game: what a transport carries is its `Carries`.
+      ...traits(),
       // What a transport can carry, and how much.
       ...canStow(),
       ...unitStowed(),

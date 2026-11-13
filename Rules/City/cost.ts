@@ -1,11 +1,4 @@
 import {
-  Air,
-  Diplomatic,
-  Fortifiable,
-  Naval,
-  Worker,
-} from '@civ-clone/civ1-unit/Types';
-import {
   Anarchy,
   Communism,
   Democracy,
@@ -30,24 +23,24 @@ import Cost from '@civ-clone/core-city/Rules/Cost';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Government from '@civ-clone/core-government/Government';
+import NonCombatant from '@civ-clone/base-unit-trait-non-combatant/NonCombatant';
 import PopulationSupportFood from '@civ-clone/base-city-yield-population-support-food/PopulationSupportFood';
 import { Settlers } from '@civ-clone/civ1-unit/Units';
 import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-yield/Yield';
 import {
+  UnitPredicate,
   exceedsFreeSupport,
   foodSupport,
-  isSupportedBy,
   productionSupport,
 } from '@civ-clone/base-government-unit-support/lib/unitSupport';
 import { isUnderGovernment } from '@civ-clone/base-government-unit-support/lib/government';
 
 // Diplomats and Caravans cost no shield under any government, and don't use up a free unit under Anarchy or Despotism
-//  (v474.05: OpenCivOne `CityWorker.cs` L422-L430).
-const supported = isSupportedBy(
-  [Air, Fortifiable, Naval, Worker],
-  [Diplomatic]
-);
+//  (v474.05: OpenCivOne `CityWorker.cs` L422-L430): every unit is supported but those that are `NonCombatant`. Asked of
+//  the unit, so of its own game's rules.
+export const supported: UnitPredicate = (unit: Unit): boolean =>
+  !unit.hasTrait(NonCombatant);
 
 export const getRules: (
   cityGrowthRegistry?: CityGrowthRegistry,

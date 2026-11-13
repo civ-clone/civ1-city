@@ -29,6 +29,7 @@ import { Low } from '@civ-clone/core-rule/Priorities';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import { Land } from '@civ-clone/civ1-unit/Types';
 import defendersLosing from '../../lib/defendersLosing';
+import { isA } from '@civ-clone/core-unit/traits';
 import Player from '@civ-clone/core-player/Player';
 import Removed from '@civ-clone/core-tile-improvement/Rules/Removed';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
@@ -129,7 +130,7 @@ export const getRules: (
     new Effect((city: City): void =>
       unitRegistry
         .getByTile(city.tile())
-        .filter((unit: Unit): boolean => !(unit instanceof Land))
+        .filter((unit: Unit): boolean => !isA(unit, Land))
         .forEach((unit: Unit): void => {
           // Not a defender whose defeat destroyed the city, which is lost to the attacker (`lib/defendersLosing`).
           //  Those that went with the city already, as it supported them, or with its player, are no longer on the

@@ -43,6 +43,7 @@ import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import unitUnsupported from '../Rules/Unit/unsupported';
 import { CityImprovementRegistry } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import traits from '@civ-clone/civ1-unit/Rules/Unit/traits';
 
 describe('city:process-yield', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -68,6 +69,8 @@ describe('city:process-yield', (): void => {
   );
 
   ruleRegistry.register(
+    // civ1-unit's unit traits, registered first as in a game: `cost` asks which units are `NonCombatant`.
+    ...traits(),
     new PlayerAdded(
       new Effect((player: Player) => {
         const playerGovernment = new PlayerGovernment(
