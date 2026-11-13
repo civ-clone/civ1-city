@@ -2,30 +2,34 @@ import {
   RuleRegistry,
   instance as ruleRegistryInstance,
 } from '@civ-clone/core-rule/RuleRegistry';
+import {
+  exhaustFood,
+  grow,
+  hasFoodToGrow,
+  isFoodExhausted,
+} from '@civ-clone/base-city-lifecycle/lib/foodStorage';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import FoodStorage from '@civ-clone/core-city-growth/Rules/FoodStorage';
-import FoodExhausted from '@civ-clone/core-city-growth/Rules/FoodExhausted';
 
 export const getRules: (ruleRegistry?: RuleRegistry) => FoodStorage[] = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): FoodStorage[] => [
   new FoodStorage(
     'civ1-city:city/food-storage/grow',
-    new Criterion(
-      (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.progress().value() >= cityGrowth.cost().value()
+    new Criterion((cityGrowth: CityGrowth): boolean =>
+      hasFoodToGrow(cityGrowth)
     ),
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.grow())
+    new Effect((cityGrowth: CityGrowth): void => grow(cityGrowth))
   ),
   new FoodStorage(
     'civ1-city:city/food-storage/exhausted',
-    new Criterion(
-      (cityGrowth: CityGrowth): boolean => cityGrowth.progress().value() < 0
+    new Criterion((cityGrowth: CityGrowth): boolean =>
+      isFoodExhausted(cityGrowth)
     ),
     new Effect((cityGrowth: CityGrowth): void => {
-      ruleRegistry.process(FoodExhausted, cityGrowth);
+      exhaustFood(cityGrowth, ruleRegistry);
     })
   ),
 ];

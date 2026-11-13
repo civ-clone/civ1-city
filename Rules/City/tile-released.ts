@@ -6,6 +6,7 @@ import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
 import Tile from '@civ-clone/core-world/Tile';
 import TileReleased from '@civ-clone/core-city/Rules/TileReleased';
+import { emitTileReleased } from '@civ-clone/base-city-lifecycle/lib/events';
 
 export const getRules: (engine?: Engine) => TileReleased[] = (
   engine: Engine = engineInstance
@@ -14,7 +15,7 @@ export const getRules: (engine?: Engine) => TileReleased[] = (
   new TileReleased(
     'civ1-city:city/tile-released/emit',
     new Effect((city: City, tile: Tile): void => {
-      engine.emit('city:tile-released', city, tile);
+      emitTileReleased(city, tile, engine);
     })
   ),
 ];

@@ -1,7 +1,6 @@
+import { CityNames } from '@civ-clone/base-city-lifecycle/lib/claimName';
 import Renamed from '@civ-clone/core-city/Rules/Renamed';
-export type CityNames = {
-  claim(name: string): void;
-};
+export type { CityNames };
 /**
  * A city's new name is claimed, so that no city founded later is given it too (civ-clone/web-renderer#712, #876),
  * however the city came to be renamed: by its player, by another client or by a computer player. Its old name stays
