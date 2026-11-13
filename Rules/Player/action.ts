@@ -1,8 +1,4 @@
 import {
-  CityBuild as CityBuildAction,
-  ChangeProduction,
-} from '@civ-clone/core-city-build/PlayerActions';
-import {
   CityBuildRegistry,
   instance as cityBuildRegistryInstance,
 } from '@civ-clone/core-city-build/CityBuildRegistry';
@@ -14,11 +10,17 @@ import {
   SpecialistRegistry,
   instance as specialistRegistryInstance,
 } from '@civ-clone/core-city/SpecialistRegistry';
+import {
+  changeProductionActions,
+  changeSpecialistActions,
+  changeWorkedTileActions,
+  chooseProductionActions,
+  hasCity,
+  hasCityToChangeProduction,
+  hasCityToChooseProduction,
+  hasSpecialist,
+} from '@civ-clone/base-city-lifecycle/lib/playerActions';
 import Action from '@civ-clone/core-player/Rules/Action';
-import ChangeSpecialist from '@civ-clone/core-city/PlayerActions/ChangeSpecialist';
-import ChangeWorkedTile from '@civ-clone/core-city/PlayerActions/ChangeWorkedTile';
-import City from '@civ-clone/core-city/City';
-import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
@@ -36,66 +38,35 @@ export const getRules: (
     new Action(
       'civ1-city:player/action/choose-production',
       new Criterion((player: Player): boolean =>
-        cityRegistry
-          .getByPlayer(player)
-          .map((city: City): CityBuild => cityBuildRegistry.getByCity(city))
-          .some((cityBuild: CityBuild): boolean => !cityBuild.building())
+        hasCityToChooseProduction(player, cityRegistry, cityBuildRegistry)
       ),
       new Effect((player: Player) =>
-        cityRegistry
-          .getByPlayer(player)
-          .map((city: City): CityBuild => cityBuildRegistry.getByCity(city))
-          .filter((cityBuild: CityBuild): boolean => !cityBuild.building())
-          .map(
-            (cityBuild: CityBuild): CityBuildAction =>
-              new CityBuildAction(player, cityBuild)
-          )
+        chooseProductionActions(player, cityRegistry, cityBuildRegistry)
       )
     ),
     new Action(
       'civ1-city:player/action/change-production',
       new Criterion((player: Player): boolean =>
-        cityRegistry
-          .getByPlayer(player)
-          .map((city: City): CityBuild => cityBuildRegistry.getByCity(city))
-          .some((cityBuild: CityBuild): boolean => !!cityBuild.building())
+        hasCityToChangeProduction(player, cityRegistry, cityBuildRegistry)
       ),
       new Effect((player: Player) =>
-        cityRegistry
-          .getByPlayer(player)
-          .map((city: City): CityBuild => cityBuildRegistry.getByCity(city))
-          .filter((cityBuild: CityBuild): boolean => !!cityBuild.building())
-          .map(
-            (cityBuild: CityBuild): ChangeProduction =>
-              new ChangeProduction(player, cityBuild)
-          )
+        changeProductionActions(player, cityRegistry, cityBuildRegistry)
       )
     ),
     new Action(
       'civ1-city:player/action/change-worked-tile',
-      new Criterion(
-        (player: Player): boolean => cityRegistry.getByPlayer(player).length > 0
-      ),
+      new Criterion((player: Player): boolean => hasCity(player, cityRegistry)),
       new Effect((player: Player) =>
-        cityRegistry
-          .getByPlayer(player)
-          .map(
-            (city: City): ChangeWorkedTile => new ChangeWorkedTile(player, city)
-          )
+        changeWorkedTileActions(player, cityRegistry)
       )
     ),
     new Action(
       'civ1-city:player/action/change-specialist',
       new Criterion((player: Player): boolean =>
-        cityRegistry
-          .getByPlayer(player)
-          .some((city: City) => specialistRegistry.getByCity(city).length > 0)
+        hasSpecialist(player, cityRegistry, specialistRegistry)
       ),
       new Effect((player: Player) =>
-        cityRegistry
-          .getByPlayer(player)
-          .flatMap((city: City) => specialistRegistry.getByCity(city))
-          .map((specialist) => new ChangeSpecialist(player, specialist))
+        changeSpecialistActions(player, cityRegistry, specialistRegistry)
       )
     ),
   ];

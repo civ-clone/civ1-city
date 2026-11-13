@@ -37,6 +37,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@civ-clone/base-city-lifecycle": "github:civ-clone/base-city-lifecycle#feat/city-lifecycle",
     "@civ-clone/base-city-tiles-fat-cross": "^0.1.0",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
     "@civ-clone/base-government-unit-support": "^0.1.0",
@@ -48,7 +49,6 @@
     "@civ-clone/core-city": "^0.1.24",
     "@civ-clone/core-city-build": "^0.1.22",
     "@civ-clone/core-city-growth": "^0.1.6",
-    "@civ-clone/core-city-happiness": "^0.1.2",
     "@civ-clone/core-city-improvement": "^0.1.5",
     "@civ-clone/core-client": "^0.1.0",
     "@civ-clone/core-difficulty": "^0.1.0",

@@ -7,7 +7,6 @@ import {
   instance as cityGrowthRegistryInstance,
 } from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import { Food, Production } from '../..//Yields';
-import { FoodStorage, UnitSupportProduction } from '../../Yields';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -16,12 +15,15 @@ import {
   UnitRegistry,
   instance as unitRegistryInstance,
 } from '@civ-clone/core-unit/UnitRegistry';
+import {
+  buildWithProduction,
+  storeFood,
+} from '@civ-clone/base-city-lifecycle/lib/processYield';
 import City from '@civ-clone/core-city/City';
-import CivilDisorder from '@civ-clone/core-city-happiness/Rules/CivilDisorder';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import ProcessYield from '@civ-clone/core-city/Rules/ProcessYield';
-import Unsupported from '@civ-clone/core-unit/Rules/Unsupported';
+import { UnitSupportProduction } from '../../Yields';
 import Yield from '@civ-clone/core-yield/Yield';
 
 export const getRules: (
@@ -44,10 +46,7 @@ export const getRules: (
     //  food loses a unit it feeds (or a citizen) only when it does, not as soon as it is short (`FoodExhausted`,
     //  civ-clone/web-renderer#969).
     new Effect((cityYield: Food, city: City): void => {
-      const cityGrowth = cityGrowthRegistry.getByCity(city);
-
-      cityGrowth.add(new FoodStorage(cityYield));
-      cityGrowth.check();
+      storeFood(cityYield, city, cityGrowthRegistry);
     })
   ),
 
@@ -57,49 +56,17 @@ export const getRules: (
       (cityYield: Yield): cityYield is Production =>
         cityYield instanceof Production
     ),
+    // Units the city can't support go, furthest first, and there's no production while there's civil disorder.
     new Effect(
       (cityYield: Production, city: City, cityYields: Yield[]): void => {
-        const cityBuild = cityBuildRegistry.getByCity(city),
-          availableProduction = cityYield.clone();
-
-        (cityYields as (Yield | UnitSupportProduction)[])
-          .filter(
-            (cityYield): cityYield is UnitSupportProduction =>
-              cityYield instanceof UnitSupportProduction
-          )
-          .sort(
-            (yieldA, yieldB) =>
-              (yieldB.unit()?.tile().distanceFrom(city.tile()) ?? 0) -
-              (yieldA.unit()?.tile().distanceFrom(city.tile()) ?? 0)
-          )
-          .forEach((cityYield) => {
-            if (availableProduction.value() >= 0) {
-              return;
-            }
-
-            const unit = cityYield.unit();
-
-            if (unit === null) {
-              return;
-            }
-
-            ruleRegistry.process(Unsupported, city, unit, cityYield as Yield);
-
-            availableProduction.subtract(cityYield as Yield);
-          });
-
-        const updatedCityYields = city.yields();
-
-        // No production happens when there's civil disorder.
-        if (
-          !ruleRegistry
-            .process(CivilDisorder, city, updatedCityYields)
-            .some((result: boolean): boolean => result)
-        ) {
-          cityBuild.add(availableProduction);
-        }
-
-        cityBuild.check();
+        buildWithProduction(
+          cityYield,
+          city,
+          cityYields,
+          UnitSupportProduction,
+          cityBuildRegistry,
+          ruleRegistry
+        );
       }
     )
   ),

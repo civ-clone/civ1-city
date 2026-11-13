@@ -2,25 +2,23 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
+import {
+  emitFoodStorageExhausted,
+  emptyFoodStore,
+  foodSupportedUnit as baseFoodSupportedUnit,
+  loseFoodSupportedUnit,
+  shrinkFromFamine,
+} from '@civ-clone/base-city-lifecycle/lib/famine';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import FoodExhausted from '@civ-clone/core-city-growth/Rules/FoodExhausted';
 import Unit from '@civ-clone/core-unit/Unit';
 import { UnitSupportFood } from '../../Yields';
-import Yield from '@civ-clone/core-yield/Yield';
 
 // The first unit the city feeds, in the order its units were built (Settlers, in Civ1), or `null`.
 const foodSupportedUnit = (cityGrowth: CityGrowth): Unit | null =>
-  (
-    cityGrowth
-      .city()
-      .yields()
-      .find(
-        (cityYield: Yield): boolean =>
-          cityYield instanceof UnitSupportFood && cityYield.unit() !== null
-      ) as UnitSupportFood | undefined
-  )?.unit() ?? null;
+  baseFoodSupportedUnit(cityGrowth, UnitSupportFood);
 
 // When a city's food store runs out, v474.05 loses one Settlers the city supports, or failing that a citizen, and empties
 //  the store (civd `CITYMGT.C` `city_process()`):
@@ -54,15 +52,11 @@ export const getRules: (engine?: Engine) => FoodExhausted[] = (
   new FoodExhausted(
     'civ1-city:city/food-exhausted/emit',
     new Effect((cityGrowth: CityGrowth): void => {
-      const unit = foodSupportedUnit(cityGrowth);
-
-      if (unit === null) {
-        engine.emit('city:food-storage-exhausted', cityGrowth.city());
-
-        return;
-      }
-
-      engine.emit('city:food-storage-exhausted', cityGrowth.city(), unit);
+      emitFoodStorageExhausted(
+        cityGrowth,
+        foodSupportedUnit(cityGrowth),
+        engine
+      );
     })
   ),
   // One, in place of a citizen, whatever the city's size (#969).
@@ -73,7 +67,7 @@ export const getRules: (engine?: Engine) => FoodExhausted[] = (
         foodSupportedUnit(cityGrowth) !== null
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      foodSupportedUnit(cityGrowth)!.destroy()
+      loseFoodSupportedUnit(cityGrowth, UnitSupportFood)
     )
   ),
   new FoodExhausted(
@@ -82,14 +76,12 @@ export const getRules: (engine?: Engine) => FoodExhausted[] = (
       (cityGrowth: CityGrowth): boolean =>
         foodSupportedUnit(cityGrowth) === null
     ),
-    new Effect((cityGrowth: CityGrowth): void =>
-      cityGrowth.shrink(FoodExhausted)
-    )
+    new Effect((cityGrowth: CityGrowth): void => shrinkFromFamine(cityGrowth))
   ),
   // Either way (#969).
   new FoodExhausted(
     'civ1-city:city/food-exhausted/empty-food-store',
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.empty())
+    new Effect((cityGrowth: CityGrowth): void => emptyFoodStore(cityGrowth))
   ),
 ];
 

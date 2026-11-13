@@ -6,6 +6,7 @@ import { IBuildable as Buildable } from '@civ-clone/core-city-build/Buildable';
 import BuildingHeld from '@civ-clone/core-city-build/Rules/BuildingHeld';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import Effect from '@civ-clone/core-rule/Effect';
+import { emitBuildingHeld } from '@civ-clone/base-city-lifecycle/lib/events';
 
 export const getRules: (engine?: Engine) => BuildingHeld[] = (
   engine: Engine = engineInstance
@@ -20,7 +21,7 @@ export const getRules: (engine?: Engine) => BuildingHeld[] = (
         item: Buildable,
         held: (string | null)[]
       ): void => {
-        engine.emit('city:building-held', cityBuild, item, held);
+        emitBuildingHeld(cityBuild, item, held, engine);
       }
     )
   ),

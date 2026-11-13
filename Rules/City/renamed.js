@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
+const claimName_1 = require("@civ-clone/base-city-lifecycle/lib/claimName");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Renamed_1 = require("@civ-clone/core-city/Rules/Renamed");
 /**
@@ -9,7 +10,7 @@ const Renamed_1 = require("@civ-clone/core-city/Rules/Renamed");
  * taken, as a name in use once always has.
  */
 const getRules = (cityNames) => [
-    new Renamed_1.default(new Effect_1.default((city) => cityNames.claim(city.name()))),
+    new Renamed_1.default(new Effect_1.default((city) => (0, claimName_1.claimName)(city, cityNames))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
