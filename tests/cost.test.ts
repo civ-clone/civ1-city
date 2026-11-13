@@ -39,7 +39,16 @@ import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprov
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
-import cityCost from '../Rules/City/cost';
+import * as Units from '@civ-clone/civ1-unit/Units';
+import {
+  Air,
+  Diplomatic,
+  Fortifiable,
+  Naval,
+  Worker,
+} from '@civ-clone/civ1-unit/Types';
+import cityCost, { supported } from '../Rules/City/cost';
+import Unit from '@civ-clone/core-unit/Unit';
 import cityCreated from '../Rules/City/created';
 import cityYield from '../Rules/City/yield';
 import { expect } from 'chai';
@@ -48,6 +57,7 @@ import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 import setUpCity from './lib/setUpCity';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import Priority from '@civ-clone/core-rule/Priority';
+import traits from '@civ-clone/civ1-unit/Rules/Unit/traits';
 
 describe('city:cost', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -62,6 +72,8 @@ describe('city:cost', (): void => {
     cityImprovementRegistry = new CityImprovementRegistry();
 
   ruleRegistry.register(
+    // civ1-unit's unit traits, registered first as in a game: `cost` asks which units are `NonCombatant`.
+    ...traits(),
     ...playerAdded(
       availableGovernmentRegistry,
       playerGovernmentRegistry,
@@ -421,4 +433,29 @@ describe('city:cost', (): void => {
         );
       })
   );
+
+  // Which units need support was `[Air, Fortifiable, Naval, Worker]` but not `Diplomatic`, before it was "not
+  //  `NonCombatant`": the same answer for each of the 28 types, asked of a unit in these rules.
+  it('should support the same unit types as the class lists did', (): void => {
+    const UnitTypes = Object.values(Units) as unknown as (typeof Unit)[],
+      old = (unit: Unit): boolean =>
+        ([Air, Fortifiable, Naval, Worker] as (typeof Unit)[]).some(
+          (UnitType) => unit instanceof UnitType
+        ) && !(unit instanceof Diplomatic);
+
+    expect(UnitTypes).length(28);
+
+    const units = UnitTypes.map(
+      (UnitType): Unit =>
+        Object.assign(Object.create(UnitType.prototype), {
+          _ruleRegistry: ruleRegistry,
+        })
+    );
+
+    units.forEach((unit): void => {
+      expect(supported(unit), unit.constructor.name).equal(old(unit));
+    });
+
+    expect(units.filter(supported)).length(26);
+  });
 });

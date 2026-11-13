@@ -13,6 +13,7 @@ const Priorities_1 = require("@civ-clone/core-rule/Priorities");
 const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
 const Types_1 = require("@civ-clone/civ1-unit/Types");
 const defendersLosing_1 = require("../../lib/defendersLosing");
+const traits_1 = require("@civ-clone/core-unit/traits");
 const Removed_1 = require("@civ-clone/core-tile-improvement/Rules/Removed");
 const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
@@ -61,7 +62,7 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     //  twice.
     new Destroyed_1.default('civ1-city:city/destroyed/destroy-ships-and-aircraft', new Priorities_1.Low(), new Effect_1.default((city) => unitRegistry
         .getByTile(city.tile())
-        .filter((unit) => !(unit instanceof Types_1.Land))
+        .filter((unit) => !(0, traits_1.isA)(unit, Types_1.Land))
         .forEach((unit) => {
         // Not a defender whose defeat destroyed the city, which is lost to the attacker (`lib/defendersLosing`).
         //  Those that went with the city already, as it supported them, or with its player, are no longer on the

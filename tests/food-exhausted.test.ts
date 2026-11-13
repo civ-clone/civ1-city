@@ -40,6 +40,7 @@ import shrink from '../Rules/City/shrink';
 import unitCreated from '@civ-clone/civ1-unit/Rules/Unit/created';
 import unitDestroyed from '@civ-clone/civ1-unit/Rules/Unit/destroyed';
 import { WorkedTileRegistry } from '@civ-clone/core-city/WorkedTileRegistry';
+import traits from '@civ-clone/civ1-unit/Rules/Unit/traits';
 
 // What each event was said with, by id: chai prints what it compares when an assertion fails, and a unit or a city leads
 //  to the whole game.
@@ -82,6 +83,8 @@ describe('A city whose food store runs out (civ-clone/web-renderer#969)', (): vo
     availableGovernmentRegistry.register(Anarchy, Despotism, Monarchy);
 
     ruleRegistry.register(
+      // civ1-unit's unit traits, registered first as in a game: `cost` asks which units are `NonCombatant`.
+      ...traits(),
       new PlayerAdded(
         new Effect((player: Player): void => {
           const playerGovernment = new PlayerGovernment(

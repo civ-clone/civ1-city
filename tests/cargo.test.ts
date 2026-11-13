@@ -23,6 +23,7 @@ import tileReassigned from '../Rules/City/tile-reassigned';
 import tiles from '../Rules/City/tiles';
 import unitMoved from '@civ-clone/civ1-unit/Rules/Unit/moved';
 import unitYield from '@civ-clone/civ1-unit/Rules/Unit/yield';
+import traits from '@civ-clone/civ1-unit/Rules/Unit/traits';
 
 describe('A transport and its cargo moving onto a worked tile', (): void => {
   it('should release the tile once, for the transport and its cargo, without throwing (civ-clone/web-renderer#225)', async (): Promise<void> => {
@@ -33,6 +34,8 @@ describe('A transport and its cargo moving onto a worked tile', (): void => {
       workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
     ruleRegistry.register(
+      // civ1-unit's unit traits, registered first as in a game: its `Moved` rules ask them.
+      ...traits(),
       // `civ1-unit`'s `Moved` rules come before this package's in a game, so a transport's cargo is moved (and the
       // cargo's own `Moved` rules run) before this package's rule acts for the transport, but after every `Moved`
       // rule's criteria have been checked for it.
