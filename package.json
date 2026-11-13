@@ -37,7 +37,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@civ-clone/base-city-lifecycle": "github:civ-clone/base-city-lifecycle#feat/city-lifecycle",
+    "@civ-clone/base-city-lifecycle": "^0.1.0",
     "@civ-clone/base-city-tiles-fat-cross": "^0.1.0",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
     "@civ-clone/base-government-unit-support": "^0.1.0",
