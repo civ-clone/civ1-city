@@ -49,16 +49,21 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
                     (10 * governmentModifier)), currentTrade)
             : 0, distanceFromCapital.toFixed(2));
     })),
+    // What each worked square gives the city (`City#tileYields`): the tile's own yields, as no Civ1 rule changes them for
+    //  a city.
     new Yield_1.default('civ1-city:city/yield/worked-tiles', new Priority_1.default(0), // X High
-    new Effect_1.default((city) => city
-        .tilesWorked()
-        .entries()
-        .flatMap((tile) => tile.yields(city.player()).flatMap((tileYield) => new tileYield.constructor(tileYield.value(), tile.id() +
-        ': ' +
-        tileYield
-            .values()
-            .map(([, provider]) => provider)
-            .join('-')))))),
+    new Effect_1.default((city) => {
+        const rules = city.tileYieldRules();
+        return city
+            .tilesWorked()
+            .entries()
+            .flatMap((tile) => city.tileYields(tile, rules).flatMap((tileYield) => new tileYield.constructor(tileYield.value(), tile.id() +
+            ': ' +
+            tileYield
+                .values()
+                .map(([, provider]) => provider)
+                .join('-'))));
+    })),
     // Each trade route adds (the partner's base trade + the city's trade so far + 4) / 8, or / 16 when the partner has
     //  the same owner, in route order, so each builds on the last (v474.05 `CityWorker.cs` L1268-L1300,
     //  civ-clone/web-renderer#57). After the worked tiles and before corruption, which is then worked out on the total.
