@@ -112,15 +112,19 @@ export const getRules: (
     })
   ),
 
+  // What each worked square gives the city (`City#tileYields`): the tile's own yields, as no Civ1 rule changes them for
+  //  a city.
   new YieldRule(
     'civ1-city:city/yield/worked-tiles',
     new Priority(0), // X High
-    new Effect((city: City) =>
-      city
+    new Effect((city: City) => {
+      const rules = city.tileYieldRules();
+
+      return city
         .tilesWorked()
         .entries()
         .flatMap((tile) =>
-          tile.yields(city.player()).flatMap(
+          city.tileYields(tile, rules).flatMap(
             (tileYield: Yield) =>
               new (tileYield.constructor as typeof Yield)(
                 tileYield.value(),
@@ -132,8 +136,8 @@ export const getRules: (
                     .join('-')
               )
           )
-        )
-    )
+        );
+    })
   ),
 
   // Each trade route adds (the partner's base trade + the city's trade so far + 4) / 8, or / 16 when the partner has
