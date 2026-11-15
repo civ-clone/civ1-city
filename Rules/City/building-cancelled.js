@@ -2,15 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
-const BulidingCancelled_1 = require("@civ-clone/core-city-build/Rules/BulidingCancelled");
-const Effect_1 = require("@civ-clone/core-rule/Effect");
+const autoBuildRules_1 = require("@civ-clone/base-city-auto-build/lib/autoBuildRules");
 const autoBuild_1 = require("../../lib/autoBuild");
 const getRules = (ruleRegistry = RuleRegistry_1.instance) => [
-    new BulidingCancelled_1.default(
-    // A city on Auto whose build can no longer be built chooses again (civ-clone/web-renderer#194).
-    'civ1-city:city/building-cancelled/auto', new Effect_1.default((cityBuild) => {
-        (0, autoBuild_1.default)(cityBuild, ruleRegistry);
-    })),
+    // `civ1-city:city/building-cancelled/auto`: a city on Auto whose build can no longer be built chooses again
+    //  (civ-clone/web-renderer#194).
+    (0, autoBuildRules_1.autoBuildOnCancelled)({ ruleRegistry }, { include: autoBuild_1.autoBuildable, prefix: 'civ1-city' }),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

@@ -26,7 +26,8 @@ import TileReassigned from '@civ-clone/core-city/Rules/TileReassigned';
 import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
 import Unit from '@civ-clone/core-unit/Unit';
 import WorkedTile from '@civ-clone/core-city/WorkedTile';
-import autoBuild from '../../lib/autoBuild';
+import { autoBuildAtTurnStart } from '@civ-clone/base-city-auto-build/lib/autoBuildRules';
+import { autoBuildable } from '../../lib/autoBuild';
 
 export const getRules = (
   cityRegistry: CityRegistry = cityRegistryInstance,
@@ -58,15 +59,12 @@ export const getRules = (
       )
     )
   ),
-  new TurnStart(
-    // A city on Auto that had nothing it would choose, such as one whose player knew nothing that unlocks an
-    //  improvement, tries again each turn, once production has finished what it could (civ-clone/web-renderer#194).
-    'civ1-city:player/turn-start/auto-build',
-    new Effect((player: Player): void =>
-      cityRegistry.getByPlayer(player).forEach((city: City): void => {
-        autoBuild(cityBuildRegistry.getByCity(city), ruleRegistry);
-      })
-    )
+  // `civ1-city:player/turn-start/auto-build`: a city on Auto that had nothing it would choose, such as one whose player
+  //  knew nothing that unlocks an improvement, tries again each turn, once production has finished what it could
+  //  (civ-clone/web-renderer#194).
+  autoBuildAtTurnStart(
+    { cityBuildRegistry, cityRegistry, ruleRegistry },
+    { include: autoBuildable, prefix: 'civ1-city' }
   ),
 ];
 

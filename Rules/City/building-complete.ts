@@ -9,7 +9,8 @@ import {
 import BuildingComplete from '@civ-clone/core-city-build/Rules/BulidingComplete';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import Effect from '@civ-clone/core-rule/Effect';
-import autoBuild from '../../lib/autoBuild';
+import { autoBuildOnComplete } from '@civ-clone/base-city-auto-build/lib/autoBuildRules';
+import { autoBuildable } from '../../lib/autoBuild';
 
 export const getRules: (
   engine?: Engine,
@@ -24,12 +25,11 @@ export const getRules: (
       engine.emit('city:building-complete', cityBuild, built);
     })
   ),
-  new BuildingComplete(
-    // A city on Auto goes straight on to what it needs next (civ-clone/web-renderer#194).
-    'civ1-city:city/building-complete/auto',
-    new Effect((cityBuild: CityBuild): void => {
-      autoBuild(cityBuild, ruleRegistry);
-    })
+  // `civ1-city:city/building-complete/auto`: a city on Auto goes straight on to what it needs next
+  //  (civ-clone/web-renderer#194).
+  autoBuildOnComplete(
+    { ruleRegistry },
+    { include: autoBuildable, prefix: 'civ1-city' }
   ),
 ];
 
