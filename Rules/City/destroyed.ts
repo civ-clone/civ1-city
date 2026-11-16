@@ -29,6 +29,7 @@ import { Low } from '@civ-clone/core-rule/Priorities';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import { Land } from '@civ-clone/civ1-unit/Types';
 import defendersLosing from '../../lib/defendersLosing';
+import removeTradeRoutes from '@civ-clone/base-city-trade-route/lib/removeTradeRoutes';
 import { isA } from '@civ-clone/core-unit/traits';
 import Player from '@civ-clone/core-player/Player';
 import Removed from '@civ-clone/core-tile-improvement/Rules/Removed';
@@ -167,10 +168,7 @@ export const getRules: (
   new Destroyed(
     'civ1-city:city/destroyed/remove-trade-routes',
     new Effect((city: City): void =>
-      tradeRouteRegistry.unregister(
-        ...tradeRouteRegistry.getByCity(city),
-        ...tradeRouteRegistry.getByPartner(city)
-      )
+      removeTradeRoutes(city, tradeRouteRegistry)
     )
   ),
 ];

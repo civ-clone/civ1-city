@@ -41,8 +41,8 @@ import {
   computingBaseTrade,
 } from '@civ-clone/civ1-unit/lib/baseTrade';
 import Specialist from '@civ-clone/core-city/Specialist';
-import TradeRoute from '@civ-clone/core-city/TradeRoute';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
+import tradeRouteYields from '@civ-clone/base-city-trade-route/lib/tradeRouteYields';
 import civ1Distance from '@civ-clone/civ1-world/lib/civ1Distance';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
@@ -151,23 +151,19 @@ export const getRules: (
     new Criterion(
       (city: City): boolean => tradeRouteRegistry.getByCity(city).length > 0
     ),
-    new Effect((city: City, yields: Yield[]): Yield[] => {
-      let total = reduceYield(yields, Trade);
-
-      return tradeRouteRegistry
-        .getByCity(city)
-        .map((route: TradeRoute): Yield => {
-          const partner = route.to(),
-            value = Math.floor(
-              (baseTrade(partner) + total + 4) /
-                (partner.player() === city.player() ? 16 : 8)
-            );
-
-          total += value;
-
-          return new Trade(value, partner.id());
-        });
-    })
+    new Effect((city: City, yields: Yield[]): Yield[] =>
+      tradeRouteYields(
+        city,
+        yields,
+        Trade,
+        (partner: City, total: number): number =>
+          Math.floor(
+            (baseTrade(partner) + total + 4) /
+              (partner.player() === city.player() ? 16 : 8)
+          ),
+        tradeRouteRegistry
+      )
+    )
   ),
 
   // Each specialist gives 2 of its yield, before improvements: p46 (Table 4-1), Wilson, J.L & Emrich A. (1992). Sid

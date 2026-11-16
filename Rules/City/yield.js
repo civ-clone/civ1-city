@@ -15,6 +15,7 @@ const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const TradeRouteRegistry_1 = require("@civ-clone/core-city/TradeRouteRegistry");
 const baseTrade_1 = require("@civ-clone/civ1-unit/lib/baseTrade");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
+const tradeRouteYields_1 = require("@civ-clone/base-city-trade-route/lib/tradeRouteYields");
 const civ1Distance_1 = require("@civ-clone/civ1-world/lib/civ1Distance");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, tradeRouteRegistry = TradeRouteRegistry_1.instance) => [
@@ -68,17 +69,8 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
     //  the same owner, in route order, so each builds on the last (v474.05 `CityWorker.cs` L1268-L1300,
     //  civ-clone/web-renderer#57). After the worked tiles and before corruption, which is then worked out on the total.
     //  Left out while a partner's `baseTrade` is being worked out, so two cities routed to each other don't recurse.
-    new Yield_1.default('civ1-city:city/yield/trade-routes', new Priority_1.default(500), new Criterion_1.default(() => !(0, baseTrade_1.computingBaseTrade)()), new Criterion_1.default((city) => tradeRouteRegistry.getByCity(city).length > 0), new Effect_1.default((city, yields) => {
-        let total = (0, reduceYields_1.reduceYield)(yields, Yields_1.Trade);
-        return tradeRouteRegistry
-            .getByCity(city)
-            .map((route) => {
-            const partner = route.to(), value = Math.floor(((0, baseTrade_1.baseTrade)(partner) + total + 4) /
-                (partner.player() === city.player() ? 16 : 8));
-            total += value;
-            return new Yields_1.Trade(value, partner.id());
-        });
-    })),
+    new Yield_1.default('civ1-city:city/yield/trade-routes', new Priority_1.default(500), new Criterion_1.default(() => !(0, baseTrade_1.computingBaseTrade)()), new Criterion_1.default((city) => tradeRouteRegistry.getByCity(city).length > 0), new Effect_1.default((city, yields) => (0, tradeRouteYields_1.default)(city, yields, Yields_1.Trade, (partner, total) => Math.floor(((0, baseTrade_1.baseTrade)(partner) + total + 4) /
+        (partner.player() === city.player() ? 16 : 8)), tradeRouteRegistry))),
     // Each specialist gives 2 of its yield, before improvements: p46 (Table 4-1), Wilson, J.L & Emrich A. (1992). Sid
     // Meier's Civilization, or Rome on 640K a Day. Rocklin, CA: Prima Publishing. The Marketplace, Bank, Library and
     // University modifiers then take them to 3 and 4, as the table has it.
