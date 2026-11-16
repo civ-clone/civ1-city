@@ -13,6 +13,7 @@ const Priorities_1 = require("@civ-clone/core-rule/Priorities");
 const TileImprovements_1 = require("@civ-clone/civ1-world/TileImprovements");
 const Types_1 = require("@civ-clone/civ1-unit/Types");
 const defendersLosing_1 = require("../../lib/defendersLosing");
+const removeTradeRoutes_1 = require("@civ-clone/base-city-trade-route/lib/removeTradeRoutes");
 const traits_1 = require("@civ-clone/core-unit/traits");
 const Removed_1 = require("@civ-clone/core-tile-improvement/Rules/Removed");
 const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
@@ -80,7 +81,7 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         .forEach((specialist) => specialistRegistry.unregister(specialist)))),
     // A destroyed city is cleared from every route, both the ones it held and the ones held to it (v474.05
     //  `Segment_1ade.cs` `F0_1ade_018e`, civ-clone/web-renderer#57).
-    new Destroyed_1.default('civ1-city:city/destroyed/remove-trade-routes', new Effect_1.default((city) => tradeRouteRegistry.unregister(...tradeRouteRegistry.getByCity(city), ...tradeRouteRegistry.getByPartner(city)))),
+    new Destroyed_1.default('civ1-city:city/destroyed/remove-trade-routes', new Effect_1.default((city) => (0, removeTradeRoutes_1.default)(city, tradeRouteRegistry))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
