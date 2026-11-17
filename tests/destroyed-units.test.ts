@@ -1,3 +1,5 @@
+import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
+import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import {
   Carrier,
   Fighter,
@@ -33,7 +35,6 @@ import unitStowed from '@civ-clone/civ1-unit/Rules/Unit/stowed';
 import unitYield from '@civ-clone/civ1-unit/Rules/Unit/yield';
 import { InciteRevolt } from '@civ-clone/civ1-unit/Actions';
 import defectingUnits from '@civ-clone/civ1-unit/Rules/City/captured';
-import defendersLosing from '../lib/defendersLosing';
 import playerCityDestroyed from '@civ-clone/civ1-player/Rules/City/destroyed';
 import playerDefeated from '@civ-clone/civ1-player/Rules/Player/defeated';
 import playerUnitDestroyed from '@civ-clone/civ1-player/Rules/Unit/destroyed';
@@ -85,8 +86,8 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
         game.tradeRoutes,
         game.rules
       ),
-      // A defender's defeat: this package's shrinks its city, then civ1-unit's destroys it, as they load.
-      ...defeated(game.cities, game.cityGrowth, game.engine),
+      // A defender's defeat: civ1-unit's destroys it (it's High), then this package's shrinks its city.
+      ...defeated(game.cities, game.cityGrowth),
       ...unitDefeated(
         game.cities,
         game.rules,
@@ -311,7 +312,6 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
     );
 
     expect(city.destroyed()).true;
-    expect(defendersLosing.size).equal(0);
     // The defender once, lost to the attacker, and counted as a loss, as v474.05's `battle` drops it before `vanish`.
     expect(
       lost.filter(([unit]) => unit === defender).map(([, by]) => by === enemy)
@@ -381,7 +381,7 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
       [...gone, ...stay].filter((unit: Unit): boolean => !unit.destroyed())
     ).length(0);
     // Each once: none is destroyed here before the defeat, which would destroy it again from inside its own
-    //  destruction. (A unit homed in the city is, by `destroy-supported-units`: civ-clone/web-renderer#1000.)
+    //  destruction.
     const announced = lost.map(([unit]) => unit);
 
     gone.concat(stay).forEach((unit: Unit): void => {
@@ -402,5 +402,89 @@ describe('The units in a destroyed city (civ-clone/web-renderer#969)', (): void 
 
     expect(city.destroyed()).false;
     expect(lost).length(0);
+  });
+
+  // The attacker's win destroys a beaten defender, and counts it, before its city of size 1 goes, wherever the defender
+  //  is homed, as v474.05's `battle` drops it before `vanish` (civ-clone/web-renderer#1000).
+  describe('A beaten defender in a city of size 1 (civ-clone/web-renderer#1000)', (): void => {
+    const attack = (
+      { city, enemy, game }: Awaited<ReturnType<typeof setUp>>,
+      defender: Unit
+    ): Unit[] => {
+      const from = city.tile().getNeighbour('e'),
+        tank = new Tank(null, enemy, from, game.rules),
+        defeats: Unit[] = [];
+
+      game.units.register(tank);
+      game.engine.on('unit:defeated', (unit: Unit) => defeats.push(unit));
+
+      game.rules.process(
+        Defeated,
+        defender,
+        tank,
+        new Attack(from, city.tile(), tank, game.rules)
+      );
+
+      return defeats;
+    };
+
+    it('should leave announcing the defeat to civ1-unit', (): void => {
+      expect(
+        defeated(new CityRegistry(), new CityGrowthRegistry()).map((rule) =>
+          rule.id()
+        )
+      ).eql(['civ1-city:unit/defeated/shrink-defended-city']);
+    });
+
+    (
+      [
+        ['homed in the city', (setting) => setting.gone.at(-1)!],
+        ['homed elsewhere', (setting) => setting.stay[0]],
+        ['homed nowhere', (setting) => setting.stay[1]],
+      ] as [string, (setting: Awaited<ReturnType<typeof setUp>>) => Unit][]
+    ).forEach(([home, pick]): void => {
+      it(`should be destroyed once, by the attacker, and counted, when ${home}`, async (): Promise<void> => {
+        const setting = await setUp(),
+          { city, enemy, game, lost, player } = setting,
+          defender = pick(setting),
+          defeats = attack(setting, defender);
+
+        expect(defender.constructor.name).equal('Warrior');
+        expect(city.destroyed()).true;
+        expect(defender.destroyed()).true;
+        expect(
+          lost
+            .filter(([unit]) => unit === defender)
+            .map(([, by]) => by === enemy)
+        ).eql([true]);
+        expect(
+          game.unitLosses
+            .getByPlayer(player)
+            .map((loss) => [loss.unit().name, loss.count()])
+        ).eql([['Warrior', 1]]);
+        // Announced once, by `civ1-unit`.
+        expect(defeats.filter((unit) => unit === defender)).length(1);
+      });
+    });
+
+    it("should be destroyed once, by the attacker, and counted, in its player's last city", async (): Promise<void> => {
+      const setting = await setUp({ lastCity: true }),
+        { city, enemy, game, lost, player } = setting,
+        [defender] = setting.stay,
+        defeats = attack(setting, defender);
+
+      expect(city.destroyed()).true;
+      expect(game.players.includes(player)).false;
+      expect(
+        lost.filter(([unit]) => unit === defender).map(([, by]) => by === enemy)
+      ).eql([true]);
+      // The defender alone counted, once: the defeat destroys the rest by no one, as the city is destroyed by no one.
+      expect(
+        game.unitLosses
+          .getByPlayer(player)
+          .map((loss) => [loss.unit().name, loss.count()])
+      ).eql([['Warrior', 1]]);
+      expect(defeats.filter((unit) => unit === defender)).length(1);
+    });
   });
 });
