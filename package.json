@@ -40,6 +40,7 @@
     "@civ-clone/base-city-auto-build": "^0.1.0",
     "@civ-clone/base-city-lifecycle": "^0.1.0",
     "@civ-clone/base-city-tiles-fat-cross": "^0.1.0",
+    "@civ-clone/base-city-tiles-rings": "^0.1.0",
     "@civ-clone/base-city-trade-route": "^0.1.0",
     "@civ-clone/base-city-yield-population-support-food": "^0.1.1",
     "@civ-clone/base-government-unit-support": "^0.1.0",
