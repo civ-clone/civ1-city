@@ -30,7 +30,7 @@ export const register = (game: Game): void => {
   registerAvailableSpecialists(game.availableSpecialists);
 
   game.rules.register(
-    ...cityBuildingCancelled(game.rules),
+    ...cityBuildingCancelled(game.rules, game.engine),
     ...cityBuildingComplete(game.engine, game.rules),
     ...cityBuildingHeld(game.engine),
     ...cityCanBeWorked(game.cities, game.units, game.workedTiles),

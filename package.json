@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@civ-clone/base-city-auto-build": "^0.1.0",
-    "@civ-clone/base-city-lifecycle": "^0.1.0",
+    "@civ-clone/base-city-lifecycle": "^0.1.4",
     "@civ-clone/base-city-tiles-fat-cross": "^0.1.0",
     "@civ-clone/base-city-tiles-rings": "^0.1.0",
     "@civ-clone/base-city-trade-route": "^0.1.0",
@@ -50,7 +50,7 @@
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
     "@civ-clone/core-city": "^0.1.25",
-    "@civ-clone/core-city-build": "^0.1.22",
+    "@civ-clone/core-city-build": "^0.1.24",
     "@civ-clone/core-city-growth": "^0.1.6",
     "@civ-clone/core-city-improvement": "^0.1.5",
     "@civ-clone/core-client": "^0.1.0",
