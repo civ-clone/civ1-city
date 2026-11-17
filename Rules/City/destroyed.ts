@@ -28,7 +28,6 @@ import Effect from '@civ-clone/core-rule/Effect';
 import { Low } from '@civ-clone/core-rule/Priorities';
 import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
 import { Land } from '@civ-clone/civ1-unit/Types';
-import defendersLosing from '../../lib/defendersLosing';
 import removeTradeRoutes from '@civ-clone/base-city-trade-route/lib/removeTradeRoutes';
 import { isA } from '@civ-clone/core-unit/traits';
 import Player from '@civ-clone/core-player/Player';
@@ -132,16 +131,10 @@ export const getRules: (
       unitRegistry
         .getByTile(city.tile())
         .filter((unit: Unit): boolean => !isA(unit, Land))
-        .forEach((unit: Unit): void => {
-          // Not a defender whose defeat destroyed the city, which is lost to the attacker (`lib/defendersLosing`).
-          //  Those that went with the city already, as it supported them, or with its player, are no longer on the
-          //  square.
-          if (defendersLosing.has(unit)) {
-            return;
-          }
-
-          unit.destroy();
-        })
+        // Not a defender whose defeat destroyed the city: the attacker's win destroyed it first (`civ1-unit`'s High
+        //  `unit/defeated/emit-and-destroy`), and, like those that went with the city already, as it supported them, or
+        //  with its player, it is no longer on the square.
+        .forEach((unit: Unit): void => unit.destroy())
     )
   ),
 

@@ -119,7 +119,7 @@ export const register = (game: Game): void => {
       game.rules,
       game.cityBuilds
     ),
-    ...unitDefeated(game.cities, game.cityGrowth, game.engine),
+    ...unitDefeated(game.cities, game.cityGrowth),
     ...unitMoved(game.rules, game.workedTiles),
     ...unitUnsupported()
   );
