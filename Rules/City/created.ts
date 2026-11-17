@@ -35,6 +35,7 @@ import {
   WorkedTileRegistry,
   instance as workedTileRegistryInstance,
 } from '@civ-clone/core-city/WorkedTileRegistry';
+import Available from '@civ-clone/core-tile-improvement/Rules/Available';
 import City from '@civ-clone/core-city/City';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
@@ -80,8 +81,29 @@ export const getRules: (
   specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
   availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): Created[] => [
-  ...([Irrigation, Road] as (typeof TileImprovement)[]).map(
-    (TileImprovementType) =>
+  ...(
+    [
+      // A new city's square is irrigated only where its terrain can be irrigated, as the rule set's `Available` rules
+      //  have it (civ1-world's: Desert, Grassland, Hills, Plains and River), without the water nearby a worker would
+      //  need (v474.05 `CITY.C`, `work_rules[terrain][0] < -1`, civ-clone/web-renderer#1029)...
+      [
+        Irrigation,
+        new Criterion((city: City): boolean =>
+          ruleRegistry
+            .get(Available)
+            .some((rule: Available): boolean =>
+              rule.validate(city.tile(), Irrigation, city.player())
+            )
+        ),
+      ],
+      // ...and it has a Road whatever its terrain.
+      [Road],
+    ] as [typeof TileImprovement, ...Criterion[]][]
+  ).map(
+    ([TileImprovementType, ...criteria]: [
+      typeof TileImprovement,
+      ...Criterion[]
+    ]) =>
       new Created(
         `civ1-city:city/created/add-improvement/${TileImprovementType.name}`,
         new Criterion((city: City) =>
@@ -92,6 +114,7 @@ export const getRules: (
                 !(tileImprovement instanceof TileImprovementType)
             )
         ),
+        ...criteria,
         new Effect((city: City): void =>
           tileImprovementRegistry.register(new TileImprovementType(city.tile()))
         )

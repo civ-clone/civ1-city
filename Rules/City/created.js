@@ -11,6 +11,7 @@ const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldR
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const WorkedTileRegistry_1 = require("@civ-clone/core-city/WorkedTileRegistry");
+const Available_1 = require("@civ-clone/core-tile-improvement/Rules/Available");
 const CityBuild_1 = require("@civ-clone/core-city-build/CityBuild");
 const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
 const Created_1 = require("@civ-clone/core-city/Rules/Created");
@@ -22,9 +23,21 @@ const assignWorkers_1 = require("../../lib/assignWorkers");
 const AvailableSpecialistRegistry_1 = require("@civ-clone/core-city/AvailableSpecialistRegistry");
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, cityRegistry = CityRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, availableBuildItemsRegistry = AvailableCityBuildItemsRegistry_1.instance, engine = Engine_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, availableSpecialistRegistry = AvailableSpecialistRegistry_1.instance) => [
-    ...[TileImprovements_1.Irrigation, TileImprovements_1.Road].map((TileImprovementType) => new Created_1.default(`civ1-city:city/created/add-improvement/${TileImprovementType.name}`, new Criterion_1.default((city) => tileImprovementRegistry
+    ...[
+        // A new city's square is irrigated only where its terrain can be irrigated, as the rule set's `Available` rules
+        //  have it (civ1-world's: Desert, Grassland, Hills, Plains and River), without the water nearby a worker would
+        //  need (v474.05 `CITY.C`, `work_rules[terrain][0] < -1`, civ-clone/web-renderer#1029)...
+        [
+            TileImprovements_1.Irrigation,
+            new Criterion_1.default((city) => ruleRegistry
+                .get(Available_1.default)
+                .some((rule) => rule.validate(city.tile(), TileImprovements_1.Irrigation, city.player()))),
+        ],
+        // ...and it has a Road whatever its terrain.
+        [TileImprovements_1.Road],
+    ].map(([TileImprovementType, ...criteria]) => new Created_1.default(`civ1-city:city/created/add-improvement/${TileImprovementType.name}`, new Criterion_1.default((city) => tileImprovementRegistry
         .getByTile(city.tile())
-        .every((tileImprovement) => !(tileImprovement instanceof TileImprovementType))), new Effect_1.default((city) => tileImprovementRegistry.register(new TileImprovementType(city.tile()))))),
+        .every((tileImprovement) => !(tileImprovement instanceof TileImprovementType))), ...criteria, new Effect_1.default((city) => tileImprovementRegistry.register(new TileImprovementType(city.tile()))))),
     new Created_1.default('civ1-city:city/created/register-city-build', new Effect_1.default((city) => {
         const cityBuild = new CityBuild_1.default(city, availableBuildItemsRegistry, ruleRegistry);
         // Its first build is asked for as a new city's (civ-clone/web-renderer#716).
