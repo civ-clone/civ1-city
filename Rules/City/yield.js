@@ -8,6 +8,7 @@ const Specialists_1 = require("@civ-clone/library-city/Specialists");
 const PlayerGovernmentRegistry_1 = require("@civ-clone/core-government/PlayerGovernmentRegistry");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const Description_1 = require("@civ-clone/core-rule/Description");
 const Priorities_1 = require("@civ-clone/core-rule/Priorities");
 const CityImprovements_1 = require("@civ-clone/library-city/CityImprovements");
 const Priority_1 = require("@civ-clone/core-rule/Priority");
@@ -49,7 +50,10 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
                 Math.min(Math.floor((currentTrade * distanceFromCapital * 3) /
                     (10 * governmentModifier)), currentTrade)
             : 0, distanceFromCapital.toFixed(2));
-    })),
+    }), 
+    // What the Palace does, for the Civilopedia (civ-clone/web-renderer#1196): a city's corruption is measured by its
+    //  distance from it.
+    new Description_1.default({ type: 'capital', subject: CityImprovements_1.Palace, yield: Yields_1.Corruption })),
     // What each worked square gives the city (`City#tileYields`): the tile's own yields, as no Civ1 rule changes them for
     //  a city.
     new Yield_1.default('civ1-city:city/yield/worked-tiles', new Priority_1.default(0), // X High

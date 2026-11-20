@@ -24,6 +24,7 @@ import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Government from '@civ-clone/core-government/Government';
+import Description from '@civ-clone/core-rule/Description';
 import { High } from '@civ-clone/core-rule/Priorities';
 import { Palace } from '@civ-clone/library-city/CityImprovements';
 import Priority from '@civ-clone/core-rule/Priority';
@@ -109,7 +110,10 @@ export const getRules: (
           : 0,
         distanceFromCapital.toFixed(2)
       );
-    })
+    }),
+    // What the Palace does, for the Civilopedia (civ-clone/web-renderer#1196): a city's corruption is measured by its
+    //  distance from it.
+    new Description({ type: 'capital', subject: Palace, yield: Corruption })
   ),
 
   // What each worked square gives the city (`City#tileYields`): the tile's own yields, as no Civ1 rule changes them for
