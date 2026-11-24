@@ -23,6 +23,7 @@ import playerTurnStart from './Rules/Player/turn-start';
 import unitDefeated from './Rules/Unit/defeated';
 import unitMoved from './Rules/Unit/moved';
 import unitUnsupported from './Rules/Unit/unsupported';
+import tileImprovementBuilt from './Rules/TileImprovement/built';
 import { Game, defaultGame } from '@civ-clone/core-game';
 import registerAvailableSpecialists from './registerAvailableSpecialists';
 
@@ -121,7 +122,8 @@ export const register = (game: Game): void => {
     ),
     ...unitDefeated(game.cities, game.cityGrowth),
     ...unitMoved(game.rules, game.workedTiles),
-    ...unitUnsupported()
+    ...unitUnsupported(),
+    ...tileImprovementBuilt(game.cities, game.rules, game.tileImprovements)
   );
 };
 
