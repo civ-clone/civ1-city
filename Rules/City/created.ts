@@ -18,7 +18,11 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
-import { Irrigation, Road } from '@civ-clone/civ1-world/TileImprovements';
+import {
+  Fortress,
+  Irrigation,
+  Road,
+} from '@civ-clone/civ1-world/TileImprovements';
 import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
@@ -43,6 +47,7 @@ import Created from '@civ-clone/core-city/Rules/Created';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { High } from '@civ-clone/core-rule/Priorities';
+import Removed from '@civ-clone/core-tile-improvement/Rules/Removed';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import TileReassigned from '@civ-clone/core-city/Rules/TileReassigned';
 import WorkedTile from '@civ-clone/core-city/WorkedTile';
@@ -81,6 +86,22 @@ export const getRules: (
   specialistRegistry: SpecialistRegistry = specialistRegistryInstance,
   availableSpecialistRegistry: AvailableSpecialistRegistry = availableSpecialistRegistryInstance
 ): Created[] => [
+  // A Fortress on the square goes when a city is founded there (v474.05 `CITY.C`, `unflag(36)`;
+  //  civ-clone/web-renderer#388), taken away through the `Removed` rules so the square is redrawn.
+  new Created(
+    'civ1-city:city/created/remove-fortress',
+    new Effect((city: City): void =>
+      tileImprovementRegistry
+        .getByTile(city.tile())
+        .filter(
+          (tileImprovement: TileImprovement): boolean =>
+            tileImprovement instanceof Fortress
+        )
+        .forEach((fortress: TileImprovement): void => {
+          ruleRegistry.process(Removed, city.tile(), fortress);
+        })
+    )
+  ),
   ...(
     [
       // A new city's square is irrigated only where its terrain can be irrigated, as the rule set's `Available` rules
