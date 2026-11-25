@@ -17,12 +17,21 @@ const CityGrowth_1 = require("@civ-clone/core-city-growth/CityGrowth");
 const Created_1 = require("@civ-clone/core-city/Rules/Created");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const Removed_1 = require("@civ-clone/core-tile-improvement/Rules/Removed");
 const TileReassigned_1 = require("@civ-clone/core-city/Rules/TileReassigned");
 const WorkedTile_1 = require("@civ-clone/core-city/WorkedTile");
 const assignWorkers_1 = require("../../lib/assignWorkers");
 const AvailableSpecialistRegistry_1 = require("@civ-clone/core-city/AvailableSpecialistRegistry");
 const SpecialistRegistry_1 = require("@civ-clone/core-city/SpecialistRegistry");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, cityBuildRegistry = CityBuildRegistry_1.instance, cityGrowthRegistry = CityGrowthRegistry_1.instance, cityRegistry = CityRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, availableBuildItemsRegistry = AvailableCityBuildItemsRegistry_1.instance, engine = Engine_1.instance, workedTileRegistry = WorkedTileRegistry_1.instance, specialistRegistry = SpecialistRegistry_1.instance, availableSpecialistRegistry = AvailableSpecialistRegistry_1.instance) => [
+    // A Fortress on the square goes when a city is founded there (v474.05 `CITY.C`, `unflag(36)`;
+    //  civ-clone/web-renderer#388), taken away through the `Removed` rules so the square is redrawn.
+    new Created_1.default('civ1-city:city/created/remove-fortress', new Effect_1.default((city) => tileImprovementRegistry
+        .getByTile(city.tile())
+        .filter((tileImprovement) => tileImprovement instanceof TileImprovements_1.Fortress)
+        .forEach((fortress) => {
+        ruleRegistry.process(Removed_1.default, city.tile(), fortress);
+    }))),
     ...[
         // A new city's square is irrigated only where its terrain can be irrigated, as the rule set's `Available` rules
         //  have it (civ1-world's: Desert, Grassland, Hills, Plains and River), without the water nearby a worker would

@@ -15,7 +15,9 @@ import {
   generateGenerator,
   generateWorld,
 } from '@civ-clone/core-world/tests/lib/buildWorld';
-import { Irrigation } from '@civ-clone/civ1-world/TileImprovements';
+import { Fortress, Irrigation } from '@civ-clone/civ1-world/TileImprovements';
+import Engine from '@civ-clone/core-engine/Engine';
+import removed from '@civ-clone/civ1-world/Rules/TileImprovement/removed';
 import AdvanceRegistry from '@civ-clone/core-science/AdvanceRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
@@ -43,7 +45,8 @@ describe('city:created', (): void => {
       cityGrowthRegistry = new CityGrowthRegistry(),
       playerWorldRegistry = new PlayerWorldRegistry(),
       workedTileRegistry = new WorkedTileRegistry(ruleRegistry),
-      player = new Player(ruleRegistry);
+      player = new Player(ruleRegistry),
+      engine = new Engine();
 
     playerResearchRegistry.register(
       new PlayerResearch(player, new AdvanceRegistry(), ruleRegistry)
@@ -52,6 +55,8 @@ describe('city:created', (): void => {
     ruleRegistry.register(
       // Which tile improvements can be built where, as civ1-world registers them in a game.
       ...available(playerResearchRegistry, tileImprovementRegistry),
+      // How a tile improvement is taken away, as civ1-world registers it in a game.
+      ...removed(tileImprovementRegistry, engine),
       ...created(
         tileImprovementRegistry,
         undefined,
@@ -67,6 +72,7 @@ describe('city:created', (): void => {
 
     return {
       cityGrowthRegistry,
+      engine,
       player,
       playerWorldRegistry,
       ruleRegistry,
@@ -163,5 +169,47 @@ describe('city:created', (): void => {
         .getByTile(city.tile())
         .filter((improvement) => improvement instanceof Irrigation)
     ).to.deep.equal([irrigation]);
+  });
+
+  it('should take away a Fortress on the square, telling the renderer (civ-clone/web-renderer#388)', async (): Promise<void> => {
+    const {
+        cityGrowthRegistry,
+        engine,
+        player,
+        playerWorldRegistry,
+        ruleRegistry,
+        tileImprovementRegistry,
+        workedTileRegistry,
+      } = setUp(),
+      world = await generateWorld(generateGenerator(5, 5, Hills), ruleRegistry),
+      fortress = new Fortress(world.get(2, 2)),
+      heard: TileImprovement[] = [];
+
+    tileImprovementRegistry.register(fortress);
+    engine.on('tile-improvement:removed', (tile, improvement) =>
+      heard.push(improvement)
+    );
+
+    const city = await setUpCity({
+      ruleRegistry,
+      tileImprovementRegistry,
+      player,
+      world,
+      improveTerrain: false,
+      playerWorldRegistry,
+      cityGrowthRegistry,
+      workedTileRegistry,
+    });
+
+    expect(city.tile()).equal(fortress.tile());
+    expect(
+      tileImprovementRegistry
+        .getByTile(city.tile())
+        .map(
+          (improvement: TileImprovement): string => improvement.constructor.name
+        )
+        .sort()
+    ).to.deep.equal(['Irrigation', 'Road']);
+    expect(heard).to.deep.equal([fortress]);
   });
 });
